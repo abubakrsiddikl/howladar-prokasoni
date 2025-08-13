@@ -1,6 +1,5 @@
-import { JwtPayload } from "jsonwebtoken";
 import { IBook } from "./book.interface";
-import { Role } from "../user/user.interface";
+
 import AppError from "../../errorHelper/AppError";
 import httpStatus from "http-status-codes";
 import { Book } from "./book.model";
@@ -8,12 +7,24 @@ import { bookSearchableFields } from "./tour.constants";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 
 // create book
-const createBook = async (payload: IBook, decodedToken: JwtPayload) => {
-  if (
-    decodedToken.role !== Role.ADMIN &&
-    decodedToken.role !== Role.STORE_MANAGER
-  ) {
-    throw new AppError(httpStatus.FORBIDDEN, "You are not authorized !");
+const createBook = async (payload: IBook) => {
+  if (payload.discount) {
+    const discount = payload.discount;
+    if (discount < 0 || discount > 100) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Discount must be between 0 and 100"
+      );
+    }
+    const price = payload.price;
+    if (price < 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Price must be a positive number"
+      );
+    }
+    payload.discountedPrice = (price * discount) / 100;
+    payload.price = price - payload.discountedPrice;
   }
   const newBook = await Book.create(payload);
   return newBook;

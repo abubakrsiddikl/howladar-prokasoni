@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { BookServices } from "./book.service";
-import { JwtPayload } from "jsonwebtoken";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 
 // create book
 const createBook = catchAsync(async (req: Request, res: Response) => {
-  const decodedToken = req.user as JwtPayload;
-  const newBook = await BookServices.createBook(req.body, decodedToken);
+  console.log(req.file)
+  const payload = req.body;
+  return 
+  const newBook = await BookServices.createBook(payload);
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

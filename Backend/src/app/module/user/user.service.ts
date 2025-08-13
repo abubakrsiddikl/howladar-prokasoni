@@ -44,7 +44,7 @@ const updateUser = async (
 ) => {
   const isUserExist = await User.findById(userId);
   if (
-    decodedToken.role === Role.USER ||
+    decodedToken.role === Role.CUSTOMER ||
     decodedToken.role === Role.STORE_MANAGER
   ) {
     if (userId !== decodedToken.userId) {

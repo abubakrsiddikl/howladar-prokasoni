@@ -10,6 +10,9 @@ export const createBookZodSchema = z.object({
   discount: z.number().min(0).max(100, "Discount must be between 0 and 100"),
   description: z.string().max(2000).optional(),
   coverImage: z.string().url("Cover image must be a valid URL"),
+  previewImages: z
+    .array(z.string().url("Preview images must be valid URLs"))
+    .optional(),
   available: z.boolean(),
 });
 

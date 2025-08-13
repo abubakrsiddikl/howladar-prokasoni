@@ -16,9 +16,11 @@ export interface IBook {
   price: number;
   stock: number;
   genre: Genre;
-  discount: number;
+  discount?: number;
+  discountedPrice?: number;
   description?: string;
   coverImage: string;
+  previewImages?: string[];
   available: boolean;
 }
 

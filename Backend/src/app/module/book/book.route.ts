@@ -4,12 +4,13 @@ import { createBookZodSchema, updateBookZodSchema } from "./book.validation";
 import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../user/user.interface";
 import { BookControllers } from "./book.controller";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 // create a book
 router.post(
   "/create",
-  validateRequest(createBookZodSchema),
+  validateRequest(createBookZodSchema),multerUpload.single("file"),
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   BookControllers.createBook
 );

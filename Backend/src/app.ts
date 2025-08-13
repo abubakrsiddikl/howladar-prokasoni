@@ -6,9 +6,16 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import expressSession from "express-session";
 import { envVars } from "./app/config/env";
+import cors from "cors";
 import "./app/config/passport";
 
 const app = express();
+app.use(
+  cors({
+    origin: envVars.FRONTEND_URL,
+    credentials: true,
+  })
+);
 app.use(
   expressSession({
     secret: envVars.EXPRESS_SESSION_SECRET,

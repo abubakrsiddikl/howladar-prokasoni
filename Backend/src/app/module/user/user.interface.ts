@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 export enum Role {
   ADMIN = "ADMIN",
   STORE_MANAGER = "STORE_MANAGER",
-  USER = "USER",
+  CUSTOMER = "CUSTOMER",
 }
 
 //auth providers
