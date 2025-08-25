@@ -1,5 +1,6 @@
 import App from "@/App";
 import AuthenticationLayout from "@/components/layout/AuthenticationLayout";
+import HomePage from "@/pages/Home";
 import Login from "@/pages/Authentication/Login";
 import Register from "@/pages/Authentication/Register";
 
@@ -11,6 +12,10 @@ export const router = createBrowserRouter([
     path: "/",
     children: [
       {
+        Component: HomePage,
+        index: true,
+      },
+      {
         Component: AuthenticationLayout,
         path: "/auth",
         children: [
@@ -20,8 +25,8 @@ export const router = createBrowserRouter([
           },
           {
             Component: Register,
-            path: "register"
-          }
+            path: "register",
+          },
         ],
       },
     ],
