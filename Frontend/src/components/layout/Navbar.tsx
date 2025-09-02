@@ -22,6 +22,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserProfileQuery,
+} from "@/redux/feature/Authentication/auth.api";
+import { useDispatch } from "react-redux";
 
 interface MenuItem {
   title: string;
@@ -44,20 +50,23 @@ interface Navbar1Props {
       title: string;
       url: string;
     };
-    
+    logout: {
+      title: string;
+      // url?: string; // If logout needs a URL, add it; otherwise use onClick
+    };
   };
 }
 
 const Navbar = ({
   logo = {
-    url: "https://www.shadcnblocks.com",
+    url: "#",
     src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
     alt: "logo",
     title: "Shadcnblocks.com",
   },
 
   menu = [
-    { title: "হোম", url: "#" },
+    { title: "হোম", url: "/" },
     { title: "উপন্যাস", url: "#" },
     { title: "গল্প", url: "#" },
     { title: "বিজ্ঞান", url: "#" },
@@ -68,8 +77,20 @@ const Navbar = ({
   ],
   auth = {
     login: { title: "লগইন", url: "/auth/login" },
+    logout: { title: "লগআউট" }, // Fixed the title to be complete
   },
 }: Navbar1Props) => {
+  const { data } = useUserProfileQuery(undefined);
+  const [logout] = useLogoutMutation();
+  const dispatch = useDispatch(); // For handling logout
+
+  const handleLogout = async () => {
+    await logout(undefined);
+    dispatch(authApi.util.resetApiState());
+  };
+
+  // Removed console.log for production safety
+
   return (
     <section className="py-4">
       <div className="container mx-auto">
@@ -96,10 +117,15 @@ const Navbar = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            
+            {data?.data?.email ? (
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                {auth.logout.title}
+              </Button>
+            ) : (
+              <Button asChild variant="outline" size="sm">
+                <a href={auth.login.url}>{auth.login.title}</a>
+              </Button>
+            )}
           </div>
         </nav>
 
@@ -121,6 +147,9 @@ const Navbar = ({
                         className="max-h-8 dark:invert"
                         alt={logo.alt}
                       />
+                      <span className="text-lg font-semibold tracking-tighter">
+                        {logo.title} {/* Added title for consistency */}
+                      </span>
                     </a>
                   </SheetTitle>
                 </SheetHeader>
@@ -134,10 +163,15 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                   
+                    {data?.data?.email ? (
+                      <Button variant="outline" onClick={handleLogout}>
+                        {auth.logout.title}
+                      </Button>
+                    ) : (
+                      <Button asChild variant="outline">
+                        <a href={auth.login.url}>{auth.login.title}</a>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </SheetContent>
@@ -178,25 +212,25 @@ const renderMenuItem = (item: MenuItem) => {
 };
 
 const renderMobileMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-          {item.title}
-        </AccordionTrigger>
-        <AccordionContent className="mt-2">
-          {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    );
-  }
-
   return (
-    <a key={item.title} href={item.url} className="text-md font-semibold">
-      {item.title}
-    </a>
+    <AccordionItem key={item.title} value={item.title} className="border-b-0">
+      {item.items ? (
+        <>
+          <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
+            {item.title}
+          </AccordionTrigger>
+          <AccordionContent className="mt-2">
+            {item.items.map((subItem) => (
+              <SubMenuLink key={subItem.title} item={subItem} />
+            ))}
+          </AccordionContent>
+        </>
+      ) : (
+        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
+          <a href={item.url}>{item.title}</a>
+        </AccordionTrigger>
+      )}
+    </AccordionItem>
   );
 };
 

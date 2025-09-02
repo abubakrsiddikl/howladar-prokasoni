@@ -1,3 +1,9 @@
+import HistoryBook from "@/components/modules/HomePage/HistoryBook";
+
 export default function HomePage() {
-  return <div>Home</div>;
+  return (
+    <div>
+      <HistoryBook></HistoryBook>
+    </div>
+  );
 }

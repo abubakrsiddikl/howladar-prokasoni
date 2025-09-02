@@ -13,19 +13,34 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import GoogleLogin from "./GoogleLogin";
+import { useLoginMutation } from "@/redux/feature/Authentication/auth.api";
 
 export default function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const [login] = useLoginMutation();
   const navigate = useNavigate();
   const form = useForm();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+    try {
+      const res = await login(data).unwrap();
+      console.log(res);
+      if (res.success) {
+        navigate("/");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error(err);
+
+      if (err.data.message === "Password does not match") {
+        toast.error("Invalid credentials");
+      }
+    }
   };
 
   return (

@@ -5,7 +5,7 @@ export default function GoogleLogin() {
   return (
     <div>
       <Button
-        // onClick={() => window.open(`${config.baseUrl}/auth/google`)}
+        onClick={() => window.open(`http://localhost:5000/api/v1/auth/google`)}
         type="button"
         variant="outline"
         className="w-full cursor-pointer bg-black text-white"

@@ -12,16 +12,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router";
 import GoogleLogin from "./GoogleLogin";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRegisterMutation } from "@/redux/feature/Authentication/auth.api";
+import { toast } from "sonner";
 
 export default function RegisterForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const [register] = useRegisterMutation();
   const registerSchema = z
     .object({
       name: z
@@ -70,7 +72,15 @@ export default function RegisterForm({
   });
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+    const toastId = "submitting...";
+    try {
+      const res = await register(data).unwrap();
+      if (res.success) {
+        toast("Register successfully", { id: toastId });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -97,6 +107,7 @@ export default function RegisterForm({
                 </FormItem>
               )}
             />
+            {/* email */}
             <FormField
               control={form.control}
               name="email"
@@ -120,7 +131,7 @@ export default function RegisterForm({
             {/* phone */}
             <FormField
               control={form.control}
-              name="email"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
@@ -138,6 +149,7 @@ export default function RegisterForm({
                 </FormItem>
               )}
             />
+            {/* password */}
             <FormField
               control={form.control}
               name="password"
