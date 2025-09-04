@@ -26,7 +26,7 @@ const Navbar = () => {
     dispatch(authApi.util.resetApiState());
   };
 
-  // ✅ NavLink Generator
+  //  NavLink Generator
   const navLink = (href: string, label: string) => (
     <Link
       to={href}
@@ -39,7 +39,7 @@ const Navbar = () => {
   return (
     <nav className="bg-[#727088] shadow sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* ✅ Logo */}
+        {/*  Logo */}
         <Link
           to="/"
           className="text-xl font-bold text-white flex items-center gap-2"
@@ -52,7 +52,7 @@ const Navbar = () => {
           <span>হাওলাদার প্রকাশনী</span>
         </Link>
 
-        {/* ✅ Desktop Menu */}
+        {/*  Desktop Menu */}
         <div className="hidden md:flex items-center gap-2">
           {navLink("/", "হোম")}
           {navLink("#", "উপন্যাস")}
@@ -65,12 +65,15 @@ const Navbar = () => {
 
           {/* Auth Buttons */}
           {user?.data?.email ? (
+            <>
             <Button
               onClick={handleLogout}
               className="bg-white text-gray-700 hover:bg-gray-200"
             >
               লগআউট
             </Button>
+            
+            </>
           ) : (
             <Button
               asChild
@@ -85,9 +88,9 @@ const Navbar = () => {
             to="/cart"
             className="relative flex items-center px-3 py-2 rounded-md hover:underline"
           >
-            <ShoppingCart className="h-5 w-5 text-white" />
+            <ShoppingCart className="h-7 w-7 text-white" />
             {cart?.length > 0 && (
-              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 rounded-full">
+              <span className="absolute top-1 right-1 bg-[#ff8600] text-white text-xs px-1.5 rounded-full font-bold">
                 {cart.length}
               </span>
             )}

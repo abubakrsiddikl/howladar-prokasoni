@@ -6,6 +6,11 @@ import Register from "@/pages/Authentication/Register";
 
 import { createBrowserRouter } from "react-router";
 import Cart from "@/pages/Cart";
+import CheckoutPage from "@/pages/User/Checkout";
+import OrderSuccessPage from "@/pages/User/OrderSuccess";
+import { withAuth } from "@/utils/withAuth";
+import MyOrdersPage from "@/pages/User/MyOrders";
+import OrderDetails from "@/pages/User/OrderDetails";
 
 export const router = createBrowserRouter([
   {
@@ -30,10 +35,27 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      // user route
       {
         Component: Cart,
-        path: "/cart"
-      }
+        path: "/cart",
+      },
+      {
+        Component: withAuth(CheckoutPage, "CUSTOMER"),
+        path: "/checkout",
+      },
+      {
+        Component: OrderSuccessPage,
+        path: "/ordersuccess/:id",
+      },
+      {
+        Component: withAuth(MyOrdersPage, "CUSTOMER"),
+        path: "/my-orders",
+      },
+      {
+        Component: OrderDetails,
+        path: "/orderdetails/:id",
+      },
     ],
   },
 ]);
