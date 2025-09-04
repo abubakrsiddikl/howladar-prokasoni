@@ -5,6 +5,7 @@ import Login from "@/pages/Authentication/Login";
 import Register from "@/pages/Authentication/Register";
 
 import { createBrowserRouter } from "react-router";
+import Cart from "@/pages/Cart";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        Component: Cart,
+        path: "/cart"
+      }
     ],
   },
 ]);

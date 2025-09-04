@@ -1,255 +1,167 @@
-import { Menu } from "lucide-react";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Menu, ShoppingCart } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   authApi,
   useLogoutMutation,
   useUserProfileQuery,
 } from "@/redux/feature/Authentication/auth.api";
 import { useDispatch } from "react-redux";
+import { useCart } from "@/hooks/useCart";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-interface MenuItem {
-  title: string;
-  url: string;
-  description?: string;
-  icon?: React.ReactNode;
-  items?: MenuItem[];
-}
-
-interface Navbar1Props {
-  logo?: {
-    url: string;
-    src: string;
-    alt: string;
-    title: string;
-  };
-  menu?: MenuItem[];
-  auth?: {
-    login: {
-      title: string;
-      url: string;
-    };
-    logout: {
-      title: string;
-      // url?: string; // If logout needs a URL, add it; otherwise use onClick
-    };
-  };
-}
-
-const Navbar = ({
-  logo = {
-    url: "#",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
-    alt: "logo",
-    title: "Shadcnblocks.com",
-  },
-
-  menu = [
-    { title: "হোম", url: "/" },
-    { title: "উপন্যাস", url: "#" },
-    { title: "গল্প", url: "#" },
-    { title: "বিজ্ঞান", url: "#" },
-    { title: "ইতিহাস", url: "#" },
-    { title: "জীবনী", url: "#" },
-    { title: "ফ্যান্টাসি", url: "#" },
-    { title: "প্রযুক্তি", url: "#" },
-  ],
-  auth = {
-    login: { title: "লগইন", url: "/auth/login" },
-    logout: { title: "লগআউট" }, // Fixed the title to be complete
-  },
-}: Navbar1Props) => {
-  const { data } = useUserProfileQuery(undefined);
+const Navbar = () => {
+  const { data: user } = useUserProfileQuery(undefined);
   const [logout] = useLogoutMutation();
-  const dispatch = useDispatch(); // For handling logout
+  const dispatch = useDispatch();
+  const { cart } = useCart();
 
   const handleLogout = async () => {
     await logout(undefined);
     dispatch(authApi.util.resetApiState());
   };
 
-  // Removed console.log for production safety
+  // ✅ NavLink Generator
+  const navLink = (href: string, label: string) => (
+    <Link
+      to={href}
+      className="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-[#FF8600]"
+    >
+      {label}
+    </Link>
+  );
 
   return (
-    <section className="py-4">
-      <div className="container mx-auto">
-        {/* Desktop Menu */}
-        <nav className="hidden justify-between lg:flex">
-          <div className="flex items-center gap-6">
-            {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
+    <nav className="bg-[#727088] shadow sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        {/* ✅ Logo */}
+        <Link
+          to="/"
+          className="text-xl font-bold text-white flex items-center gap-2"
+        >
+          <img
+            src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+            className="max-h-8 dark:invert"
+            alt="logo"
+          />
+          <span>হাওলাদার প্রকাশনী</span>
+        </Link>
+
+        {/* ✅ Desktop Menu */}
+        <div className="hidden md:flex items-center gap-2">
+          {navLink("/", "হোম")}
+          {navLink("#", "উপন্যাস")}
+          {navLink("#", "গল্প")}
+          {navLink("#", "বিজ্ঞান")}
+          {navLink("#", "ইতিহাস")}
+          {navLink("#", "জীবনী")}
+          {navLink("#", "ফ্যান্টাসি")}
+          {navLink("#", "প্রযুক্তি")}
+
+          {/* Auth Buttons */}
+          {user?.data?.email ? (
+            <Button
+              onClick={handleLogout}
+              className="bg-white text-gray-700 hover:bg-gray-200"
+            >
+              লগআউট
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className="bg-white text-gray-700 hover:bg-gray-200"
+            >
+              <Link to="/auth/login">লগইন</Link>
+            </Button>
+          )}
+
+          {/* Cart */}
+          <Link
+            to="/cart"
+            className="relative flex items-center px-3 py-2 rounded-md hover:underline"
+          >
+            <ShoppingCart className="h-5 w-5 text-white" />
+            {cart?.length > 0 && (
+              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 rounded-full">
+                {cart.length}
               </span>
-            </a>
-            <div className="flex items-center">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            {data?.data?.email ? (
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                {auth.logout.title}
-              </Button>
-            ) : (
-              <Button asChild variant="outline" size="sm">
-                <a href={auth.login.url}>{auth.login.title}</a>
-              </Button>
             )}
-          </div>
-        </nav>
+          </Link>
+        </div>
 
-        {/* Mobile Menu */}
-        <div className="block lg:hidden">
-          <div className="flex items-center justify-start">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <img
-                        src={logo.src}
-                        className="max-h-8 dark:invert"
-                        alt={logo.alt}
-                      />
-                      <span className="text-lg font-semibold tracking-tighter">
-                        {logo.title} {/* Added title for consistency */}
-                      </span>
-                    </a>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
+        {/* ✅ Mobile Menu Drawer */}
+        <div className="md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white">
+                <Menu />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-3/4 bg-[#727088]">
+              <SheetHeader>
+                <Link
+                  to="/"
+                  className="text-lg font-bold text-white flex items-center gap-2"
+                >
+                  <img
+                    src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+                    className="max-h-6 dark:invert"
+                    alt="logo"
+                  />
+                  <span>হাওলাদার প্রকাশনী</span>
+                </Link>
+              </SheetHeader>
+
+              <div className="mt-6 flex flex-col gap-2">
+                {navLink("/", "হোম")}
+                {navLink("#", "উপন্যাস")}
+                {navLink("#", "গল্প")}
+                {navLink("#", "বিজ্ঞান")}
+                {navLink("#", "ইতিহাস")}
+                {navLink("#", "জীবনী")}
+                {navLink("#", "ফ্যান্টাসি")}
+                {navLink("#", "প্রযুক্তি")}
+
+                {user?.data?.email ? (
+                  <Button
+                    onClick={handleLogout}
+                    className="bg-white text-gray-700 hover:bg-gray-200"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
+                    লগআউট
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    className="bg-white text-gray-700 hover:bg-gray-200"
+                  >
+                    <Link to="/auth/login">লগইন</Link>
+                  </Button>
+                )}
 
-                  <div className="flex flex-col gap-3">
-                    {data?.data?.email ? (
-                      <Button variant="outline" onClick={handleLogout}>
-                        {auth.logout.title}
-                      </Button>
-                    ) : (
-                      <Button asChild variant="outline">
-                        <a href={auth.login.url}>{auth.login.title}</a>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+                {/* ✅ Cart */}
+                <Link
+                  to="/cart"
+                  className="relative flex items-center px-3 py-2 rounded-md hover:bg-gray-200"
+                >
+                  <ShoppingCart className="h-5 w-5 text-white" />
+                  {cart?.length > 0 && (
+                    <span className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 rounded-full">
+                      {cart.length}
+                    </span>
+                  )}
+                  <span className="ml-2 text-white">Cart</span>
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-    </section>
-  );
-};
-
-const renderMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <NavigationMenuItem key={item.title}>
-        <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-        <NavigationMenuContent className="bg-popover text-popover-foreground">
-          {item.items.map((subItem) => (
-            <NavigationMenuLink asChild key={subItem.title} className="w-80">
-              <SubMenuLink item={subItem} />
-            </NavigationMenuLink>
-          ))}
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-    );
-  }
-
-  return (
-    <NavigationMenuItem key={item.title}>
-      <NavigationMenuLink
-        href={item.url}
-        className="bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
-      >
-        {item.title}
-      </NavigationMenuLink>
-    </NavigationMenuItem>
-  );
-};
-
-const renderMobileMenuItem = (item: MenuItem) => {
-  return (
-    <AccordionItem key={item.title} value={item.title} className="border-b-0">
-      {item.items ? (
-        <>
-          <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-            {item.title}
-          </AccordionTrigger>
-          <AccordionContent className="mt-2">
-            {item.items.map((subItem) => (
-              <SubMenuLink key={subItem.title} item={subItem} />
-            ))}
-          </AccordionContent>
-        </>
-      ) : (
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-          <a href={item.url}>{item.title}</a>
-        </AccordionTrigger>
-      )}
-    </AccordionItem>
-  );
-};
-
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
-  return (
-    <a
-      className="hover:bg-muted hover:text-accent-foreground flex select-none flex-row gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors"
-      href={item.url}
-    >
-      <div className="text-foreground">{item.icon}</div>
-      <div>
-        <div className="text-sm font-semibold">{item.title}</div>
-        {item.description && (
-          <p className="text-muted-foreground text-sm leading-snug">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </a>
+    </nav>
   );
 };
 

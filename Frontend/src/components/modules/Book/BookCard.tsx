@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
-import type { IBook } from "@/types";
+import { useCart } from "@/hooks/useCart";
+import type { CartItem, IBook } from "@/types";
 import { Link } from "react-router";
 
 export default function BookCard({
+  _id,
   title,
   author,
   price,
@@ -10,6 +12,16 @@ export default function BookCard({
   discount,
   discountedPrice,
 }: IBook) {
+  const { addToCart } = useCart();
+  const handleAddToCart = async () => {
+    const cartItem: CartItem = {
+      book: { _id, title, coverImage, price },
+      quantity: 1,
+    };
+
+    const res = await addToCart(cartItem);
+    console.log("cart res", res);
+  };
   return (
     <div>
       <div className="bg-white shadow-md hover:shadow-2xl transition-shadow duration-300 rounded-lg">
@@ -60,7 +72,10 @@ export default function BookCard({
         </div>
 
         <div className="px-2 pb-4">
-          <Button className="w-full p-1 md:px-4 md:py-1 rounded-lg text-lg flex justify-center items-center gap-2 transition ">
+          <Button
+            onClick={handleAddToCart}
+            className="w-full p-1 md:px-4 md:py-1 rounded-lg text-lg flex justify-center items-center gap-2 transition "
+          >
             Add to Cart
           </Button>
         </div>
