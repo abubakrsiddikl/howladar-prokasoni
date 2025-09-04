@@ -1,3 +1,5 @@
+import type { ComponentType } from "react";
+
 export type { IBook } from "./book.type";
 export type { CartItem, ICartItemResponse } from "./cart.type";
 export type { TRole } from "./auth.type";
@@ -8,4 +10,13 @@ export interface IResponse<T> {
   success: boolean;
   message: string;
   data: T;
+}
+
+export interface ISidebarItem {
+  title: string;
+  items: {
+    title: string;
+    url: string;
+    component: ComponentType;
+  }[];
 }

@@ -1,0 +1,15 @@
+import { role } from "@/constants/role";
+import { adminSidebarItems } from "@/router/adminSidebarItems";
+import { userSidebarItems } from "@/router/userSidebarItems";
+import type { TRole } from "@/types";
+
+export const getSidebarItems = (userRole: TRole) => {
+  switch (userRole) {
+    case role.admin:
+      return [...adminSidebarItems];
+    case role.customer:
+      return [...userSidebarItems];
+    default:
+      return [];
+  }
+};

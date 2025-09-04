@@ -11,6 +11,10 @@ import OrderSuccessPage from "@/pages/User/OrderSuccess";
 import { withAuth } from "@/utils/withAuth";
 import MyOrdersPage from "@/pages/User/MyOrders";
 import OrderDetails from "@/pages/User/OrderDetails";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { generateRoutes } from "@/utils/generateRoutes";
+import { adminSidebarItems } from "./adminSidebarItems";
+import { userSidebarItems } from "./userSidebarItems";
 
 export const router = createBrowserRouter([
   {
@@ -57,5 +61,17 @@ export const router = createBrowserRouter([
         path: "/orderdetails/:id",
       },
     ],
+  },
+  // user route
+  {
+    Component: DashboardLayout,
+    path: "/user",
+    children: [...generateRoutes(userSidebarItems)],
+  },
+  // admin route
+  {
+    Component: DashboardLayout,
+    path: "/admin",
+    children: [...generateRoutes(adminSidebarItems)],
   },
 ]);
