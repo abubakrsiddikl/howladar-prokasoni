@@ -18,10 +18,11 @@ const credentialsLogin = catchAsync(
       if (!user) {
         return next(new AppError(401, info.message));
       }
-      const userToken = createUserToken(user);
+      const userToken = await createUserToken(user);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: pass, ...rest } = user.toObject();
+      setAuthCookie(res, userToken);
       sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -66,7 +67,7 @@ const googleCallbackController = catchAsync(
       throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
     }
 
-    const tokenInfo = createUserToken(user);
+    const tokenInfo =  createUserToken(user);
 
     setAuthCookie(res, tokenInfo);
 

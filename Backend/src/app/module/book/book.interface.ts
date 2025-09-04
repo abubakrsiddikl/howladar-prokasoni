@@ -22,6 +22,7 @@ export interface IBook {
   coverImage: string;
   previewImages?: string[];
   available: boolean;
+  deletePreviewImages?: string[];
 }
 
 export interface IBookFilterOptions {

@@ -22,6 +22,13 @@ router.patch(
   UserControllers.updateUser
 );
 
+// * promote user to admin
+router.patch(
+  "/promote/:id",
+  checkAuth(Role.ADMIN),
+  UserControllers.promoteUser
+);
+
 router.get("/me", checkAuth(...Object.values(Role)), UserControllers.getMe);
 
 // /api/v1/user/:id

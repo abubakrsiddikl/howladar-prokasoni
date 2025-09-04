@@ -39,6 +39,20 @@ const updateUser = catchAsync(
   }
 );
 
+// promete user to admin
+const promoteUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+    const user = await UserServices.promoteUser(userId, req.body.role);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "User Promoted Successfully",
+      data: user,
+    });
+  }
+);
 const getMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user as JwtPayload;
@@ -59,6 +73,7 @@ export const UserControllers = {
   createUser,
   updateUser,
   getMe,
+  promoteUser,
 };
 
 // route matching -> controller -> service -> model -> DB

@@ -68,6 +68,20 @@ const updateUser = async (
   return newUpdatedUser;
 };
 
+// * promote user to admin
+const promoteUser = async (userId: string, newRole: Role) => {
+  const isUserExist = await User.findById(userId);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { role: newRole },
+    { new: true, runValidators: true }
+  ).select("-password");
+  return updatedUser;
+};
 const getMe = async (userId: string) => {
   const user = await User.findById(userId).select("-password");
   return {
@@ -78,5 +92,6 @@ const getMe = async (userId: string) => {
 export const UserServices = {
   createUser,
   updateUser,
+  promoteUser,
   getMe,
 };

@@ -22,3 +22,11 @@ export const createOrderSchema = z.object({
   paymentMethod: z.nativeEnum(PaymentMethod).default(PaymentMethod.COD),
   paymentStatus: z.nativeEnum(PaymentStatus).default(PaymentStatus.Pending),
 });
+
+export const updateOrderStatusZodSchema = z.object({
+  orderStatus: z.nativeEnum(OrderStatus),
+});
+
+export const updatePaymentStatusZodSchema = z.object({
+  paymentStatus: z.nativeEnum(PaymentStatus),
+});

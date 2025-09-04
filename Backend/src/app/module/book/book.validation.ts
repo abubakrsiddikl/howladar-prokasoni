@@ -9,14 +9,16 @@ export const createBookZodSchema = z.object({
   genre: z.nativeEnum(Genre),
   discount: z.number().min(0).max(100, "Discount must be between 0 and 100"),
   description: z.string().max(2000).optional(),
-  coverImage: z.string().url("Cover image must be a valid URL"),
+  coverImage: z.string().url("Cover image must be a valid URL").optional(),
   previewImages: z
     .array(z.string().url("Preview images must be valid URLs"))
     .optional(),
   available: z.boolean(),
 });
 
-export const updateBookZodSchema = createBookZodSchema.partial();
+export const updateBookZodSchema = createBookZodSchema.partial().extend({
+  deletePreviewImages: z.array(z.string()).optional(),
+});
 
 export const filterBookZodSchema = z.object({
   search: z.string().optional(),

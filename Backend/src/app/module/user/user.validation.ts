@@ -56,3 +56,7 @@ export const updateUserZodSchema = z
       .optional(),
   })
   .strict("Extra filed are not allowed");
+
+export const promoteUserZodSchema = z.object({
+  role: z.enum(Object.values(Role) as [string]),
+});

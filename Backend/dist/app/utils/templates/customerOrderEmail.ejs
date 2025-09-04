@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Order Confirmation</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f8f8; margin: 0; padding: 0; }
+    .container { max-width: 600px; background: #fff; margin: auto; padding: 20px; border-radius: 8px; }
+    h2 { color: #4CAF50; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    td { padding: 8px; border: 1px solid #ddd; }
+    .footer { margin-top: 30px; font-size: 12px; color: gray; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📦 Thank You for Your Order, <%= customerName %>!</h2>
+    <p>We have received your order and will process it shortly.</p>
+
+    <h3>Order Summary:</h3>
+    <table>
+      <tr>
+        <td>Order ID:</td>
+        <td><strong><%= orderId %></strong></td>
+      </tr>
+      <tr>
+        <td>Payment Method:</td>
+        <td><%= paymentMethod %></td>
+      </tr>
+      <tr>
+        <td>Total Amount:</td>
+        <td>৳<%= total %></td>
+      </tr>
+    </table>
+
+    <h3>Shipping To:</h3>
+    <p>
+      <%= shippingAddress %><br/>
+      উপজেলা: <%= city %>, জেলা: <%= district %>, বিভাগ: <%= division %><br/>
+      📞 <%= phone %>
+    </p>
+
+    <p style="margin-top: 20px;">We’ll notify you when your order ships. Thank you for shopping with <strong>Howladar Bookstore</strong>!</p>
+
+    <div class="footer">
+      This is an automated email. Please do not reply.
+    </div>
+  </div>
+</body>
+</html>

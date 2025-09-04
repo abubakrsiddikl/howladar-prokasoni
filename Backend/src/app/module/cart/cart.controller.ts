@@ -58,7 +58,7 @@ const updateCartQuantity = catchAsync(
     const userId = (req.user as JwtPayload).userId;
     const cartItemId = req.params.id;
     const { quantity } = req.body;
-
+    console.log(req.body,cartItemId)
     const updatedCartItem = await CartServices.updateCartQuantity(
       userId,
       cartItemId,

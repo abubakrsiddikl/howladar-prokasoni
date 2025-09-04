@@ -10,8 +10,12 @@ const router = Router();
 // create a book
 router.post(
   "/create",
-  validateRequest(createBookZodSchema),multerUpload.single("file"),
+  multerUpload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "files", maxCount: 5 },
+  ]),
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
+  validateRequest(createBookZodSchema),
   BookControllers.createBook
 );
 
@@ -19,11 +23,17 @@ router.post(
 router.get("/all-books", BookControllers.getAllBook);
 // get single book with slug
 router.get("/:slug", BookControllers.getSingleBook);
+// get book by  genre
+router.get("/genre/:genre", BookControllers.getBookByGenre);
 // update a book
 router.patch(
   "/:id",
-  validateRequest(updateBookZodSchema),
+  multerUpload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "files", maxCount: 5 },
+  ]),
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
+  validateRequest(updateBookZodSchema),
   BookControllers.updateBook
 );
 // delete a book

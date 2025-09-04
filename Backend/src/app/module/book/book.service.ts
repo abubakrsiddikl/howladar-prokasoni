@@ -3,8 +3,9 @@ import { IBook } from "./book.interface";
 import AppError from "../../errorHelper/AppError";
 import httpStatus from "http-status-codes";
 import { Book } from "./book.model";
-import { bookSearchableFields } from "./tour.constants";
+import { bookSearchableFields } from "./book.constants";
 import { QueryBuilder } from "../../utils/QueryBuilder";
+import { deleteImageFromCLoudinary } from "../../config/cloudinary.config";
 
 // create book
 const createBook = async (payload: IBook) => {
@@ -58,16 +59,64 @@ const getSingleBook = async (slug: string) => {
   return book;
 };
 
+// get book by genre
+const getBookByGenre = async (genre: string) => {
+  return await Book.find({ genre: genre });
+};
+
 // update a book
 const updateBook = async (id: string, payload: Partial<IBook>) => {
   const isBookExist = await Book.findById(id);
   if (!isBookExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "Book Not Found");
   }
-  const updatedBook = await Book.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  });
+
+  if (payload.coverImage) {
+    // if cover image is provided, delete the old coverImage
+    if (isBookExist.coverImage) {
+      await deleteImageFromCLoudinary(isBookExist.coverImage);
+    }
+  } else {
+    // if cover image is not provided, keep the existing coverImage
+    payload.coverImage = isBookExist.coverImage;
+  }
+  if (
+    payload.previewImages &&
+    payload.previewImages.length > 0 &&
+    isBookExist.previewImages &&
+    isBookExist.previewImages.length > 0
+  ) {
+    payload.previewImages = [
+      ...payload.previewImages,
+      ...isBookExist.previewImages,
+    ];
+  }
+  if (
+    payload.deletePreviewImages &&
+    payload.deletePreviewImages.length > 0 &&
+    isBookExist.previewImages &&
+    isBookExist.previewImages.length > 0
+  ) {
+    const restDBImages = isBookExist.previewImages.filter(
+      (imageUrl) => !payload.deletePreviewImages?.includes(imageUrl)
+    );
+    const updatedPayloadImages = (payload.previewImages || [])
+      .filter((imageUrl) => !payload.deletePreviewImages?.includes(imageUrl))
+      .filter((imageUrl) => !restDBImages.includes(imageUrl));
+
+    payload.previewImages = [...restDBImages, ...updatedPayloadImages];
+  }
+  const updatedBook = await Book.findByIdAndUpdate(id, payload, { new: true });
+  if (
+    payload.deletePreviewImages &&
+    payload.deletePreviewImages.length > 0 &&
+    isBookExist.previewImages &&
+    isBookExist.previewImages.length > 0
+  ) {
+    await Promise.all(
+      payload.deletePreviewImages.map((url) => deleteImageFromCLoudinary(url))
+    );
+  }
   return updatedBook;
 };
 
@@ -85,6 +134,7 @@ export const BookServices = {
   createBook,
   getAllBook,
   getSingleBook,
+  getBookByGenre,
   deleteBook,
   updateBook,
 };

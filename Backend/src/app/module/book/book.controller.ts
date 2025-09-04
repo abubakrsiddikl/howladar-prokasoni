@@ -6,9 +6,19 @@ import httpStatus from "http-status-codes";
 
 // create book
 const createBook = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.file)
-  const payload = req.body;
-  return 
+  let coverImagePath: string | undefined;
+  let previewImagePaths: string[] = [];
+
+  if (!Array.isArray(req.files)) {
+    coverImagePath = req.files?.file?.[0]?.path;
+    previewImagePaths = req.files?.files?.map((file) => file.path) || [];
+  }
+  const payload = {
+    ...req.body,
+    coverImage: coverImagePath,
+    previewImages: previewImagePaths,
+  };
+
   const newBook = await BookServices.createBook(payload);
 
   sendResponse(res, {
@@ -44,10 +54,35 @@ const getSingleBook = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get book by genre
+const getBookByGenre = catchAsync(async (req: Request, res: Response) => {
+  const genre = req.params.genre;
+  console.log(genre)
+  const book = await BookServices.getBookByGenre(genre);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Book retrieve successfully",
+    data: book,
+  });
+});
+
 // update a book
 const updateBook = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const updatedBook = await BookServices.updateBook(id, req.body);
+  let coverImagePath: string | undefined;
+  let previewImagePaths: string[] = [];
+
+  if (!Array.isArray(req.files)) {
+    coverImagePath = req.files?.file?.[0]?.path;
+    previewImagePaths = req.files?.files?.map((file) => file.path) || [];
+  }
+  const payload = {
+    ...req.body,
+    coverImage: coverImagePath,
+    previewImages: previewImagePaths,
+  };
+  const updatedBook = await BookServices.updateBook(id, payload);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -72,6 +107,7 @@ export const BookControllers = {
   createBook,
   getAllBook,
   getSingleBook,
+  getBookByGenre,
   updateBook,
   deleteBook,
 };

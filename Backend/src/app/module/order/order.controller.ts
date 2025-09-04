@@ -23,6 +23,17 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get customer order her create
+const getMyOrders = catchAsync(async (req: Request, res: Response) => {
+  const decodedToken = req.user as JwtPayload;
+  const orders = await OrderService.getMyOrders(decodedToken);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Orders retrieved successfully",
+    data: orders,
+  });
+});
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const orders = await OrderService.getAllOrders();
   sendResponse(res, {
@@ -30,6 +41,21 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "Orders retrieved successfully",
     data: orders,
+  });
+});
+
+// order trace
+const getTraceOrder = catchAsync(async (req: Request, res: Response) => {
+  const orderId = req.params.orderId;
+  if (!orderId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
+  }
+  const order = await OrderService.getTraceOrder(orderId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Order traced successfully",
+    data: order,
   });
 });
 
@@ -66,9 +92,30 @@ const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// update payment status
+const updatePaymentStatus = catchAsync(async (req: Request, res: Response) => {
+  const orderId = req.params.orderId;
+  if (!orderId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
+  }
+  const updatedOrder = await OrderService.updatePaymentStatus(
+    orderId,
+    req.body.paymentStatus
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment status updated successfully",
+    data: updatedOrder,
+  });
+});
+
 export const OrderController = {
   createOrder,
+  getMyOrders,
+  getTraceOrder,
   getAllOrders,
   getSingleOrder,
   updateOrderStatus,
+  updatePaymentStatus,
 };
