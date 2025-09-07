@@ -15,7 +15,7 @@ exports.createBookZodSchema = zod_1.z.object({
     previewImages: zod_1.z
         .array(zod_1.z.string().url("Preview images must be valid URLs"))
         .optional(),
-    available: zod_1.z.boolean(),
+    available: zod_1.z.boolean().optional(),
 });
 exports.updateBookZodSchema = exports.createBookZodSchema.partial().extend({
     deletePreviewImages: zod_1.z.array(zod_1.z.string()).optional(),

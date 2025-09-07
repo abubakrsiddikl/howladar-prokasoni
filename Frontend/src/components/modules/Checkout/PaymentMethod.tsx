@@ -1,10 +1,11 @@
+import type { IPaymentMethod } from "@/types";
 
 export default function PaymentMethod({
   paymentMethod,
   setPaymentMethod,
 }: {
-  paymentMethod: string;
-  setPaymentMethod: (method: string) => void;
+  paymentMethod: IPaymentMethod;
+  setPaymentMethod: (method: IPaymentMethod) => void;
 }) {
   return (
     <div className="bg-white p-5 rounded shadow">
@@ -22,7 +23,10 @@ export default function PaymentMethod({
           <input
             type="radio"
             checked={paymentMethod === "SSLCommerz"}
-            onChange={() => setPaymentMethod("SSLCommerz")}
+            onChange={() => {
+              alert("Coming Soon ");
+              setPaymentMethod("COD"); 
+            }}
           />
           SSLCommerz (Card / Mobile Wallet)
         </label>

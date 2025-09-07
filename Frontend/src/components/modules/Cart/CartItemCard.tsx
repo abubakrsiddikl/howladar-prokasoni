@@ -1,8 +1,8 @@
 import { useCart } from "@/hooks/useCart";
-import type { ICartItemResponse } from "@/types";
+import type { ICartItem } from "@/types";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 
-export default function CartItemCard({ item }: { item: ICartItemResponse }) {
+export default function CartItemCard({ item }: { item: ICartItem }) {
   const { updateQuantity, removeFromCart } = useCart();
 
   return (

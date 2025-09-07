@@ -18,13 +18,19 @@ import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: user } = useUserProfileQuery(undefined);
-  console.log(user)
+  console.log(user);
   const data = {
     navMain: getSidebarItems(user?.data?.role),
   };
   return (
     <Sidebar {...props}>
-      <SidebarHeader>Logo after</SidebarHeader>
+      <SidebarHeader>
+        <img
+          src="/logo.jpg"
+          alt="log"
+          className="h-[36px] w-[36px] dark:invert rounded"
+        />
+      </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
@@ -34,7 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu>
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
+                    <SidebarMenuButton asChild>
                       <Link to={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

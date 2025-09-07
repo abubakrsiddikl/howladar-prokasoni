@@ -1,12 +1,11 @@
-// src/redux/feature/cart/cart.slice.ts
-import type { CartItem } from "@/types";
+import type { ICartItem } from "@/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-type CartState = { items: CartItem[] };
+type CartState = { items: ICartItem[] };
 
 const LS_KEY = "cart";
 
-const loadFromLS = (): CartItem[] => {
+const loadFromLS = (): ICartItem[] => {
   try {
     const raw = localStorage.getItem(LS_KEY);
     return raw ? JSON.parse(raw) : [];
@@ -15,7 +14,7 @@ const loadFromLS = (): CartItem[] => {
   }
 };
 
-const saveToLS = (items: CartItem[]) => {
+const saveToLS = (items: ICartItem[]) => {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(items));
   } catch (error) {
@@ -29,7 +28,7 @@ const cartSlice = createSlice({
   name: "guestCart",
   initialState,
   reducers: {
-    addLocal: (state, action: PayloadAction<CartItem>) => {
+    addLocal: (state, action: PayloadAction<ICartItem>) => {
       const item = action.payload;
       const exist = state.items.find((i) => i._id === item._id);
       if (exist) {
@@ -57,7 +56,7 @@ const cartSlice = createSlice({
       state.items = [];
       saveToLS(state.items);
     },
-    setLocalFromServer: (state, action: PayloadAction<CartItem[]>) => {
+    setLocalFromServer: (state, action: PayloadAction<ICartItem[]>) => {
       // server cart reflect করতে চাইলে (optional)
       state.items = action.payload;
       saveToLS(state.items);

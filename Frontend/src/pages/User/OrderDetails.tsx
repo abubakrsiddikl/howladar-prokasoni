@@ -1,4 +1,4 @@
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { format } from "date-fns";
 import { useParams } from "react-router";
@@ -17,13 +17,16 @@ import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 
 export default function OrderDetails() {
   const { id } = useParams();
-  const { data: user } = useUserProfileQuery(undefined); // ✅ role check এখান থেকে হবে
-  const { data: order, isLoading, isError } = useGetSingleOrderQuery(id);
+  const { data: user } = useUserProfileQuery(undefined); 
+  const {
+    data: order,
+    isLoading,
+    isError,
+  } = useGetSingleOrderQuery(id as string);
 
-  // ✅ Status Update Handler
+  //  Status Update Handler
   const handleStatusUpdate = (newStatus: string) => {
     console.log("Update to:", newStatus);
-    // এখানে mutation কল করবে (updateOrderStatus API দিয়ে)
   };
 
   if (isLoading) {
@@ -107,7 +110,8 @@ export default function OrderDetails() {
         </CardHeader>
         <CardContent className="space-y-2">
           <p>
-            <strong>Payment Method:</strong> {order.paymentMethod === "COD" && "Cash On Delivery"}
+            <strong>Payment Method:</strong>{" "}
+            {order.paymentMethod === "COD" && "Cash On Delivery"}
           </p>
           <p>
             <strong>Payment Status:</strong>{" "}

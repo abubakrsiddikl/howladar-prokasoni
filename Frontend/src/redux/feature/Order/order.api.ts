@@ -1,28 +1,35 @@
 import { baseApi } from "@/redux/baseApi";
+import type { ICreateOrderPayload, IOrder, IResponse } from "@/types";
 
-export const authApi = baseApi.injectEndpoints({
+export const orderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createOrder: builder.mutation({
+    //  Create Order
+    createOrder: builder.mutation<IResponse<IOrder>, ICreateOrderPayload>({
       query: (orderInfo) => ({
         url: "/order/create",
         method: "POST",
         data: orderInfo,
       }),
+      invalidatesTags: ["ORDER"],
     }),
 
-    getMyOrder: builder.query({
+    //  Get My Orders
+    getMyOrder: builder.query<IOrder[], void>({
       query: () => ({
         url: "/order/my-order",
         method: "GET",
       }),
-      transformResponse: (res) => res?.data ?? res,
+      providesTags: ["ORDER"],
+      transformResponse: (res: IResponse<IOrder[]>) => res.data,
     }),
-    getSingleOrder: builder.query({
+
+    // Get Single Order
+    getSingleOrder: builder.query<IOrder, string>({
       query: (orderId) => ({
         url: `/order/${orderId}`,
         method: "GET",
       }),
-      transformResponse: (res) => res?.data ?? res,
+      transformResponse: (res: IResponse<IOrder>) => res.data,
     }),
   }),
 });
@@ -31,4 +38,4 @@ export const {
   useCreateOrderMutation,
   useGetMyOrderQuery,
   useGetSingleOrderQuery,
-} = authApi;
+} = orderApi;

@@ -14,9 +14,9 @@ const SearchInput = () => {
       skip: !search,
     }
   );
-  console.log(data?.data?.data);
+  console.log(data?.data);
 
-  const books: Partial<IBook>[] = data?.data?.data || [];
+  const books: Partial<IBook>[] = data?.data || [];
 
   return (
     <div className="relative w-11/12 mx-auto bg-white ">

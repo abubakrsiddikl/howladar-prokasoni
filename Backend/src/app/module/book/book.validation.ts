@@ -13,7 +13,7 @@ export const createBookZodSchema = z.object({
   previewImages: z
     .array(z.string().url("Preview images must be valid URLs"))
     .optional(),
-  available: z.boolean(),
+  available: z.boolean().optional(),
 });
 
 export const updateBookZodSchema = createBookZodSchema.partial().extend({

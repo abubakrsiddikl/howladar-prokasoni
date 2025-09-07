@@ -1,5 +1,4 @@
 import { useGetMyOrderQuery } from "@/redux/feature/Order/order.api";
-import type { IOrder } from "@/types";
 import { Link } from "react-router";
 
 export default function MyOrdersPage() {
@@ -13,7 +12,7 @@ export default function MyOrdersPage() {
         <p className="text-gray-600">আপনার কোনো অর্ডার নেই।</p>
       ) : (
         <div className="space-y-6">
-          {orders?.map((order: IOrder) => (
+          {orders?.map((order) => (
             <div
               key={order._id}
               className="border rounded-lg p-4 shadow hover:shadow-lg transition"

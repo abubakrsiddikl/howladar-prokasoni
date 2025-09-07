@@ -1,9 +1,9 @@
 import type { ComponentType } from "react";
 
-export type { IBook } from "./book.type";
-export type { CartItem, ICartItemResponse } from "./cart.type";
+export  { type IBook,type IBookCreate, Genre } from "./book.type";
+export type { CartItem, ICartItem } from "./cart.type";
 export type { TRole } from "./auth.type";
-export type { IOrder } from "./order.type";
+export type { IOrder, ICreateOrderPayload, IPaymentMethod } from "./order.type";
 
 export interface IResponse<T> {
   statusCode: number;

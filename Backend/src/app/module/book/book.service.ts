@@ -25,7 +25,7 @@ const createBook = async (payload: IBook) => {
       );
     }
     payload.discountedPrice = (price * discount) / 100;
-    payload.price = price - payload.discountedPrice;
+    payload.price = Math.round(price - payload.discountedPrice);
   }
   const newBook = await Book.create(payload);
   return newBook;
@@ -126,6 +126,10 @@ const deleteBook = async (id: string) => {
   if (!isBookExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "Book Not Found");
   }
+  // delete coverImage
+  deleteImageFromCLoudinary(isBookExist.coverImage);
+  // delete preview image
+  isBookExist.previewImages?.map((img) => deleteImageFromCLoudinary(img));
   await Book.findByIdAndDelete(id);
   return isBookExist;
 };

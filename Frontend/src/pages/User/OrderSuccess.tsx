@@ -22,7 +22,7 @@ export default function OrderSuccessPage() {
 
         <div className="flex gap-4 justify-center">
           <Link
-            to="/my-orders"
+            to="/user/my-orders"
             className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700"
           >
             🧾 অর্ডার সমূহ দেখুন

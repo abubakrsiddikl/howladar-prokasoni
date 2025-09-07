@@ -1,23 +1,8 @@
-// export interface IOrder {
-//   _id: string;
-//   orderId: string;
-//   totalAmount: number;
-//   orderStatus: string;
-//   paymentStatus: string;
-//   createdAt: string;
-//   items: {
-//     book: {
-//       title: string;
-//       coverImage: string;
-//     };
-//     quantity: number;
-//   }[];
-// }
 export interface IOrderItem {
   book: {
     title: string;
     coverImage: string;
-    price: string
+    price: string;
   };
   quantity: number;
 }
@@ -54,4 +39,15 @@ export interface IOrderStats {
   processing: number;
   shipped: number;
   cancelled: number;
+}
+
+// send order payload interfaces
+// Order create Payload
+export interface ICreateOrderPayload {
+  items: {
+    book: string;
+    quantity: number;
+  }[];
+  shippingInfo: IShippingInfo;
+  paymentMethod: IPaymentMethod;
 }

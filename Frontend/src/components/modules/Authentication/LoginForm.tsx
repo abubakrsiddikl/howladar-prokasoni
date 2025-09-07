@@ -13,10 +13,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+
 import { toast } from "sonner";
 import GoogleLogin from "./GoogleLogin";
 import { useLoginMutation } from "@/redux/feature/Authentication/auth.api";
+// import { role } from "@/constants/role";
+import { useNavigate } from "react-router";
 
 export default function LoginForm({
   className,
@@ -29,10 +31,18 @@ export default function LoginForm({
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const res = await login(data).unwrap();
-      console.log(res);
+      console.log(res.data?.user?.role);
       if (res.success) {
-        navigate("/");
+        // if (res.data?.user?.role === role.admin) {
+        //   navigate("/admin/analytics", { replace: true });
+        // } else if (res.data?.user?.role === role.customer) {
+        //   navigate("/user", { replace: true });
+        // } else {
+        //   navigate("/", { replace: true });
+        // }
+        navigate("/")
       }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);

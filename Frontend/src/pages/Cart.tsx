@@ -1,12 +1,13 @@
 import CartItemCard from "@/components/modules/Cart/CartItemCard";
 import { useCart } from "@/hooks/useCart";
+
 import { Link } from "react-router";
 
 export default function CartPage() {
   const { cart, clearCart } = useCart();
 
   const total = cart.reduce(
-    (sum, item) => sum + item.book.price * item.quantity,
+    (sum: number, item) => sum + item.book.price * item.quantity,
     0
   );
 

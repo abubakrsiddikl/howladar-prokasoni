@@ -9,7 +9,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export interface ICartItemResponse {
+export interface ICartItem {
   _id?: string;
   book: {
     _id: string;

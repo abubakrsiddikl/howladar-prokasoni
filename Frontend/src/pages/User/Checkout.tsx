@@ -4,7 +4,7 @@ import ShippingForm from "@/components/modules/Checkout/ShippingForm";
 import { useCart } from "@/hooks/useCart";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 import { useCreateOrderMutation } from "@/redux/feature/Order/order.api";
-import type { CartItem } from "@/types";
+import type { ICartItem, ICreateOrderPayload, IPaymentMethod } from "@/types";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -15,16 +15,17 @@ export default function CheckoutPage() {
   const { data: user } = useUserProfileQuery(undefined);
   const navigate = useNavigate();
 
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod>("COD");
   const [loading, setLoading] = useState(false);
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.book.price * item.quantity,
+    (sum: number, item) => sum + item.book.price * item.quantity,
     0
   );
   const onlineFee = paymentMethod === "SSLCommerz" ? 50 : 80;
   const total = subtotal + onlineFee;
 
+  
   const handlePlaceOrder = async (shippingInfo: {
     name: string;
     email: string;
@@ -36,13 +37,13 @@ export default function CheckoutPage() {
   }) => {
     setLoading(true);
     try {
-      const payload = {
-        items: cart.map((item: Partial<CartItem>) => ({
+      const payload: ICreateOrderPayload = {
+        items: cart.map((item: ICartItem) => ({
           book: item.book?._id,
           quantity: item.quantity,
         })),
         shippingInfo,
-        paymentMethod,
+        paymentMethod: paymentMethod as IPaymentMethod,
       };
 
       const res = await createOrder(payload).unwrap();
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
       //   }
       else {
         clearCart();
-        navigate(`/ordersuccess/${res.data.data?.orderId}`);
+        navigate(`/ordersuccess/${res.data?.orderId}`);
       }
     } catch (error) {
       console.error(error);

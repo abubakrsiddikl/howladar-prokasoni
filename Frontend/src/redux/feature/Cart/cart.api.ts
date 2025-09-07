@@ -1,31 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "@/redux/baseApi";
-import type { CartItem } from "@/types";
+import type { IResponse, ICartItem } from "@/types";
 
 export const cartApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // get my cart
-    getMyCart: builder.query({
+    // Get my cart
+    getMyCart: builder.query<ICartItem[], void>({
       query: () => ({
         url: "/cart/my-cart",
         method: "GET",
       }),
       providesTags: ["CART"],
-      transformResponse: (res: any) => res?.data ?? res,
+      transformResponse: (res: IResponse<ICartItem[]>) => res.data,
     }),
 
-    // add to cart
-    addToCart: builder.mutation({
+    // Add to cart
+    addToCart: builder.mutation<
+      IResponse<ICartItem>,
+      { bookId: string; quantity: number }
+    >({
       query: (body) => ({
         url: "/cart/add",
         method: "POST",
-        data: body,
+        data: body, // ❌ data না, fetchBaseQuery তে body দিতে হয়
       }),
       invalidatesTags: ["CART"],
     }),
 
-    // remove cart to db
-    removeFromCart: builder.mutation<void, string>({
+    // Remove item from cart
+    removeFromCart: builder.mutation<IResponse<null>, string>({
       query: (cartItemId) => ({
         url: `/cart/remove/${cartItemId}`,
         method: "DELETE",
@@ -33,31 +35,38 @@ export const cartApi = baseApi.injectEndpoints({
       invalidatesTags: ["CART"],
     }),
 
-    // update cart quantity
+    //  Update cart quantity
     updateCartQuantity: builder.mutation<
-      void,
+      IResponse<ICartItem>,
       { id: string; quantity: number }
     >({
       query: ({ id, quantity }) => ({
-        url: `/cart/update/${id}`, // id কে param হিসেবে পাঠাও
+        url: `/cart/update/${id}`,
         method: "PATCH",
-        data: { quantity: quantity }, // ✅ Proper object পাঠাও
+        data: { quantity }, 
       }),
       invalidatesTags: ["CART"],
     }),
 
-    // clear all cart for a user
-    clearCart: builder.mutation<void, void>({
-      query: () => ({ url: "/cart/clear", method: "DELETE" }),
+    //  Clear all cart
+    clearCart: builder.mutation<IResponse<null>, void>({
+      query: () => ({
+        url: "/cart/clear",
+        method: "DELETE",
+      }),
       invalidatesTags: ["CART"],
     }),
 
-    // merge cart after login to db
+    //  Merge cart after login
     mergeCart: builder.mutation<
-      CartItem[],
+      IResponse<ICartItem[]>,
       { items: { book: string; quantity: number }[] }
     >({
-      query: (body) => ({ url: "/cart/merge", method: "POST", body }),
+      query: (body) => ({
+        url: "/cart/merge",
+        method: "POST",
+        data: body,
+      }),
       invalidatesTags: ["CART"],
     }),
   }),

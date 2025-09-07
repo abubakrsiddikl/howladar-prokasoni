@@ -21,7 +21,7 @@ const bookSchema = new mongoose_1.Schema({
     discount: { type: Number, min: 0, max: 100 },
     // If discount is applied, this field will be calculated
     // and stored in the database.
-    discountedPrice: { type: Number, min: 0 },
+    discountedPrice: { type: Number, min: 0, default: 0 },
     description: { type: String, maxLength: 2000 },
     coverImage: { type: String, required: true },
     previewImages: [{ type: String }],

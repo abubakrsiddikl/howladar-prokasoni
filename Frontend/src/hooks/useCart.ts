@@ -16,6 +16,7 @@ import {
 import type { RootState } from "@/redux/store";
 import type { CartItem } from "@/types";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
+import { toast } from "sonner";
 
 export function useCart() {
   const { data: user } = useUserProfileQuery(undefined);
@@ -66,7 +67,9 @@ export function useCart() {
         bookId: item.book._id as string,
         quantity: item.quantity,
       });
-      console.log("Server Add:", res);
+     if (res.data?.success) {
+      toast.success("Item added to cart .")
+     }
     } else {
       dispatch(addLocal(item));
     }
@@ -82,7 +85,6 @@ export function useCart() {
 
   const updateQuantity = async (id: string, quantity: number) => {
     if (user) {
-      console.log({id,quantity})
       await updateQtyServer({ id, quantity });
     } else {
       dispatch(updateLocal({ id, quantity }));

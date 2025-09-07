@@ -31,7 +31,7 @@ const createBook = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Price must be a positive number");
         }
         payload.discountedPrice = (price * discount) / 100;
-        payload.price = price - payload.discountedPrice;
+        payload.price = Math.round(price - payload.discountedPrice);
     }
     const newBook = yield book_model_1.Book.create(payload);
     return newBook;
@@ -109,10 +109,15 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
 });
 // delete a book
 const deleteBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const isBookExist = yield book_model_1.Book.findById(id);
     if (!isBookExist) {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Book Not Found");
     }
+    // delete coverImage
+    (0, cloudinary_config_1.deleteImageFromCLoudinary)(isBookExist.coverImage);
+    // delete preview image
+    (_a = isBookExist.previewImages) === null || _a === void 0 ? void 0 : _a.map((img) => (0, cloudinary_config_1.deleteImageFromCLoudinary)(img));
     yield book_model_1.Book.findByIdAndDelete(id);
     return isBookExist;
 });

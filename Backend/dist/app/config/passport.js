@@ -65,9 +65,6 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
             return done(null, false, { mesaage: "No email found" });
         }
         let isUserExist = yield user_model_1.User.findOne({ email });
-        if (isUserExist && !isUserExist.isVerified) {
-            return done(null, false, { message: "User is not verified" });
-        }
         if (isUserExist &&
             (isUserExist.isActive === user_interface_1.IsActive.BLOCKED ||
                 isUserExist.isActive === user_interface_1.IsActive.INACTIVE)) {
@@ -83,7 +80,6 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
                 name: profile.displayName,
                 picture: (_b = profile.photos) === null || _b === void 0 ? void 0 : _b[0].value,
                 role: user_interface_1.Role.CUSTOMER,
-                isVerified: true,
                 auths: [
                     {
                         provider: "google",

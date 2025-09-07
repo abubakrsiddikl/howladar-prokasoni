@@ -1,9 +1,12 @@
-import HistoryBook from "@/components/modules/HomePage/HistoryBook";
+import GenreWiseBooks from "@/components/modules/HomePage/GenreWiseBooks";
+import HomeModal from "@/components/modules/HomePage/HomeModal";
 
 export default function HomePage() {
   return (
-    <div>
-      <HistoryBook></HistoryBook>
+    <div className="my-7">
+      <HomeModal></HomeModal>
+      <GenreWiseBooks></GenreWiseBooks>
+     
     </div>
   );
 }

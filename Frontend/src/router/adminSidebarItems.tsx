@@ -15,6 +15,7 @@ export const adminSidebarItems: ISidebarItem[] = [
         url: "/admin/analytics",
         component: Analytics,
       },
+      
     ],
   },
 ];
