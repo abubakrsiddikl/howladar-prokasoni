@@ -18,6 +18,8 @@ router.post("/create", multer_config_1.multerUpload.fields([
 router.get("/all-books", book_controller_1.BookControllers.getAllBook);
 // get single book with slug
 router.get("/:slug", book_controller_1.BookControllers.getSingleBook);
+// get book by  genre
+router.get("/genre/:genre", book_controller_1.BookControllers.getBookByGenre);
 // update a book
 router.patch("/:id", multer_config_1.multerUpload.fields([
     { name: "file", maxCount: 1 },

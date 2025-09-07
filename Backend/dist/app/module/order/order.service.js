@@ -107,6 +107,12 @@ const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0,
         session.endSession();
     }
 });
+// get order by customer id
+const getMyOrders = (decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    const orders = yield order_model_1.Order.find({ user: decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.userId }).populate("items.book", "title coverImage");
+    return orders;
+});
+// get all order
 const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield order_model_1.Order.find().populate("user").populate("items.book");
 });
@@ -128,11 +134,13 @@ const updatePaymentStatus = (orderId, paymentStatus) => __awaiter(void 0, void 0
     const updatedOrder = yield order_model_1.Order.findByIdAndUpdate(orderId, { paymentStatus: paymentStatus }, { new: true, runValidators: true });
     return updatedOrder;
 });
+// delete orders
 const deleteOrder = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield order_model_1.Order.findByIdAndDelete(id);
 });
 exports.OrderService = {
     createOrder,
+    getMyOrders,
     getTraceOrder,
     getAllOrders,
     getSingleOrder,

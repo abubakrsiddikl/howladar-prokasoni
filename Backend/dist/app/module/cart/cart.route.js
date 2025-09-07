@@ -9,17 +9,18 @@ const cart_controller_1 = require("./cart.controller");
 const checkAuth_1 = require("../../middleware/checkAuth");
 const validateRequest_1 = require("../../middleware/validateRequest");
 const cart_validation_1 = require("./cart.validation");
+const user_interface_1 = require("../user/user.interface");
 const router = express_1.default.Router();
 // Add to cart
-router.post("/add", (0, checkAuth_1.checkAuth)(), (0, validateRequest_1.validateRequest)(cart_validation_1.addToCartZodSchema), cart_controller_1.CartControllers.addToCart);
+router.post("/add", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), (0, validateRequest_1.validateRequest)(cart_validation_1.addToCartZodSchema), cart_controller_1.CartControllers.addToCart);
 // Get my cart
-router.get("/my-cart", (0, checkAuth_1.checkAuth)(), cart_controller_1.CartControllers.getMyCart);
+router.get("/my-cart", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), cart_controller_1.CartControllers.getMyCart);
 // Remove from cart
-router.delete("/remove/:id", (0, checkAuth_1.checkAuth)(), cart_controller_1.CartControllers.removeFromCart);
+router.delete("/remove/:id", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), cart_controller_1.CartControllers.removeFromCart);
 // Update cart quantity
-router.patch("/update/:id", (0, checkAuth_1.checkAuth)(), cart_controller_1.CartControllers.updateCartQuantity);
+router.patch("/update/:id", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), cart_controller_1.CartControllers.updateCartQuantity);
 // Clear cart
-router.delete("/clear", (0, checkAuth_1.checkAuth)(), cart_controller_1.CartControllers.clearCart);
+router.delete("/clear", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), cart_controller_1.CartControllers.clearCart);
 // Merge cart
-router.post("/merge", (0, checkAuth_1.checkAuth)(), cart_controller_1.CartControllers.mergeCart);
+router.post("/merge", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), cart_controller_1.CartControllers.mergeCart);
 exports.CartRoutes = router;

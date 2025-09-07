@@ -38,7 +38,8 @@ const getAllBook = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.OK,
     message: "Book retrieve successfully",
-    data: books,
+    data: books.data,
+    meta: books.meta,
   });
 });
 
@@ -57,7 +58,6 @@ const getSingleBook = catchAsync(async (req: Request, res: Response) => {
 // get book by genre
 const getBookByGenre = catchAsync(async (req: Request, res: Response) => {
   const genre = req.params.genre;
-  console.log(genre)
   const book = await BookServices.getBookByGenre(genre);
   sendResponse(res, {
     success: true,

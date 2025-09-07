@@ -40,9 +40,10 @@ const credentialsLogin = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
         if (!user) {
             return next(new AppError_1.default(401, info.message));
         }
-        const userToken = (0, userTokens_1.createUserToken)(user);
+        const userToken = yield (0, userTokens_1.createUserToken)(user);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const _a = user.toObject(), { password: pass } = _a, rest = __rest(_a, ["password"]);
+        (0, setCookie_1.setAuthCookie)(res, userToken);
         (0, sendResponse_1.sendResponse)(res, {
             success: true,
             statusCode: http_status_codes_1.default.OK,

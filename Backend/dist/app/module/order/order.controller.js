@@ -28,6 +28,17 @@ const createOrder = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0,
         data: order,
     });
 }));
+// get customer order her create
+const getMyOrders = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const decodedToken = req.user;
+    const orders = yield order_service_1.OrderService.getMyOrders(decodedToken);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: "Orders retrieved successfully",
+        data: orders,
+    });
+}));
 const getAllOrders = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const orders = yield order_service_1.OrderService.getAllOrders();
     (0, sendResponse_1.sendResponse)(res, {
@@ -93,6 +104,7 @@ const updatePaymentStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter
 }));
 exports.OrderController = {
     createOrder,
+    getMyOrders,
     getTraceOrder,
     getAllOrders,
     getSingleOrder,

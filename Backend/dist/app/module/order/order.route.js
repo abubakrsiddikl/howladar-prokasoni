@@ -10,6 +10,8 @@ const order_validation_1 = require("./order.validation");
 const router = (0, express_1.Router)();
 //  Create Order (customer only)
 router.post("/create", (0, validateRequest_1.validateRequest)(order_validation_1.createOrderSchema), (0, checkAuth_1.checkAuth)(user_interface_1.Role.CUSTOMER), order_controller_1.OrderController.createOrder);
+// Get my order
+router.get("/my-order", (0, checkAuth_1.checkAuth)(user_interface_1.Role.CUSTOMER), order_controller_1.OrderController.getMyOrders);
 //  Get all orders (admin & store manager)
 router.get("/", (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.STORE_MANAGER), order_controller_1.OrderController.getAllOrders);
 // Get single order (admin, store manager, or the customer who ordered it)

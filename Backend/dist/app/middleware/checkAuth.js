@@ -21,16 +21,17 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_interface_1 = require("../module/user/user.interface");
 const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accessToken = req.headers.authorization;
+        const accessToken = req.headers.authorization || req.cookies.accessToken;
         if (!accessToken) {
-            throw new AppError_1.default(403, "No Token Recieved");
+            throw new AppError_1.default(403, "No Token Received");
         }
         const verifiedToken = (0, jwt_1.verifyToken)(accessToken, env_1.envVars.JWT_ACCESS_SECRET);
         const isUserExist = yield user_model_1.User.findOne({ email: verifiedToken.email });
         if (!isUserExist) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "User does not exist");
         }
-        if (isUserExist.isActive === user_interface_1.IsActive.BLOCKED || isUserExist.isActive === user_interface_1.IsActive.INACTIVE) {
+        if (isUserExist.isActive === user_interface_1.IsActive.BLOCKED ||
+            isUserExist.isActive === user_interface_1.IsActive.INACTIVE) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `User is ${isUserExist.isActive}`);
         }
         if (isUserExist.isDeleted) {

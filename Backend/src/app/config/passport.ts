@@ -74,9 +74,6 @@ passport.use(
         }
 
         let isUserExist = await User.findOne({ email });
-        if (isUserExist && !isUserExist.isVerified) {
-          return done(null, false, { message: "User is not verified" });
-        }
 
         if (
           isUserExist &&
@@ -96,7 +93,6 @@ passport.use(
             name: profile.displayName,
             picture: profile.photos?.[0].value,
             role: Role.CUSTOMER,
-            isVerified: true,
             auths: [
               {
                 provider: "google",
@@ -105,6 +101,7 @@ passport.use(
             ],
           });
         }
+        
 
         return done(null, isUserExist);
       } catch (error) {

@@ -42,13 +42,25 @@ const getAllBook = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
         success: true,
         statusCode: http_status_codes_1.default.OK,
         message: "Book retrieve successfully",
-        data: books,
+        data: books.data,
+        meta: books.meta,
     });
 }));
 // get single book with slug
 const getSingleBook = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const slug = req.params.slug;
     const book = yield book_service_1.BookServices.getSingleBook(slug);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "Book retrieve successfully",
+        data: book,
+    });
+}));
+// get book by genre
+const getBookByGenre = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const genre = req.params.genre;
+    const book = yield book_service_1.BookServices.getBookByGenre(genre);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
@@ -90,6 +102,7 @@ exports.BookControllers = {
     createBook,
     getAllBook,
     getSingleBook,
+    getBookByGenre,
     updateBook,
     deleteBook,
 };

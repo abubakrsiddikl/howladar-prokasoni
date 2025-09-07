@@ -16,7 +16,7 @@ exports.BookServices = void 0;
 const AppError_1 = __importDefault(require("../../errorHelper/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const book_model_1 = require("./book.model");
-const tour_constants_1 = require("./tour.constants");
+const book_constants_1 = require("./book.constants");
 const QueryBuilder_1 = require("../../utils/QueryBuilder");
 const cloudinary_config_1 = require("../../config/cloudinary.config");
 // create book
@@ -40,7 +40,7 @@ const createBook = (payload) => __awaiter(void 0, void 0, void 0, function* () {
 const getAllBook = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const queryBuilder = new QueryBuilder_1.QueryBuilder(book_model_1.Book.find(), query);
     const books = queryBuilder
-        .search(tour_constants_1.bookSearchableFields)
+        .search(book_constants_1.bookSearchableFields)
         .filter()
         .sort()
         .paginate();
@@ -59,7 +59,10 @@ const getSingleBook = (slug) => __awaiter(void 0, void 0, void 0, function* () {
     const book = yield book_model_1.Book.findOne({ slug });
     return book;
 });
-// update a book
+// get book by genre
+const getBookByGenre = (genre) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield book_model_1.Book.find({ genre: genre });
+});
 // update a book
 const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isBookExist = yield book_model_1.Book.findById(id);
@@ -117,6 +120,7 @@ exports.BookServices = {
     createBook,
     getAllBook,
     getSingleBook,
+    getBookByGenre,
     deleteBook,
     updateBook,
 };
