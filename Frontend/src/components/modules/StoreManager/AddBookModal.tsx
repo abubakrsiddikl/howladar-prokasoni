@@ -41,7 +41,8 @@ const bookSchema = z.object({
   author: z.string().min(1, "Author is required"),
   price: z.number().min(1, "Price is required"),
   stock: z.number().min(0),
-  genre: z.string().min(1,"Genre is required "),
+  genre: z.string().min(1, "Genre is required "),
+  publisher: z.string().min(1, "Publisher is required"),
   discount: z.number().min(0).max(100),
   description: z.string().min(5).optional(),
 });
@@ -68,6 +69,7 @@ export default function AddBookModal() {
       price: 0,
       stock: 0,
       genre: "",
+      publisher: "",
       discount: 0,
       description: "",
     },
@@ -80,12 +82,13 @@ export default function AddBookModal() {
         author: data.author,
         discount: data.discount,
         genre: data.genre,
+        publisher: data.publisher,
         price: data.price,
         stock: data.stock,
         title: data.title,
         description: data.description,
       };
-      console.log(data)
+      console.log(data);
       const formData = new FormData();
 
       formData.append("data", JSON.stringify(payload));
@@ -218,6 +221,21 @@ export default function AddBookModal() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Publisher */}
+            <FormField
+              control={form.control}
+              name="publisher"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Publisher</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Prokasoni name " {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

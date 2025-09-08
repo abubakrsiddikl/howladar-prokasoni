@@ -56,8 +56,8 @@ const updateGenre = async (slug: string, payload: Partial<IGenre>) => {
 };
 
 // Delete Genre
-const deleteGenre = async (slug: string) => {
-  return await Genre.findOneAndDelete({ slug });
+const deleteGenre = async (id: string) => {
+  return await Genre.findByIdAndDelete(id);
 };
 
 export const GenreService = {

@@ -56,8 +56,8 @@ const updateGenre = catchAsync(async (req: Request, res: Response) => {
 
 // Delete Genre
 const deleteGenre = catchAsync(async (req: Request, res: Response) => {
-  const { slug } = req.params;
-  const result = await GenreService.deleteGenre(slug);
+  const { id } = req.params;
+  const result = await GenreService.deleteGenre(id);
 
   sendResponse(res, {
     success: true,

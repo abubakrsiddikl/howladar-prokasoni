@@ -14,7 +14,7 @@ import { Link } from "react-router";
 interface Props {
   books: IBook[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
 }
 
 export default function StoreManagerBooksTable({
@@ -80,7 +80,7 @@ export default function StoreManagerBooksTable({
                 <Button
                   size="icon"
                   variant="destructive"
-                  onClick={() => onDelete(book._id)}
+                  onClick={() => onDelete(book._id, book.title)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -92,4 +92,3 @@ export default function StoreManagerBooksTable({
     </div>
   );
 }
-

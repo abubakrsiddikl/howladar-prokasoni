@@ -34,7 +34,7 @@ router.patch(
 
 //  Delete Genre
 router.delete(
-  "/:slug",
+  "/:id",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   GenreController.deleteGenre
 );

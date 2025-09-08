@@ -13,7 +13,7 @@ import type { IGenre } from "@/types";
 interface Props {
   genres: IGenre[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
 }
 
 export default function StoreManagerBookGenreTable({
@@ -47,7 +47,7 @@ export default function StoreManagerBookGenreTable({
                 <Button
                   size="icon"
                   variant="destructive"
-                  onClick={() => onDelete(genre._id as string)}
+                  onClick={() => onDelete(genre._id as string, genre.name)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

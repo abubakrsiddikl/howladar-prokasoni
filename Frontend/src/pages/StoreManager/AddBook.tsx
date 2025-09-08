@@ -1,15 +1,38 @@
 import AddBookModal from "@/components/modules/StoreManager/AddBookModal";
 import StoreManagerBooksTable from "../../components/modules/StoreManager/StoreManagerBooksTable";
-import { useGetAllBookQuery } from "@/redux/feature/Book/book.api";
-
+import {
+  useDeleteSingleBookMutation,
+  useGetAllBookQuery,
+} from "@/redux/feature/Book/book.api";
+import Swal from "sweetalert2";
 export default function AddBook() {
   const { data: books } = useGetAllBookQuery(undefined);
+  const [deleteBook] = useDeleteSingleBookMutation();
   const handleEdit = (id: string) => {
     console.log("Edit", id);
   };
 
-  const handleDelete = (id: string) => {
-    console.log("Delete", id);
+  const handleDelete = (id: string, name: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `আপনি কি নিশ্চিত "${name}" কে মুছে  ফেলতে চান !`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await deleteBook(id);
+        if (res.data?.success) {
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+          });
+        }
+      }
+    });
   };
   return (
     <div>
