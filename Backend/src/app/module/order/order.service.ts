@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Order } from "./order.model";
-import { IOrder } from "./order.interface";
+import { IOrder, IOrderStatusLog, OrderStatus } from "./order.interface";
 import { Book } from "../book/book.model";
 import AppError from "../../errorHelper/AppError";
 import httpStatus from "http-status-codes";
@@ -47,11 +47,19 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       totalAmount += book.price * item.quantity;
     }
 
+    const initialOrderStatusLog: IOrderStatusLog = {
+      status: OrderStatus.Processing,
+      location: "N/A",
+      note: "অর্ডারটি গ্রহণ করা হয়েছে। কনফার্মেশনের জন্য অপেক্ষমান।",
+      timestamp: new Date(),
+    };
+
     // Prepare order data
     const orderData = {
       ...payload,
       user: decodedToken.userId,
       totalAmount,
+      orderStatusLogs: [initialOrderStatusLog],
       orderId: await generateOrderId(),
     };
 
@@ -129,7 +137,10 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
 
 // get order by customer id
 const getMyOrders = async (decodedToken: JwtPayload) => {
-  const orders = await Order.find({ user: decodedToken?.userId }).populate("items.book","title coverImage");
+  const orders = await Order.find({ user: decodedToken?.userId }).populate(
+    "items.book",
+    "title coverImage"
+  );
   return orders;
 };
 
@@ -139,7 +150,9 @@ const getAllOrders = async () => {
 };
 
 const getTraceOrder = async (orderId: string) => {
-  return await Order.findOne({ orderId }).select("orderStatus createdAt -_id");
+  return await Order.findOne({ orderId }).select(
+    "orderStatusLog createdAt -_id"
+  );
 };
 const getSingleOrder = async (orderId: string) => {
   return await Order.findOne({ orderId })
@@ -148,13 +161,35 @@ const getSingleOrder = async (orderId: string) => {
 };
 
 // Update order status
-const updateOrderStatus = async (orderId: string, status: string) => {
-  const orderStatus = await Order.findByIdAndUpdate(
-    orderId,
-    { orderStatus: status },
-    { new: true }
-  );
-  return orderStatus;
+const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new AppError(httpStatus.NOT_FOUND, "Order not found");
+  }
+  if (order.currentStatus === newStatus) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Order status already ${newStatus} `
+    );
+  }
+  let note = "";
+  if (newStatus === OrderStatus.Approved) {
+    note = "অর্ডারটি প্রস্তুত করা হচ্ছে";
+  } else if (newStatus === OrderStatus.Shipped) {
+    note = "অর্ডারটি কুরিয়ারের কাছে দেয়ার জন্য প্রস্তুত হয়েছে";
+  } else if (newStatus === OrderStatus.Delivered) {
+    note = "অর্ডারটি ডেলিভারি দেয়া হয়েছে";
+  } else if (newStatus === OrderStatus.Cancelled) {
+    note = "অর্ডারটি Cancelled করা হয়েছে ";
+  }
+  order.currentStatus = newStatus;
+  order.orderStatusLogs.push({
+    status: newStatus,
+    note: note,
+    timestamp: new Date(),
+  });
+  await order.save();
+  return order;
 };
 
 // Update payment status

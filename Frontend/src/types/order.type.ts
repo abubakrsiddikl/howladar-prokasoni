@@ -18,7 +18,12 @@ export interface IShippingInfo {
 }
 
 export type IPaymentMethod = "COD" | "SSLCommerz";
-
+export interface IOrderStatusLog {
+  status: "Processing" | "Approved" | "Shipped" | "Delivered" | "Cancelled";
+  location: string;
+  note: string;
+  timestamp: string;
+}
 export interface IOrder {
   _id: string;
   user: string;
@@ -27,7 +32,8 @@ export interface IOrder {
   paymentMethod: IPaymentMethod;
   paymentStatus: "Paid" | "Pending";
   totalAmount: number;
-  orderStatus: "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  orderStatusLogs: IOrderStatusLog;
+  currentStatus: string;
   orderId: string;
   createdAt: string;
   updatedAt: string;

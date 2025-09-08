@@ -4,8 +4,37 @@ import {
   PaymentMethod,
   PaymentStatus,
   OrderStatus,
+  IOrderStatusLog,
 } from "./order.interface";
 
+const orderStatusLogSchema = new Schema<IOrderStatusLog>(
+  {
+    status: {
+      type: String,
+      enum: Object.values(OrderStatus),
+      required: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    note: {
+      type: String,
+      trim: true,
+    },
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
+// order item schema
 const orderItemSchema = new Schema(
   {
     book: { type: Schema.Types.ObjectId, ref: "Book", required: true },
@@ -14,6 +43,7 @@ const orderItemSchema = new Schema(
   { _id: false }
 );
 
+// shipping schema
 const shippingInfoSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -44,11 +74,8 @@ const orderSchema = new Schema<IOrder>(
       default: PaymentStatus.Pending,
     },
     totalAmount: { type: Number, required: true, min: 0 },
-    orderStatus: {
-      type: String,
-      enum: Object.values(OrderStatus),
-      default: OrderStatus.Processing,
-    },
+    orderStatusLogs: [orderStatusLogSchema],
+    currentStatus: { type: String, default: OrderStatus.Processing },
     orderId: { type: String, required: true, unique: true },
   },
   { timestamps: true }

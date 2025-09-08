@@ -40,20 +40,17 @@ const createBook = async (payload: IBook) => {
 const getAllBook = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Book.find(), query);
 
-  // filter async, then chain other methods
-  const books = queryBuilder
-    .search(bookSearchableFields)
-    .filter()
-    .sort()
-    .fields()
-    .paginate();
+  await queryBuilder.filter(); 
+  queryBuilder.search(bookSearchableFields).sort().paginate();
+
   const [data, meta] = await Promise.all([
-    books.build().populate("genre", "name"), // lowercase 'genre'
+    queryBuilder.build().populate("genre", "name"),
     queryBuilder.getMeta(),
   ]);
 
   return { data, meta };
 };
+
 
 // get single book with slug
 const getSingleBook = async (slug: string) => {

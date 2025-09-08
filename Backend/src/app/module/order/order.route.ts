@@ -41,7 +41,7 @@ router.get("/:orderId/trace", OrderController.getTraceOrder);
 
 //  Update order status (admin & store manager)
 router.patch(
-  "/:orderId/status",
+  "/:id/status",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   validateRequest(updateOrderStatusZodSchema),
   OrderController.updateOrderStatus

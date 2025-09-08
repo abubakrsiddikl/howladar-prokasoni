@@ -1,6 +1,6 @@
 import { Query } from "mongoose";
 import { excludeField } from "../constants";
-
+import { Genre } from "../module/genre/genre.model";
 
 export class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
@@ -11,9 +11,18 @@ export class QueryBuilder<T> {
     this.query = query;
   }
 
-  filter(): this {
+  async filter(): Promise<this> {
     const filter = { ...this.query };
-
+    if (filter.genre) {
+      const genreDoc = await Genre.findOne({
+        name: { $regex: filter.genre, $options: "i" },
+      });
+      if (genreDoc) {
+        filter.genre = genreDoc._id;
+      } else {
+        delete filter.genre;
+      }
+    }
     for (const field of excludeField) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete filter[field];

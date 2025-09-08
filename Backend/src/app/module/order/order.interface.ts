@@ -12,9 +12,18 @@ export enum PaymentStatus {
 
 export enum OrderStatus {
   Processing = "Processing",
+  Approved = "Approved",
   Shipped = "Shipped",
   Delivered = "Delivered",
   Cancelled = "Cancelled",
+}
+
+export interface IOrderStatusLog {
+  status: OrderStatus;
+  location?: string;
+  note?: string;
+  updatedBy?: Types.ObjectId;
+  timestamp?: Date;
 }
 
 export interface IOrderItem {
@@ -39,6 +48,7 @@ export interface IOrder {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   totalAmount: number;
-  orderStatus: OrderStatus;
+  orderStatusLogs: IOrderStatusLog[];
+  currentStatus: string;
   orderId: string;
 }

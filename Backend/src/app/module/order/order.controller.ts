@@ -75,7 +75,7 @@ const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
-  const orderId = req.params.orderId;
+  const orderId = req.params.id;
   if (!orderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
   }
