@@ -4,7 +4,10 @@ export interface IBook {
   author: string;
   price: number;
   stock: number;
-  genre: string;
+  genre: {
+    _id: string;
+    name: string;
+  };
   discount: number;
   discountedPrice: number;
   description: string;

@@ -3,7 +3,6 @@ import { useCart } from "@/hooks/useCart";
 import type { IBook, ICartItem } from "@/types";
 import { Link } from "react-router";
 
-
 export default function BookCard({
   _id,
   title,
@@ -13,6 +12,7 @@ export default function BookCard({
   discount,
   discountedPrice,
   stock,
+  slug,
 }: IBook) {
   const { addToCart } = useCart();
   const handleAddToCart = async () => {
@@ -44,7 +44,7 @@ export default function BookCard({
 
         {/* card info */}
         <div className="py-2 pl-3 sm:pl-4 md:pl-6">
-          <Link to="/">
+          <Link to={`/book-details/${slug}`}>
             <h3 className="text-sm sm:text-base md:text-base lg:text-lg font-semibold hover:text-[#FF8600] line-clamp-1 mt-2">
               {title}
             </h3>

@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IBook, Genre } from "./book.interface";
+import { IBook } from "./book.interface";
 
 const bookSchema = new Schema<IBook>(
   {
@@ -7,7 +7,7 @@ const bookSchema = new Schema<IBook>(
     author: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
     stock: { type: Number, required: true, min: 0 },
-    genre: { type: String, enum: Object.values(Genre), required: true },
+    genre: { type: Schema.Types.ObjectId, ref: "Genre", required: true },
     discount: { type: Number, min: 0, max: 100 },
     // If discount is applied, this field will be calculated
     // and stored in the database.
@@ -16,6 +16,7 @@ const bookSchema = new Schema<IBook>(
     coverImage: { type: String, required: true },
     previewImages: [{ type: String }],
     available: { type: Boolean, default: true },
+    publisher: { type: String, required: false },
     slug: { type: String, unique: true, trim: true },
   },
   {

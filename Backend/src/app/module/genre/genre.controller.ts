@@ -1,0 +1,76 @@
+import { Request, Response } from "express";
+import httpStatus from "http-status-codes";
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+import { GenreService } from "./genre.service";
+
+// Create Genre
+const createGenre = catchAsync(async (req: Request, res: Response) => {
+  const result = await GenreService.createGenre(req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Genre created successfully",
+    data: result,
+  });
+});
+
+// Get All Genres
+const getAllGenres = catchAsync(async (req: Request, res: Response) => {
+  const result = await GenreService.getAllGenres();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Genres retrieved successfully",
+    data: result,
+  });
+});
+
+// Get Single Genre by Slug
+const getGenreBySlug = catchAsync(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const result = await GenreService.getGenreBySlug(slug);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Genre retrieved successfully",
+    data: result,
+  });
+});
+
+// Update Genre
+const updateGenre = catchAsync(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const result = await GenreService.updateGenre(slug, req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Genre updated successfully",
+    data: result,
+  });
+});
+
+// Delete Genre
+const deleteGenre = catchAsync(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const result = await GenreService.deleteGenre(slug);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Genre deleted successfully",
+    data: result,
+  });
+});
+
+export const GenreController = {
+  createGenre,
+  getAllGenres,
+  getGenreBySlug,
+  updateGenre,
+  deleteGenre,
+};

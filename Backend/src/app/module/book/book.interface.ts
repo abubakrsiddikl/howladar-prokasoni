@@ -1,13 +1,4 @@
-export enum Genre {
-  UPONNAS = "উপন্যাস",
-  GOLPO = "গল্প",
-  ISLAMIC = "ইসলামিক",
-  BIGGYAN = "বিজ্ঞান",
-  ITIHASH = "ইতিহাস",
-  JIBONI = "জীবনী",
-  FANTASY = "ফ্যান্টাসি",
-  PROJUKTI = "প্রযুক্তি",
-}
+import { Types } from "mongoose";
 
 export interface IBook {
   title: string;
@@ -15,7 +6,7 @@ export interface IBook {
   author: string;
   price: number;
   stock: number;
-  genre: Genre;
+  genre: Types.ObjectId;
   discount?: number;
   discountedPrice?: number;
   description?: string;
@@ -23,11 +14,12 @@ export interface IBook {
   previewImages?: string[];
   available: boolean;
   deletePreviewImages?: string[];
+  publisher: string;
 }
 
 export interface IBookFilterOptions {
   search?: string;
-  genre?: Genre;
+  genre?: string;
   page?: number;
   limit?: number;
 }

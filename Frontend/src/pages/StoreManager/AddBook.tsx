@@ -1,5 +1,5 @@
 import AddBookModal from "@/components/modules/StoreManager/AddBookModal";
-import StoreManagerBooksTable from "./StoreManagerBooksTable";
+import StoreManagerBooksTable from "../../components/modules/StoreManager/StoreManagerBooksTable";
 import { useGetAllBookQuery } from "@/redux/feature/Book/book.api";
 
 export default function AddBook() {

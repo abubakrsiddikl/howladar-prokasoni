@@ -33,14 +33,15 @@ import { toast } from "sonner";
 import type { FileMetadata } from "@/hooks/use-file-upload";
 import MultipleImageUploader from "@/components/MultipleImageUploader";
 import { useAddNewBookMutation } from "@/redux/feature/Book/book.api";
-import { Genre } from "@/types";
+
+import { useGetAllGenresQuery } from "@/redux/feature/Genre/genre.api";
 
 const bookSchema = z.object({
   title: z.string().min(1, "Title is required"),
   author: z.string().min(1, "Author is required"),
   price: z.number().min(1, "Price is required"),
   stock: z.number().min(0),
-  genre: z.enum(Object.values(Genre) as [string, ...string[]]),
+  genre: z.string().min(1,"Genre is required "),
   discount: z.number().min(0).max(100),
   description: z.string().min(5).optional(),
 });
@@ -52,6 +53,13 @@ export default function AddBookModal() {
   const [images, setImages] = useState<(File | FileMetadata)[] | []>([]);
   const [open, setOpen] = useState(false);
   const [addNewBook, { isLoading }] = useAddNewBookMutation();
+  const { data: genresData } = useGetAllGenresQuery(undefined);
+
+  const genresOptions = genresData?.data?.map((item) => ({
+    value: item._id,
+    label: item.name,
+  }));
+
   const form = useForm<BookFormValues>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
@@ -59,7 +67,7 @@ export default function AddBookModal() {
       author: "",
       price: 0,
       stock: 0,
-      genre: Genre.UPONNAS,
+      genre: "",
       discount: 0,
       description: "",
     },
@@ -77,6 +85,7 @@ export default function AddBookModal() {
         title: data.title,
         description: data.description,
       };
+      console.log(data)
       const formData = new FormData();
 
       formData.append("data", JSON.stringify(payload));
@@ -199,9 +208,12 @@ export default function AddBookModal() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.values(Genre).map((g) => (
-                        <SelectItem key={g} value={g}>
-                          {g}
+                      {genresOptions?.map((item) => (
+                        <SelectItem
+                          key={item.value}
+                          value={item.value as string}
+                        >
+                          {item.label}
                         </SelectItem>
                       ))}
                     </SelectContent>

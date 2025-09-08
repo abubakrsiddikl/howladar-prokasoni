@@ -41,8 +41,9 @@ const SearchInput = () => {
           ) : books.length > 0 ? (
             books.map((book) => (
               <Link
+                to={`/book-details/${book.slug}`}
+                onClick={() => setSearch("")}
                 key={book._id}
-                to={`/bookdetails/${book._id}`}
                 className="flex gap-3 items-center px-4 py-2 hover:bg-blue-50 transition-colors"
               >
                 <div className="w-12 h-16 relative flex-shrink-0">

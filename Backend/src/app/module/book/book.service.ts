@@ -9,6 +9,11 @@ import { deleteImageFromCLoudinary } from "../../config/cloudinary.config";
 
 // create book
 const createBook = async (payload: IBook) => {
+  const existingBook = await Book.findOne({ title: payload.title });
+  if (existingBook) {
+    throw new AppError(401, `${payload.title} এই বইটি পোস্ট করা আছে . `);
+  }
+
   if (payload.discount) {
     const discount = payload.discount;
     if (discount < 0 || discount > 100) {
@@ -35,22 +40,19 @@ const createBook = async (payload: IBook) => {
 const getAllBook = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Book.find(), query);
 
+  // filter async, then chain other methods
   const books = queryBuilder
     .search(bookSearchableFields)
     .filter()
     .sort()
+    .fields()
     .paginate();
-
-  // const meta = await queryBuilder.getMeta();
   const [data, meta] = await Promise.all([
-    books.build(),
+    books.build().populate("genre", "name"), // lowercase 'genre'
     queryBuilder.getMeta(),
   ]);
 
-  return {
-    data,
-    meta,
-  };
+  return { data, meta };
 };
 
 // get single book with slug

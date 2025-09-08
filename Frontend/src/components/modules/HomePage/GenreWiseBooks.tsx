@@ -15,8 +15,8 @@ export default function GenreWiseBooks() {
 
   const books = data?.data || [];
   const groupedBooks = books.reduce((acc: Record<string, IBook[]>, book) => {
-    if (!acc[book.genre]) acc[book.genre] = [];
-    acc[book.genre].push(book);
+    if (!acc[book.genre.name]) acc[book.genre.name] = [];
+    acc[book.genre.name].push(book);
     return acc;
   }, {});
 

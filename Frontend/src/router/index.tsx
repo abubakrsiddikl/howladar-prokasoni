@@ -17,6 +17,8 @@ import { userSidebarItems } from "./userSidebarItems";
 import { role } from "@/constants/role";
 import type { TRole } from "@/types";
 import { storeManagerSidebarItems } from "./storeManagerSidebarItems";
+import UnauthorizedPage from "@/pages/Unauthorized";
+import BookDetails from "@/pages/Books/BookDetails";
 
 // export const router = createBrowserRouter([
 //   {
@@ -112,7 +114,12 @@ export const router = createBrowserRouter([
           { Component: Register, path: "register" },
         ],
       },
-      // সাধারণ route
+      // normal route
+      // book details 
+      {
+        Component: BookDetails,
+        path: "/book-details/:slug"
+      },
       { Component: Cart, path: "cart" },
       { Component: withAuth(CheckoutPage, "CUSTOMER"), path: "checkout" },
       { Component: OrderSuccessPage, path: "ordersuccess/:id" },
@@ -152,5 +159,9 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/unauthorized",
+    Component: UnauthorizedPage,
   },
 ]);
