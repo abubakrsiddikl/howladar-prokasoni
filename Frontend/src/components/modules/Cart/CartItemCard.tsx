@@ -1,6 +1,7 @@
 import { useCart } from "@/hooks/useCart";
 import type { ICartItem } from "@/types";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
+import { Link } from "react-router";
 
 export default function CartItemCard({ item }: { item: ICartItem }) {
   const { updateQuantity, removeFromCart } = useCart();
@@ -17,12 +18,28 @@ export default function CartItemCard({ item }: { item: ICartItem }) {
           className="object-contain border rounded"
         />
         <div>
-          <h3 className="font-semibold text-[#1a0dab] hover:underline">
+          <Link
+            to={`/book-details/${item.book.slug}`}
+            className="font-semibold text-[#1a0dab] hover:underline"
+          >
             {item.book.title}
-          </h3>
+          </Link>
           <p className="text-sm text-gray-500">N/A</p>
-          <p className="text-sm text-gray-500">
-            Unit price: Tk. {item.book.price}
+          <p>
+            {(item.book.discount as number) > 0 ? (
+              <>
+                <p className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
+                  {item.book.price} Tk.
+                </p>
+                <p className="text-[#fe5050] line-through text-xs sm:text-sm md:text-base lg:text-base font-semibold">
+                  {item.book.price + (item.book.discountedPrice as number)} Tk.
+                </p>
+              </>
+            ) : (
+              <p className=" font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
+                ৳ {item.book.price}
+              </p>
+            )}
           </p>
         </div>
       </td>

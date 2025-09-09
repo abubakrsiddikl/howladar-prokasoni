@@ -1,5 +1,6 @@
 import AddBook from "@/pages/StoreManager/AddBook";
 import AddBookGenre from "@/pages/StoreManager/AddBookGenre";
+import AllOrders from "@/pages/StoreManager/AllOrders";
 import type { ISidebarItem } from "@/types";
 
 export const storeManagerSidebarItems: ISidebarItem[] = [
@@ -15,6 +16,11 @@ export const storeManagerSidebarItems: ISidebarItem[] = [
         title: "Add Book Category",
         url: "/store-manager/book/genre",
         component: AddBookGenre,
+      },
+            {
+        title: "All Orders",
+        url: "/store-manager/book/all-orders",
+        component: AllOrders,
       },
     ],
   },

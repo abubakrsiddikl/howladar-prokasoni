@@ -18,14 +18,18 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod>("COD");
   const [loading, setLoading] = useState(false);
 
+  const totalDiscountedPrice = cart.reduce(
+    (sum: number, item) => sum + (item.book.discountedPrice || 0),
+    0
+  );
+
   const subtotal = cart.reduce(
     (sum: number, item) => sum + item.book.price * item.quantity,
     0
   );
-  const onlineFee = paymentMethod === "SSLCommerz" ? 50 : 80;
-  const total = subtotal + onlineFee;
+  const deliveryCharge = 120;
+  const total = subtotal + deliveryCharge;
 
-  
   const handlePlaceOrder = async (shippingInfo: {
     name: string;
     email: string;
@@ -44,6 +48,7 @@ export default function CheckoutPage() {
         })),
         shippingInfo,
         paymentMethod: paymentMethod as IPaymentMethod,
+        totalDiscountedPrice: totalDiscountedPrice,
       };
 
       const res = await createOrder(payload).unwrap();
@@ -79,8 +84,8 @@ export default function CheckoutPage() {
           disabled={cart.length === 0}
           totalAmount={total}
           defaultValues={{
-            name: user?.name || "",
-            email: user?.email || "",
+            name: user?.data.name || "",
+            email: user?.data.email || "",
             phone: "",
             address: "",
             division: "",
@@ -94,7 +99,12 @@ export default function CheckoutPage() {
         />
       </div>
 
-      <OrderSummary subtotal={subtotal} onlineFee={onlineFee} total={total} />
+      <OrderSummary
+        subtotal={subtotal}
+        deliveryCharge={deliveryCharge}
+        totalDiscountedPrice={totalDiscountedPrice}
+        total={total}
+      />
     </div>
   );
 }

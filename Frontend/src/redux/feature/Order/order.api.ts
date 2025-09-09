@@ -23,6 +23,16 @@ export const orderApi = baseApi.injectEndpoints({
       transformResponse: (res: IResponse<IOrder[]>) => res.data,
     }),
 
+    // get all orders
+    getAllOrder: builder.query<IOrder[], void>({
+      query: () => ({
+        url: "/order/all-order",
+        method: "GET",
+      }),
+      providesTags: ["ORDER"],
+      transformResponse: (res: IResponse<IOrder[]>) => res.data,
+    }),
+
     // Get Single Order
     getSingleOrder: builder.query<IOrder, string>({
       query: (orderId) => ({
@@ -38,4 +48,5 @@ export const {
   useCreateOrderMutation,
   useGetMyOrderQuery,
   useGetSingleOrderQuery,
+  useGetAllOrderQuery,
 } = orderApi;

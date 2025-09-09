@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/table";
 
 import type { IOrder } from "@/types";
+import { format } from "date-fns";
+import { Link } from "react-router";
 
 interface Props {
   orders: IOrder[];
@@ -33,7 +35,12 @@ export default function OrderTable({ orders }: Props) {
           {orders.map((order) => (
             <TableRow key={order._id}>
               <TableCell className="p-2 border">
-                {order?.orderStatusLogs[0].timestamp}
+                {order?.orderStatusLog?.[0]?.timestamp
+                  ? format(
+                      new Date(order.orderStatusLog[0].timestamp),
+                      "MMM dd, yyyy"
+                    )
+                  : "N/A"}
               </TableCell>
               <TableCell className="p-2 border">{order.orderId}</TableCell>
               <TableCell className="p-2 border">
@@ -42,7 +49,9 @@ export default function OrderTable({ orders }: Props) {
               <TableCell className="p-2 border">
                 {order.paymentMethod}
               </TableCell>
-              <TableCell className="p-2 border">...</TableCell>
+              <TableCell className="p-2 border">
+                <Link to={`/order-details/${order.orderId}`} className="border hover:rounded border-blue-300 p-1 hover:bg-blue-300">...</Link>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -123,7 +123,7 @@ export const router = createBrowserRouter([
       { Component: Cart, path: "cart" },
       { Component: withAuth(CheckoutPage, "CUSTOMER"), path: "checkout" },
       { Component: OrderSuccessPage, path: "ordersuccess/:id" },
-      { Component: OrderDetails, path: "orderdetails/:id" },
+      { Component: OrderDetails, path: "order-details/:id" },
 
       // user dashboard
       {

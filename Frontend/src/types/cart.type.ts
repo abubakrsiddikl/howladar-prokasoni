@@ -5,6 +5,8 @@ export interface CartItem {
     title: string;
     coverImage: string;
     price: number;
+    discountedPrice: number;
+    discount: number;
   };
   quantity: number;
 }
@@ -16,6 +18,9 @@ export interface ICartItem {
     title: string;
     coverImage: string;
     price: number;
+    discountedPrice?: number;
+    discount?: number;
+    slug?: string;
   };
   quantity: number;
 }

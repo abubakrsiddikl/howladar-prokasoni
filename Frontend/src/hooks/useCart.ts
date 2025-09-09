@@ -14,7 +14,7 @@ import {
   useClearCartMutation,
 } from "@/redux/feature/Cart/cart.api";
 import type { RootState } from "@/redux/store";
-import type { CartItem } from "@/types";
+import type { ICartItem } from "@/types";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 import { toast } from "sonner";
 
@@ -61,7 +61,7 @@ export function useCart() {
   const cart = user ? serverCart : guestCart;
 
   // wrapper methods
-  const addToCart = async (item: CartItem) => {
+  const addToCart = async (item: ICartItem) => {
     if (user) {
       const res = await addToCartServer({
         bookId: item.book._id as string,
