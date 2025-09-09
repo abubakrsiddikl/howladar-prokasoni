@@ -24,7 +24,7 @@ router.get("/my-order", checkAuth(Role.CUSTOMER), OrderController.getMyOrders);
 
 //  Get all orders (admin & store manager)
 router.get(
-  "/",
+  "/all-order",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   OrderController.getAllOrders
 );

@@ -53,13 +53,15 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       note: "অর্ডারটি গ্রহণ করা হয়েছে। কনফার্মেশনের জন্য অপেক্ষমান।",
       timestamp: new Date(),
     };
-
+    // delivery charge include of totalAmount
+    const deliveryCharge = payload.deliveryCharge ?? 120;
+    const subTotal = totalAmount + deliveryCharge;
     // Prepare order data
     const orderData = {
       ...payload,
       user: decodedToken.userId,
-      totalAmount,
-      orderStatusLogs: [initialOrderStatusLog],
+      totalAmount: subTotal,
+      orderStatusLog: [initialOrderStatusLog],
       orderId: await generateOrderId(),
     };
 
@@ -183,7 +185,7 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     note = "অর্ডারটি Cancelled করা হয়েছে ";
   }
   order.currentStatus = newStatus;
-  order.orderStatusLogs.push({
+  order.orderStatusLog.push({
     status: newStatus,
     note: note,
     timestamp: new Date(),

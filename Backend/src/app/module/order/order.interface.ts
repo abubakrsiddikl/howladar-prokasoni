@@ -47,8 +47,10 @@ export interface IOrder {
   shippingInfo: IShippingInfo;
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
+  deliveryCharge: number;
   totalAmount: number;
-  orderStatusLogs: IOrderStatusLog[];
+  orderStatusLog: IOrderStatusLog[];
   currentStatus: string;
   orderId: string;
+  totalDiscountedPrice:number;
 }
