@@ -69,10 +69,14 @@ const getBookByGenre = catchAsync(async (req: Request, res: Response) => {
 
 // update a book
 const updateBook = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.body.files)
+  console.log(req.body.data,"1")
+
   const id = req.params.id;
+  console.log(id)
   let coverImagePath: string | undefined;
   let previewImagePaths: string[] = [];
-
+  
   if (!Array.isArray(req.files)) {
     coverImagePath = req.files?.file?.[0]?.path;
     previewImagePaths = req.files?.files?.map((file) => file.path) || [];

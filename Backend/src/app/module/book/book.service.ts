@@ -6,6 +6,8 @@ import { Book } from "./book.model";
 import { bookSearchableFields } from "./book.constants";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { deleteImageFromCLoudinary } from "../../config/cloudinary.config";
+import { Cart } from "../cart/cart.model";
+import { Order } from "../order/order.model";
 
 // create book
 const createBook = async (payload: IBook) => {
@@ -40,7 +42,7 @@ const createBook = async (payload: IBook) => {
 const getAllBook = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Book.find(), query);
 
-  await queryBuilder.filter(); 
+  await queryBuilder.filter();
   queryBuilder.search(bookSearchableFields).sort().paginate();
 
   const [data, meta] = await Promise.all([
@@ -50,7 +52,6 @@ const getAllBook = async (query: Record<string, string>) => {
 
   return { data, meta };
 };
-
 
 // get single book with slug
 const getSingleBook = async (slug: string) => {
@@ -125,11 +126,29 @@ const deleteBook = async (id: string) => {
   if (!isBookExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "Book Not Found");
   }
-  // delete coverImage
+
+  // 1. delete coverImage from cloudinary
   deleteImageFromCLoudinary(isBookExist.coverImage);
-  // delete preview image
+
+  // 2. delete preview images from cloudinary
   isBookExist.previewImages?.map((img) => deleteImageFromCLoudinary(img));
+
+  // 3. remove book references from OrderItems
+  await Order.updateMany(
+    {},
+    {
+      $pull: {
+        items: { book: isBookExist._id },
+      },
+    }
+  );
+
+  // 4. remove book references from CartItems
+  await Cart.deleteMany({ book: isBookExist._id });
+
+  // 5. finally delete the book
   await Book.findByIdAndDelete(id);
+
   return isBookExist;
 };
 

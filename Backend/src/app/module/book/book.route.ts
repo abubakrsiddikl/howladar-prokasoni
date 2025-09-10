@@ -33,7 +33,7 @@ router.patch(
     { name: "files", maxCount: 5 },
   ]),
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
-  validateRequest(updateBookZodSchema),
+  // validateRequest(updateBookZodSchema),
   BookControllers.updateBook
 );
 // delete a book

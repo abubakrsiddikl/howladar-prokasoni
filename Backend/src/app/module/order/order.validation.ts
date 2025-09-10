@@ -24,7 +24,7 @@ export const createOrderSchema = z.object({
 });
 
 export const updateOrderStatusZodSchema = z.object({
-  orderStatus: z.nativeEnum(OrderStatus),
+  status: z.nativeEnum(OrderStatus),
 });
 
 export const updatePaymentStatusZodSchema = z.object({

@@ -81,7 +81,7 @@ const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
   }
   const updatedOrder = await OrderService.updateOrderStatus(
     orderId,
-    req.body.orderStatus
+    req.body.status
   );
 
   sendResponse(res, {

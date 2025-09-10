@@ -18,6 +18,8 @@ export const validateRequest =
           req.body.deletePreviewImages = [];
         }
       }
+
+      
       req.body = await zodSchema.parseAsync(req.body);
       next();
     } catch (error) {
