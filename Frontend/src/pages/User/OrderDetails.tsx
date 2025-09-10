@@ -19,6 +19,7 @@ import OrderTimeline from "@/components/modules/Order/OrderTimeline";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 export default function OrderDetails() {
   const { id } = useParams();
@@ -43,7 +44,8 @@ export default function OrderDetails() {
   const subTotal = order.totalAmount - 120;
   // handle order status update
   const handleOrderStatusUpdate = (id: string) => {
-    Swal.fire({
+   try {
+     Swal.fire({
       title: "আপনি কি নিশ্চিত ?",
       text: ` অর্ডার status কে  ${status} করতে চান   !`,
       icon: "warning",
@@ -64,6 +66,10 @@ export default function OrderDetails() {
         }
       }
     });
+   } catch (error) {
+    // toast.error(`${error.message}`)
+    console.log(error)
+   }
   };
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">

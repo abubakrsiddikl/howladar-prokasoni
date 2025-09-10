@@ -36,7 +36,7 @@ export default function BookCard({
 
           {/* discount sticker */}
           {discount > 0 && (
-            <div className="absolute top-2 left-6 bg-red-600 text-white text-xs sm:text-sm md:text-sm font-bold px-2 rounded-full shadow-lg tracking-wider">
+            <div className="absolute top-2 left-3 bg-red-600 text-white text-xs sm:text-sm md:text-sm font-bold px-2 rounded-full shadow-lg tracking-wider">
               {discount}%<br /> OFF
             </div>
           )}

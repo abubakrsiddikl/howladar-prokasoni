@@ -1,3 +1,4 @@
+import Logout from "@/pages/Authentication/Logout";
 import MyOrdersPage from "@/pages/User/MyOrders";
 import type { ISidebarItem } from "@/types";
 
@@ -9,6 +10,11 @@ export const userSidebarItems: ISidebarItem[] = [
         title: "Orders",
         url: "/user/my-orders",
         component: MyOrdersPage,
+      },
+      {
+        title: "Logout",
+        url: "/user/logout",
+        component: Logout,
       },
     ],
   },

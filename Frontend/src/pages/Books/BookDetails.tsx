@@ -45,7 +45,7 @@ export default function BookDetails() {
             <img
               src={book.coverImage}
               alt={book.title}
-              className="w-full h-[400px] object-cover rounded-lg cursor-pointer"
+              className="p-3 w-full h-[400px] object-cover rounded-lg cursor-pointer "
               onClick={() => setOpen(true)}
             />
           </div>

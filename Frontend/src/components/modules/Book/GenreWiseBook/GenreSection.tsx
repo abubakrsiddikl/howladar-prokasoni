@@ -20,9 +20,13 @@ export function GenreSection({ genre }: { genre: IGenre }) {
       <CardContent className="space-y-4">
         {/* Genre Title */}
         <div className="flex justify-between">
-          <div className="relative">
-            <h2 className="text-xl font-bold">{genre.name} বই কিনুন</h2>
-            <p>({genre.description})</p>
+          <div className="flex justify-center gap-3">
+            <h2 className="text-xl font-bold text-[#25517a]">
+              {genre.name} বই কিনুন
+            </h2>
+            <p className="text-base mt-2 font-semibold text-[#25517a]">
+              ({genre.description})
+            </p>
           </div>
 
           <Link to={`/more-books/${genre.name}`} className="text-[#ff8600]">

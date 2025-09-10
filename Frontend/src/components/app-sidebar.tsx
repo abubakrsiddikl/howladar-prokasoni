@@ -12,18 +12,21 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { getSidebarItems } from "@/utils/getSidebarItems";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
+import type { TRole } from "@/types";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: user } = useUserProfileQuery(undefined);
-  console.log(user);
+  const location = useLocation();
+  const currentPathName = location.pathname;
+
   const data = {
-    navMain: getSidebarItems(user?.data?.role),
+    navMain: getSidebarItems(user?.data?.role as TRole),
   };
   return (
-    <Sidebar {...props}>
+    <Sidebar {...props} className="mt-8">
       <SidebarHeader>
         <img
           src="/logo.jpg"
@@ -40,7 +43,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu>
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={currentPathName === item.url}
+                    >
                       <Link to={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

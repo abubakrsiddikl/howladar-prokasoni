@@ -31,7 +31,6 @@ export default function LoginForm({
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const res = await login(data).unwrap();
-      console.log(res.data?.user?.role);
       if (res.success) {
         // if (res.data?.user?.role === role.admin) {
         //   navigate("/admin/analytics", { replace: true });

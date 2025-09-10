@@ -54,9 +54,9 @@ export default function AddBookModal() {
   const [images, setImages] = useState<(File | FileMetadata)[] | []>([]);
   const [open, setOpen] = useState(false);
   const [addNewBook, { isLoading }] = useAddNewBookMutation();
-  const { data: genresData } = useGetAllGenresQuery(undefined);
-
-  const genresOptions = genresData?.data?.map((item) => ({
+  const { data } = useGetAllGenresQuery(undefined);
+  const genresData = data?.data || [];
+  const genresOptions = genresData?.map((item) => ({
     value: item._id,
     label: item.name,
   }));
@@ -88,7 +88,6 @@ export default function AddBookModal() {
         title: data.title,
         description: data.description,
       };
-      console.log(data);
       const formData = new FormData();
 
       formData.append("data", JSON.stringify(payload));

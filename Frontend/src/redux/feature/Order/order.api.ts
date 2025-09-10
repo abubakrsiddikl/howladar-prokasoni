@@ -1,5 +1,9 @@
 import { baseApi } from "@/redux/baseApi";
-import type { ICreateOrderPayload, IOrder, IResponse } from "@/types";
+import type {
+  ICreateOrderPayload,
+  IOrder,
+  IResponse,
+} from "@/types";
 
 export const orderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -42,6 +46,15 @@ export const orderApi = baseApi.injectEndpoints({
       transformResponse: (res: IResponse<IOrder>) => res.data,
     }),
 
+    // get order trace
+    getTrackOrder: builder.query<IOrder, string>({
+      query: (orderId) => ({
+        url: `/order/${orderId}/trace`,
+        method: "GET",
+      }),
+      transformResponse: (res: IResponse<IOrder>) => res.data,
+    }),
+
     // update order status by admin and store-manager
     //  Create Order
     updateOrderStatus: builder.mutation<
@@ -63,5 +76,6 @@ export const {
   useGetMyOrderQuery,
   useGetSingleOrderQuery,
   useGetAllOrderQuery,
+  useGetTrackOrderQuery,
   useUpdateOrderStatusMutation,
 } = orderApi;

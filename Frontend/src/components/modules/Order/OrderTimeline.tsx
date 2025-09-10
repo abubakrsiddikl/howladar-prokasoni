@@ -1,9 +1,9 @@
 import { format } from "date-fns";
-import { CheckCircle, Circle } from "lucide-react";
-import type { IOrder, IOrderStatusLog } from "@/types";
+import { CheckCircle } from "lucide-react";
+import type { IOrder } from "@/types";
 
 interface Props {
-  order: IOrder;
+  order: Partial<IOrder>;
 }
 
 export default function OrderTimeline({ order }: Props) {
@@ -12,38 +12,33 @@ export default function OrderTimeline({ order }: Props) {
 
   const isCurrentStatus = (idx: number) => idx === 0; // latest index
 
-  const getStatusUI = (log: IOrderStatusLog, idx: number) => {
-    if (isCurrentStatus(idx)) {
-      return {
-        icon: <CheckCircle className="w-4 h-4 text-white" />,
-        bgColor: "bg-green-500",
-        textColor: "text-green-700",
-      };
-    }
-    return {
-      icon: <Circle className="w-3 h-3 text-gray-500" />,
-      bgColor: "bg-gray-300",
-      textColor: "text-gray-700",
-    };
-  };
-
   return (
     <div className="bg-white p-3">
-      <ul className="relative border-l border-gray-200">
+      <ul className="relative ml-6">
         {reversedLogs.map((log, idx) => {
-          const { icon, bgColor, textColor } = getStatusUI(log, idx);
+          const isLast = idx === reversedLogs.length - 1;
+
           return (
-            <li key={idx} className="flex items-center gap-3  ml-6 mb-5">
+            <li key={idx} className="relative flex gap-3 mb-6">
+              {/* Timeline line */}
+              {!isLast && (
+                <span className="absolute left-3 top-6 w-[2px] h-full bg-[#ff8600]"></span>
+              )}
+
               {/* Circle */}
               <span
-                className={` flex items-center justify-center w-6 h-6 rounded-full -left-3 ring-4 ring-white ${bgColor}`}
+                className={`relative z-10 flex items-center justify-center w-6 h-6 rounded-full bg-[#ff8600] text-white`}
               >
-                {icon}
+                {isCurrentStatus(idx) ? (
+                  <CheckCircle className="w-4 h-4 text-white" />
+                ) : (
+                  <span className="w-2 h-2 bg-white rounded-full"></span>
+                )}
               </span>
 
               {/* Content */}
               <div>
-                <h3 className={`font-semibold text-sm ${textColor}`}>
+                <h3 className="font-semibold text-sm text-[#ff8600]">
                   {log.status}
                 </h3>
                 <p className="text-xs text-gray-500">

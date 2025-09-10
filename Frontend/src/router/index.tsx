@@ -20,6 +20,7 @@ import { storeManagerSidebarItems } from "./storeManagerSidebarItems";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import BookDetails from "@/pages/Books/BookDetails";
 import GenreWiseAllBooks from "@/pages/Books/GenreWiseAllBooks";
+import OrderTrack from "@/pages/OrderTrack";
 
 // export const router = createBrowserRouter([
 //   {
@@ -131,6 +132,11 @@ export const router = createBrowserRouter([
       { Component: withAuth(CheckoutPage, "CUSTOMER"), path: "checkout" },
       { Component: OrderSuccessPage, path: "ordersuccess/:id" },
       { Component: OrderDetails, path: "order-details/:id" },
+      // order track publicly
+      {
+        Component: OrderTrack,
+        path: "order-track",
+      },
 
       // user dashboard
       {

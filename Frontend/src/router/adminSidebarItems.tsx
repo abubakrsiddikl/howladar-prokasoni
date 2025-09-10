@@ -3,19 +3,13 @@ import type { ISidebarItem } from "@/types";
 
 export const adminSidebarItems: ISidebarItem[] = [
   {
-    title: "Getting Started",
+    title: "Admin Dashboard",
     items: [
       {
         title: "Analytics",
         url: "/admin/analytics",
         component: Analytics,
       },
-      {
-        title: "Analytics",
-        url: "/admin/analytics",
-        component: Analytics,
-      },
-      
     ],
   },
 ];

@@ -14,7 +14,6 @@ const SearchInput = () => {
       skip: !search,
     }
   );
-  console.log(data?.data);
 
   const books: Partial<IBook>[] = data?.data || [];
 

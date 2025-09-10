@@ -52,11 +52,10 @@ export default function CheckoutPage() {
       };
 
       const res = await createOrder(payload).unwrap();
-      console.log(res);
+      
       if (res.success) {
         toast.success("🎉 Your order has been saved successfully");
         clearCart();
-        console.log(res.data?.orderId);
         navigate(`/ordersuccess/${res.data?.orderId}`);
       }
       //   work later for payment gateway
