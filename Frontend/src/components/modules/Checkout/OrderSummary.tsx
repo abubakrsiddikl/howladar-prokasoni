@@ -2,12 +2,10 @@ export default function OrderSummary({
   subtotal,
   deliveryCharge,
   total,
-  totalDiscountedPrice,
 }: {
   subtotal: number;
   deliveryCharge: number;
   total: number;
-  totalDiscountedPrice: number;
 }) {
   return (
     <div className="bg-white p-5 rounded shadow">
@@ -20,13 +18,7 @@ export default function OrderSummary({
         <div className="flex justify-between">
           <span>Discount </span>
           <span>
-            {" "}
-            {`${
-              totalDiscountedPrice > 0
-                ? `- ${totalDiscountedPrice}`
-                : `${totalDiscountedPrice}`
-            }`}
-            Tk.
+            0 Tk.
           </span>
         </div>
         <div className="flex justify-between">

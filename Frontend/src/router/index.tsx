@@ -19,6 +19,7 @@ import type { TRole } from "@/types";
 import { storeManagerSidebarItems } from "./storeManagerSidebarItems";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import BookDetails from "@/pages/Books/BookDetails";
+import GenreWiseAllBooks from "@/pages/Books/GenreWiseAllBooks";
 
 // export const router = createBrowserRouter([
 //   {
@@ -115,11 +116,17 @@ export const router = createBrowserRouter([
         ],
       },
       // normal route
-      // book details 
+      // genre wise all book
+      {
+        Component: GenreWiseAllBooks,
+        path: "/more-books/:genre",
+      },
+      // book details
       {
         Component: BookDetails,
-        path: "/book-details/:slug"
+        path: "/book-details/:slug",
       },
+
       { Component: Cart, path: "cart" },
       { Component: withAuth(CheckoutPage, "CUSTOMER"), path: "checkout" },
       { Component: OrderSuccessPage, path: "ordersuccess/:id" },

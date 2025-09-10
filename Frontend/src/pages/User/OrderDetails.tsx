@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -9,19 +10,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
-import { useGetSingleOrderQuery } from "@/redux/feature/Order/order.api";
+import {
+  useGetSingleOrderQuery,
+  useUpdateOrderStatusMutation,
+} from "@/redux/feature/Order/order.api";
 import { role } from "@/constants/role";
 import OrderTimeline from "@/components/modules/Order/OrderTimeline";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useState } from "react";
+import Swal from "sweetalert2";
 
 export default function OrderDetails() {
   const { id } = useParams();
+  const [status, setOrderStatus] = useState("");
   const { data: user } = useUserProfileQuery(undefined);
   const {
     data: order,
     isLoading,
     isError,
   } = useGetSingleOrderQuery(id as string);
+  const [updateOrderStatus] = useUpdateOrderStatusMutation();
 
   if (isLoading) return <LoadingSpinner></LoadingSpinner>;
   if (isError || !order)
@@ -30,17 +38,33 @@ export default function OrderDetails() {
         ❌ অর্ডার ডিটেইলস আনা যায়নি।
       </p>
     );
- console.log(order)
-  // totals
-  const subTotal =
-    order.items?.reduce(
-      (acc: number, item: any) => acc + item.quantity * item.book.price,
-      0
-    ) || 0;
-  const deliveryCharge = 0;
-  const discount = 0;
-  const grandTotal = order.totalAmount || subTotal + deliveryCharge - discount;
 
+  // totals
+  const subTotal = order.totalAmount - 120;
+  // handle order status update
+  const handleOrderStatusUpdate = (id: string) => {
+    Swal.fire({
+      title: "আপনি কি নিশ্চিত ?",
+      text: ` অর্ডার status কে  ${status} করতে চান   !`,
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonText: "না",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "হ্যা",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await updateOrderStatus({ id, status });
+        if (res.data?.success) {
+          Swal.fire({
+            title: "আপডেটড",
+            text: "অর্ডার status আপডেট সম্পূর্ণ হয়েছে .",
+            icon: "success",
+          });
+        }
+      }
+    });
+  };
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
       {/* Banner */}
@@ -72,10 +96,11 @@ export default function OrderDetails() {
         {/* Order Summary */}
         <div className="p-4 rounded-lg border bg-white">
           <h2 className="text-lg font-bold mb-4">Order Summary</h2>
+          <div className="border-t border-dashed border-[#708dbf] my-4" />
           <div className="h-[200px] space-y-4 overflow-y-scroll">
             {order.items.map((item: any, idx: number) => (
               <div key={idx}>
-                <div  className="flex items-center gap-4">
+                <div className="flex items-center gap-4">
                   <img
                     src={item.book.coverImage}
                     alt={item.book.title}
@@ -96,7 +121,7 @@ export default function OrderDetails() {
                     Tk. {(item.quantity * item.book.price).toLocaleString()}
                   </p>
                 </div>
-                 <div className="border-t border-dashed border-[#708dbf] my-4" />
+                <div className="border-t border-dashed border-[#708dbf] my-4" />
               </div>
             ))}
           </div>
@@ -115,11 +140,11 @@ export default function OrderDetails() {
             </div>
             <div className="flex justify-between">
               <span>Discount</span>
-              <span>Tk. {discount}</span>
+              <span>Tk. {order.totalDiscountedPrice}</span>
             </div>
             <div className="flex justify-between font-bold">
               <span>Payable Amount</span>
-              <span>Tk. {grandTotal}</span>
+              <span>Tk. {order.totalAmount}</span>
             </div>
           </div>
         </div>
@@ -155,7 +180,7 @@ export default function OrderDetails() {
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Select
               defaultValue={order.currentStatus}
-              onValueChange={(v) => console.log("update:", v)}
+              onValueChange={(v) => setOrderStatus(v)}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select status" />
@@ -168,7 +193,10 @@ export default function OrderDetails() {
                 <SelectItem value="Cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={() => handleOrderStatusUpdate(order._id)}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Update Status
             </Button>
           </div>

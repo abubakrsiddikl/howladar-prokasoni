@@ -102,7 +102,6 @@ export default function CheckoutPage() {
       <OrderSummary
         subtotal={subtotal}
         deliveryCharge={deliveryCharge}
-        totalDiscountedPrice={totalDiscountedPrice}
         total={total}
       />
     </div>

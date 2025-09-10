@@ -29,10 +29,10 @@ const bookApi = baseApi.injectEndpoints({
     // get book by genre limit with 10
     getBookByGenre: builder.query<
       IResponse<IBook[]>,
-      { genre: string; limit: number }
+      { genre: string; page?: number; limit: number }
     >({
-      query: ({ genre, limit = 10 }) => ({
-        url: `/book/all-books?genre=${genre}&limit=${limit}`,
+      query: ({ genre, page, limit = 10 }) => ({
+        url: `/book/all-books?genre=${genre}&page=${page}&limit=${limit}`,
         method: "GET",
       }),
     }),
@@ -43,6 +43,16 @@ const bookApi = baseApi.injectEndpoints({
         url: `/book/${slug}`,
         method: "GET",
       }),
+    }),
+
+    // update book
+    updateBook: builder.mutation<any, { id: string; formData: FormData }>({
+      query: ({ id, formData }) => ({
+        url: `/book/${id}`,
+        method: "PATCH",
+        body: formData,
+      }),
+      invalidatesTags: ["BOOK"],
     }),
 
     // delete a book
@@ -61,5 +71,6 @@ export const {
   useGetBookByGenreQuery,
   useAddNewBookMutation,
   useGetSingleBookQuery,
+  useUpdateBookMutation,
   useDeleteSingleBookMutation,
 } = bookApi;

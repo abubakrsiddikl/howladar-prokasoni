@@ -29,11 +29,11 @@ export default function OrderTimeline({ order }: Props) {
 
   return (
     <div className="bg-white p-3">
-      <ul className="relative border-l border-gray-200 ">
+      <ul className="relative border-l border-gray-200">
         {reversedLogs.map((log, idx) => {
           const { icon, bgColor, textColor } = getStatusUI(log, idx);
           return (
-            <li key={idx} className="flex items-center gap-3  ml-6">
+            <li key={idx} className="flex items-center gap-3  ml-6 mb-5">
               {/* Circle */}
               <span
                 className={` flex items-center justify-center w-6 h-6 rounded-full -left-3 ring-4 ring-white ${bgColor}`}

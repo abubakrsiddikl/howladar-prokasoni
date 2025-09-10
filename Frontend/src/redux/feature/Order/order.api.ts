@@ -41,6 +41,20 @@ export const orderApi = baseApi.injectEndpoints({
       }),
       transformResponse: (res: IResponse<IOrder>) => res.data,
     }),
+
+    // update order status by admin and store-manager
+    //  Create Order
+    updateOrderStatus: builder.mutation<
+      IResponse<IOrder>,
+      { id: string; status: string }
+    >({
+      query: ({ id, status }) => ({
+        url: `/order/${id}/status`,
+        method: "PATCH",
+        data: { status },
+      }),
+      invalidatesTags: ["ORDER"],
+    }),
   }),
 });
 
@@ -49,4 +63,5 @@ export const {
   useGetMyOrderQuery,
   useGetSingleOrderQuery,
   useGetAllOrderQuery,
+  useUpdateOrderStatusMutation,
 } = orderApi;

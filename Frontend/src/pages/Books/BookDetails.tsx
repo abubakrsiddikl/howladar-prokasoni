@@ -19,16 +19,14 @@ export default function BookDetails() {
   const { data: singleBook, isLoading } = useGetSingleBookQuery(slug as string);
   const book = singleBook?.data;
 
-  const { data: similarBook, isLoading: simLoading } = useGetBookByGenreQuery(
-    book?.genre as string,
-    { skip: !book }
-  );
+  const { data: similarBook, isLoading: simLoading } = useGetBookByGenreQuery({
+    genre: book?.genre.name as string,
+    limit: 8,
+  });
 
   if (isLoading) return <LoadingSpinner />;
 
   if (!book) return <p className="text-center py-10">❌ Book not found</p>;
-
-  
 
   // previewImages gallery setup
   const galleryItems =
@@ -62,7 +60,8 @@ export default function BookDetails() {
               </CardHeader>
 
               <p className="text-gray-600 mb-2">
-                by <span className="font-medium text-blue-400">{book.author}</span>
+                by{" "}
+                <span className="font-medium text-blue-400">{book.author}</span>
               </p>
 
               {book.description && (
@@ -82,7 +81,7 @@ export default function BookDetails() {
                       {book.price + book.discountedPrice}৳
                     </span>
                     <span className="text-[#ff8600] text-sm font-medium">
-                      Your Save Tk.{book.discountedPrice}({book.discount}%) 
+                      Your Save Tk.{book.discountedPrice}({book.discount}%)
                     </span>
                   </>
                 ) : (

@@ -2,15 +2,26 @@ import type { ComponentType } from "react";
 
 export { type IBook, type IBookCreate, Genre } from "./book.type";
 export type { CartItem, ICartItem } from "./cart.type";
-export type { TRole ,IUser } from "./auth.type";
-export type { IOrder, ICreateOrderPayload, IPaymentMethod ,IOrderStatusLog} from "./order.type";
+export type { TRole, IUser } from "./auth.type";
+export type {
+  IOrder,
+  ICreateOrderPayload,
+  IPaymentMethod,
+  IOrderStatusLog,
+} from "./order.type";
 export type { IGenre } from "./genre.type";
+
+export interface TMeta {
+  total: number;
+  totalPage: number;
+}
 
 export interface IResponse<T> {
   statusCode: number;
   success: boolean;
   message: string;
   data: T;
+  meta?: TMeta;
 }
 
 export interface ISidebarItem {

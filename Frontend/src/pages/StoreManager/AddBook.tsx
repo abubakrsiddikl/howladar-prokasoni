@@ -3,31 +3,32 @@ import StoreManagerBooksTable from "../../components/modules/StoreManager/StoreM
 import {
   useDeleteSingleBookMutation,
   useGetAllBookQuery,
+  
 } from "@/redux/feature/Book/book.api";
 import Swal from "sweetalert2";
+
 export default function AddBook() {
   const { data: books } = useGetAllBookQuery(undefined);
   const [deleteBook] = useDeleteSingleBookMutation();
-  const handleEdit = (id: string) => {
-    console.log("Edit", id);
-  };
+  
 
   const handleDelete = (id: string, name: string) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: `আপনি কি নিশ্চিত "${name}" কে মুছে  ফেলতে চান !`,
+      title: "আপনি কি নিশ্চিত ?",
+      text: `আপনি কি নিশ্চিত "${name}" বই কে মুছে  ফেলতে চান !`,
       icon: "warning",
       showCancelButton: true,
+      cancelButtonText: "না",
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "হ্যা",
     }).then(async (result) => {
       if (result.isConfirmed) {
         const res = await deleteBook(id);
         if (res.data?.success) {
           Swal.fire({
-            title: "Deleted!",
-            text: "Your file has been deleted.",
+            title: "ডিলেটেড !",
+            text: "আপনার বইটি  ডিলিট সম্পূর্ণ হয়েছে .",
             icon: "success",
           });
         }
@@ -44,7 +45,6 @@ export default function AddBook() {
         <StoreManagerBooksTable
           books={books?.data || []}
           onDelete={handleDelete}
-          onEdit={handleEdit}
         ></StoreManagerBooksTable>
       </div>
     </div>

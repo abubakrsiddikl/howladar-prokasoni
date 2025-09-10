@@ -11,17 +11,34 @@ import { Edit, Trash2 } from "lucide-react";
 import type { IBook } from "@/types";
 import { Link } from "react-router";
 
+
+// import UpdateBookModal from "./UpdateBookModal";
+// import { useGetSingleBookQuery } from "@/redux/feature/Book/book.api";
+// import { useState } from "react";
+
 interface Props {
   books: IBook[];
-  onEdit: (id: string) => void;
+
   onDelete: (id: string, name: string) => void;
 }
 
-export default function StoreManagerBooksTable({
-  books,
-  onEdit,
-  onDelete,
-}: Props) {
+export default function StoreManagerBooksTable({ books, onDelete }: Props) {
+  // const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  // const [selectedBookSlug, setSelectedBookSlug] = useState<string | null>(null);
+  // const [open, setOpen] = useState(false);
+
+  // fetch single book only if selectedBookId exists
+  // const { data: updatedBook } = useGetSingleBookQuery(selectedBookSlug!, {
+  //   skip: !selectedBookSlug,
+  // });
+  const handleUpdateBook = (slug: string, id: string) => {
+    if (slug || id) {
+      alert("Coming Soon")
+    }
+    // setSelectedBookSlug(slug);
+    // setSelectedBookId(id);
+    // setOpen(true);
+  };
   return (
     <div className="w-full overflow-x-auto rounded-lg shadow-md">
       <Table>
@@ -73,7 +90,7 @@ export default function StoreManagerBooksTable({
                 <Button
                   size="icon"
                   variant="outline"
-                  onClick={() => onEdit(book._id)}
+                  onClick={() => handleUpdateBook(book.slug, book._id)}
                 >
                   <Edit className="w-4 h-4 text-blue-600" />
                 </Button>
@@ -89,6 +106,15 @@ export default function StoreManagerBooksTable({
           ))}
         </TableBody>
       </Table>
+
+      {/* Update Modal Open */}
+      {/* {selectedBookSlug && selectedBookId && updatedBook?.data && (
+        <UpdateBookModal
+          book={updatedBook?.data}
+          open={open}
+          setOpen={setOpen}
+        />
+      )} */}
     </div>
   );
 }

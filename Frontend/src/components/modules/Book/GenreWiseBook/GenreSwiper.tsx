@@ -19,7 +19,7 @@ export function GenreSwiper({ books }: { books: IBook[] }) {
         breakpoints={{
           0: { slidesPerView: 2 }, // Mobile
           768: { slidesPerView: 4 }, // md
-          1024: { slidesPerView: 6 }, // lg
+          1024: { slidesPerView: 4 }, // lg
         }}
       >
         {books.map((book) => (

@@ -14,6 +14,7 @@ export interface IBook {
   coverImage: string;
   previewImages: string[];
   available: boolean;
+  publisher: string;
   createdAt: string;
   updatedAt: string;
   slug: string;

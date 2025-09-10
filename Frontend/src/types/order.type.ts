@@ -37,6 +37,7 @@ export interface IOrder {
   currentStatus: string;
   orderId: string;
   deliveryCharge: number;
+  totalDiscountedPrice: number;
   createdAt: string;
   updatedAt: string;
 }
