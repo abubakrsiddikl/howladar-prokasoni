@@ -278,12 +278,18 @@ export default function AddBookModal() {
 
             {/* Cover Image */}
             <div>
-              <FormLabel className="mb-2">Upload Book CoverImage</FormLabel>
+              <FormLabel className="mb-2">
+                Upload Book CoverImage{" "}
+                <small className="font-bold">(Max 01 image)</small>
+              </FormLabel>
               <SingleImageUploader onChange={setImage} />
             </div>
 
             <div>
-              <FormLabel className="mb-2">Upload Book Preview Image</FormLabel>
+              <FormLabel className="mb-2">
+                Upload Book Preview Image{" "}
+                <small className="font-bold">(Max 10 image)</small>
+              </FormLabel>
               <MultipleImageUploader
                 onChange={setImages}
               ></MultipleImageUploader>

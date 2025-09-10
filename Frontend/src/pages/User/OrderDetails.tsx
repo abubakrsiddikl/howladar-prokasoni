@@ -17,9 +17,10 @@ import {
 import { role } from "@/constants/role";
 import OrderTimeline from "@/components/modules/Order/OrderTimeline";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import type { IErrorResponse } from "@/types";
 
 export default function OrderDetails() {
   const { id } = useParams();
@@ -31,8 +32,14 @@ export default function OrderDetails() {
     isError,
   } = useGetSingleOrderQuery(id as string);
   const [updateOrderStatus] = useUpdateOrderStatusMutation();
-
+  
+  useEffect(() => {
+    if (order?.currentStatus) {
+      setOrderStatus(order.currentStatus);
+    }
+  }, [order]);
   if (isLoading) return <LoadingSpinner></LoadingSpinner>;
+
   if (isError || !order)
     return (
       <p className="text-center text-red-500 mt-10">
@@ -44,8 +51,7 @@ export default function OrderDetails() {
   const subTotal = order.totalAmount - 120;
   // handle order status update
   const handleOrderStatusUpdate = (id: string) => {
-   try {
-     Swal.fire({
+    Swal.fire({
       title: "আপনি কি নিশ্চিত ?",
       text: ` অর্ডার status কে  ${status} করতে চান   !`,
       icon: "warning",
@@ -56,20 +62,23 @@ export default function OrderDetails() {
       confirmButtonText: "হ্যা",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await updateOrderStatus({ id, status });
-        if (res.data?.success) {
-          Swal.fire({
-            title: "আপডেটড",
-            text: "অর্ডার status আপডেট সম্পূর্ণ হয়েছে .",
-            icon: "success",
-          });
+        try {
+          const res = await updateOrderStatus({ id, status }).unwrap();
+          if (res.data) {
+            Swal.fire({
+              title: "আপডেটড",
+              text: "অর্ডার status আপডেট সম্পূর্ণ হয়েছে .",
+              icon: "success",
+            });
+          }
+        } catch (error: any) {
+          const err = error?.data as IErrorResponse;
+          if (err?.message) {
+            toast.error(err?.message);
+          }
         }
       }
     });
-   } catch (error) {
-    // toast.error(`${error.message}`)
-    console.log(error)
-   }
   };
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
@@ -185,7 +194,8 @@ export default function OrderDetails() {
           <h2 className="text-lg font-bold mb-4">Update Order Status</h2>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Select
-              defaultValue={order.currentStatus}
+              // defaultValue={order.currentStatus}
+              value={order.currentStatus}
               onValueChange={(v) => setOrderStatus(v)}
             >
               <SelectTrigger className="w-[200px]">

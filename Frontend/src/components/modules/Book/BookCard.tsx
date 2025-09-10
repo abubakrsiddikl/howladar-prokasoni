@@ -25,7 +25,7 @@ export default function BookCard({
 
   return (
     <div>
-      <div className="bg-white  hover:shadow-2xl transition-shadow duration-300 rounded-lg flex flex-col border hover:border-[#ff8600]">
+      <div className="bg-white  hover:shadow-2xl transition-shadow duration-300 rounded-lg flex flex-col border  md:hover:border-[#ff8600] sm:border-[#ff8600]">
         {/* image wrapper */}
         <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
           <img

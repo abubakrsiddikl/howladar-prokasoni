@@ -1,3 +1,4 @@
+
 import { Menu, ShoppingCart } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
@@ -15,19 +16,16 @@ import SearchInput from "../SearchInput";
 
 const Navbar = () => {
   const { data: user } = useUserProfileQuery(undefined);
-
   const { cart } = useCart();
+
+
   // dashboard link generator
   const dashboardLink = () => {
-    if (user?.data?.role === role.admin) {
-      return navLink("/admin", "Dashboard");
-    }
-    if (user?.data?.role === role.customer) {
+    if (user?.data?.role === role.admin) return navLink("/admin", "Dashboard");
+    if (user?.data?.role === role.customer)
       return navLink("/user", "Dashboard");
-    }
-    if (user?.data?.role === role.storeManager) {
+    if (user?.data?.role === role.storeManager)
       return navLink("/store-manager", "Dashboard");
-    }
     return null;
   };
 
@@ -42,23 +40,41 @@ const Navbar = () => {
   );
 
   return (
-    <div>
-      {/* order track  */}
-      <div className="bg-[#ff8600] text-white py-3">
-        <div className="  w-11/12 mx-auto w-max-6xl flex justify-evenly">
-          <div className="flex gap-4">
-            <p>+8801936582963</p>
-            <p>
+    <div className="sticky top-0 z-50">
+      {/* order track */}
+      {/* <div
+        className={`bg-[#ff8600] text-white  transition-all duration-300 hidden ${
+          hideOrderDiv
+            ? "h-0 overflow-hidden opacity-0 "
+            : "h-auto opacity-100 py-3"
+        }`}
+      >
+        <div className="w-11/12 mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+          
+          <p className="whitespace-nowrap text-sm sm:text-base font-medium">
+            +8801936582963
+          </p>
+
+         
+          <div className="flex-1 overflow-hidden relative w-full">
+            <p className="inline-block animate-marquee whitespace-nowrap text-sm sm:text-base">
               কোন বই খুজে না পেলে অনুগ্রহ করে ফোন করুন অথবা হোয়াটসঅ্যাপে মেসেজ
               করুন
             </p>
           </div>
-          <Link to="order-track" className="font-bold"> অর্ডার ট্র্যাক করুন </Link>
+
+          
+          <Link
+            to="order-track"
+            className="whitespace-nowrap font-bold text-sm sm:text-base"
+          >
+            অর্ডার ট্র্যাক করুন
+          </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* this navbar */}
-      <nav className="bg-[#727088] shadow sticky top-0 z-50">
+      <nav className="bg-[#727088] shadow ">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Left: Drawer Icon and Logo */}
@@ -92,6 +108,8 @@ const Navbar = () => {
                     {navLink("#", "জীবনী")}
                     {navLink("#", "ফ্যান্টাসি")}
                     {navLink("#", "প্রযুক্তি")}
+                    {navLink("/order-track", " অর্ডার ট্র্যাক করুন")}
+
                   </div>
                 </SheetContent>
               </Sheet>

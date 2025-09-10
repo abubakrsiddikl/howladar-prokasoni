@@ -11,6 +11,8 @@ import { useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import BookCard from "@/components/modules/Book/BookCard";
 import PreviewGalleryDialog from "@/components/modules/Book/PreviewGalleryDialog";
+import { useCart } from "@/hooks/useCart";
+import type { ICartItem } from "@/types";
 
 export default function BookDetails() {
   const { slug } = useParams();
@@ -23,6 +25,7 @@ export default function BookDetails() {
     genre: book?.genre.name as string,
     limit: 8,
   });
+  const { addToCart } = useCart();
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -34,7 +37,19 @@ export default function BookDetails() {
       original: img,
       thumbnail: img,
     })) || [];
-
+  const handleAddToCart = async () => {
+    if (!book) return;
+    const cartItem: ICartItem = {
+      book: {
+        _id: book._id,
+        title: book.title,
+        coverImage: book.coverImage,
+        price: book.price,
+      },
+      quantity: 1,
+    };
+    await addToCart(cartItem);
+  };
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
       {/* Book Main Section */}
@@ -94,7 +109,9 @@ export default function BookDetails() {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              <Button className="flex-1">🛒 Add to Cart</Button>
+              <Button className="flex-1" onClick={handleAddToCart}>
+                🛒 Add to Cart
+              </Button>
               <Button
                 variant="outline"
                 className="flex-1"

@@ -49,7 +49,7 @@ export default function GenreWiseAllBooks() {
                 />
               </PaginationItem>
 
-              <PaginationItem className="flex">
+              <div className="flex">
                 {Array.from({ length: totalPage }, (_, index) => index + 1).map(
                   (page) => (
                     <PaginationItem
@@ -62,7 +62,8 @@ export default function GenreWiseAllBooks() {
                     </PaginationItem>
                   )
                 )}
-              </PaginationItem>
+                
+              </div>
               <PaginationItem>
                 <PaginationNext
                   onClick={() => setCurrentPage((prv) => prv + 1)}

@@ -6,7 +6,7 @@ import type { ISidebarItem } from "@/types";
 
 export const storeManagerSidebarItems: ISidebarItem[] = [
   {
-    title: "Getting Started",
+    title: "Store Manger",
     items: [
       {
         title: "Add New Book",

@@ -1,9 +1,5 @@
 import { baseApi } from "@/redux/baseApi";
-import type {
-  ICreateOrderPayload,
-  IOrder,
-  IResponse,
-} from "@/types";
+import type { ICreateOrderPayload, IOrder, IResponse } from "@/types";
 
 export const orderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -44,6 +40,9 @@ export const orderApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       transformResponse: (res: IResponse<IOrder>) => res.data,
+      providesTags: (_result, _error, orderId) => [
+        { type: "ORDER", id: orderId },
+      ],
     }),
 
     // get order trace
@@ -66,7 +65,7 @@ export const orderApi = baseApi.injectEndpoints({
         method: "PATCH",
         data: { status },
       }),
-      invalidatesTags: ["ORDER"],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "ORDER", id }],
     }),
   }),
 });
