@@ -3,9 +3,14 @@ import httpStatus from "http-status-codes";
 import { BannerServices } from "./banner.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { IBanner } from "./banner.interface";
 
-export const createBanner = catchAsync(async (req: Request, res: Response) => {
-  const banner = await BannerServices.createBanner(req.body);
+const createBanner = catchAsync(async (req: Request, res: Response) => {
+  const payload: IBanner = {
+    ...req.body,
+    image: req.file?.path,
+  };
+  const banner = await BannerServices.createBanner(payload);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -14,7 +19,7 @@ export const createBanner = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const getAllBanners = catchAsync(async (req: Request, res: Response) => {
+const getAllBanners = catchAsync(async (req: Request, res: Response) => {
   const banners = await BannerServices.getAllBanners();
   sendResponse(res, {
     success: true,
@@ -24,20 +29,23 @@ export const getAllBanners = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const getActiveBanners = catchAsync(
-  async (req: Request, res: Response) => {
-    const banners = await BannerServices.getActiveBanners();
-    sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "Active banners retrieved successfully",
-      data: banners,
-    });
-  }
-);
+const getActiveBanners = catchAsync(async (req: Request, res: Response) => {
+  const banners = await BannerServices.getActiveBanners();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Active banners retrieved successfully",
+    data: banners,
+  });
+});
 
-export const updateBanner = catchAsync(async (req: Request, res: Response) => {
-  const banner = await BannerServices.updateBanner(req.params.id, req.body);
+const updateBanner = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const payload: IBanner = {
+    ...req.body,
+    image: req.file?.path,
+  };
+  const banner = await BannerServices.updateBanner(id, payload);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -46,7 +54,7 @@ export const updateBanner = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const deleteBanner = catchAsync(async (req: Request, res: Response) => {
+const deleteBanner = catchAsync(async (req: Request, res: Response) => {
   await BannerServices.deleteBanner(req.params.id);
   sendResponse(res, {
     success: true,
@@ -55,3 +63,11 @@ export const deleteBanner = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
+
+export const BannerControllers = {
+  createBanner,
+  getAllBanners,
+  getActiveBanners,
+  updateBanner,
+  deleteBanner,
+};

@@ -5,6 +5,7 @@ import { BookRoutes } from "../module/book/book.route";
 import { CartRoutes } from "../module/cart/cart.route";
 import { OrderRoutes } from "../module/order/order.route";
 import { GenreRoutes } from "../module/genre/genre.route";
+import { BannerRoutes } from "../module/banner/banner.route";
 
 export const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: "/order",
     route: OrderRoutes,
+  },
+  {
+    path: "/banner",
+    route: BannerRoutes,
   },
 ];
 
