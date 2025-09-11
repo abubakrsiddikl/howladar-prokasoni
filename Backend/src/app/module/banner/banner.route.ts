@@ -27,6 +27,11 @@ router.get("/all-banners", BannerControllers.getAllBanners);
 // active
 router.get("/active-banners", BannerControllers.getActiveBanners);
 
+// single
+router.get("/:id", BannerControllers.getSingleBanner);
+
+
+
 // update
 router.patch(
   "/update/:id",

@@ -11,6 +11,8 @@ export type {
 } from "./order.type";
 export type { IGenre } from "./genre.type";
 
+export type { IBanner, IBannerCreatePayload,IBannerUpdatePayload } from "./banner.type";
+
 export interface TMeta {
   total: number;
   totalPage: number;

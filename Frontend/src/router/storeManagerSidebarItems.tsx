@@ -1,4 +1,5 @@
 import Logout from "@/pages/Authentication/Logout";
+import AddBanner from "@/pages/StoreManager/AddBanner";
 import AddBook from "@/pages/StoreManager/AddBook";
 import AddBookGenre from "@/pages/StoreManager/AddBookGenre";
 import AllOrders from "@/pages/StoreManager/AllOrders";
@@ -18,10 +19,15 @@ export const storeManagerSidebarItems: ISidebarItem[] = [
         url: "/store-manager/book/genre",
         component: AddBookGenre,
       },
-            {
+      {
         title: "All Orders",
         url: "/store-manager/book/all-orders",
         component: AllOrders,
+      },
+      {
+        title: "Add Banner",
+        url: "/store-manager/banner/add",
+        component: AddBanner,
       },
       {
         title: "Logout",

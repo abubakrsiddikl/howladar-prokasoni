@@ -39,6 +39,16 @@ const getActiveBanners = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSingleBanner = catchAsync(async (req: Request, res: Response) => {
+  const banner = await BannerServices.getBannerById(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Banner retrieved successfully",
+    data: banner,
+  });
+});
+
 const updateBanner = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const payload: IBanner = {
@@ -68,6 +78,7 @@ export const BannerControllers = {
   createBanner,
   getAllBanners,
   getActiveBanners,
+  getSingleBanner,
   updateBanner,
   deleteBanner,
 };
