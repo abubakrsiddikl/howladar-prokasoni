@@ -13,7 +13,9 @@ export default function CheckoutPage() {
   const [createOrder] = useCreateOrderMutation();
   const { cart, clearCart } = useCart();
   const { data: user } = useUserProfileQuery(undefined);
+
   const navigate = useNavigate();
+
 
   const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod>("COD");
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,7 @@ export default function CheckoutPage() {
       };
 
       const res = await createOrder(payload).unwrap();
-      
+
       if (res.success) {
         toast.success("🎉 Your order has been saved successfully");
         clearCart();

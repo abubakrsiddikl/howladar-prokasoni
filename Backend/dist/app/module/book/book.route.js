@@ -24,7 +24,9 @@ router.get("/genre/:genre", book_controller_1.BookControllers.getBookByGenre);
 router.patch("/:id", multer_config_1.multerUpload.fields([
     { name: "file", maxCount: 1 },
     { name: "files", maxCount: 5 },
-]), (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.STORE_MANAGER), (0, validateRequest_1.validateRequest)(book_validation_1.updateBookZodSchema), book_controller_1.BookControllers.updateBook);
+]), (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.STORE_MANAGER), 
+// validateRequest(updateBookZodSchema),
+book_controller_1.BookControllers.updateBook);
 // delete a book
 router.delete("/:id", (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.STORE_MANAGER), book_controller_1.BookControllers.deleteBook);
 exports.BookRoutes = router;

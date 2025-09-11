@@ -11,19 +11,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueryBuilder = void 0;
 const constants_1 = require("../constants");
+const genre_model_1 = require("../module/genre/genre.model");
 class QueryBuilder {
     constructor(modelQuery, query) {
         this.modelQuery = modelQuery;
         this.query = query;
     }
     filter() {
-        const filter = Object.assign({}, this.query);
-        for (const field of constants_1.excludeField) {
-            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-            delete filter[field];
-        }
-        this.modelQuery = this.modelQuery.find(filter); // Tour.find().find(filter)
-        return this;
+        return __awaiter(this, void 0, void 0, function* () {
+            const filter = Object.assign({}, this.query);
+            if (filter.genre) {
+                const genreDoc = yield genre_model_1.Genre.findOne({
+                    name: { $regex: filter.genre, $options: "i" },
+                });
+                if (genreDoc) {
+                    filter.genre = genreDoc._id;
+                }
+                else {
+                    delete filter.genre;
+                }
+            }
+            for (const field of constants_1.excludeField) {
+                // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+                delete filter[field];
+            }
+            this.modelQuery = this.modelQuery.find(filter); // Tour.find().find(filter)
+            return this;
+        });
     }
     search(searchableField) {
         const searchTerm = this.query.searchTerm || "";

@@ -14,6 +14,7 @@ var PaymentStatus;
 var OrderStatus;
 (function (OrderStatus) {
     OrderStatus["Processing"] = "Processing";
+    OrderStatus["Approved"] = "Approved";
     OrderStatus["Shipped"] = "Shipped";
     OrderStatus["Delivered"] = "Delivered";
     OrderStatus["Cancelled"] = "Cancelled";

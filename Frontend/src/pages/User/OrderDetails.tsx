@@ -32,7 +32,7 @@ export default function OrderDetails() {
     isError,
   } = useGetSingleOrderQuery(id as string);
   const [updateOrderStatus] = useUpdateOrderStatusMutation();
-  
+
   useEffect(() => {
     if (order?.currentStatus) {
       setOrderStatus(order.currentStatus);
@@ -46,7 +46,7 @@ export default function OrderDetails() {
         ❌ অর্ডার ডিটেইলস আনা যায়নি।
       </p>
     );
-
+  console.log(order);
   // totals
   const subTotal = order.totalAmount - 120;
   // handle order status update
@@ -125,15 +125,26 @@ export default function OrderDetails() {
                   />
                   <div className="flex-grow">
                     <p className="font-semibold">{item.book.title}</p>
-                    <p className="text-sm text-gray-600">
-                      Price: Tk. {item.book.price.toLocaleString()}
-                    </p>
+                    {item.book.discount > 0 ? (
+                      <>
+                        <p className="text-[#4d3633] font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
+                          Tk. {item.book.price}
+                        </p>
+                        <p className="text-gray-400 line-through text-xs sm:text-sm md:text-sm lg:text-base">
+                          Tk. {item.book.price + item.book.discountedPrice}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-[#4d3633] font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
+                        Tk. {item.book.price}
+                      </p>
+                    )}
                     <p className="text-sm text-gray-600">
                       Qty: {item.quantity}
                     </p>
                   </div>
                   <p className="font-bold">
-                    Tk. {(item.quantity * item.book.price).toLocaleString()}
+                    Tk. {item.quantity * item.book.price}
                   </p>
                 </div>
                 <div className="border-t border-dashed border-[#708dbf] my-4" />
@@ -194,8 +205,8 @@ export default function OrderDetails() {
           <h2 className="text-lg font-bold mb-4">Update Order Status</h2>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Select
-              // defaultValue={order.currentStatus}
-              value={order.currentStatus}
+              defaultValue={order.currentStatus}
+              // value={order.currentStatus}
               onValueChange={(v) => setOrderStatus(v)}
             >
               <SelectTrigger className="w-[200px]">
@@ -207,6 +218,7 @@ export default function OrderDetails() {
                 <SelectItem value="Shipped">Shipped</SelectItem>
                 <SelectItem value="Delivered">Delivered</SelectItem>
                 <SelectItem value="Cancelled">Cancelled</SelectItem>
+                <SelectItem value="Returned">Returned</SelectItem>
               </SelectContent>
             </Select>
             <Button

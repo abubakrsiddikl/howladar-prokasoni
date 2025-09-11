@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 export default function CartItemCard({ item }: { item: ICartItem }) {
   const { updateQuantity, removeFromCart } = useCart();
-
+ 
   return (
     <tr className="border-b ">
       {/* Details */}
@@ -25,7 +25,7 @@ export default function CartItemCard({ item }: { item: ICartItem }) {
             {item.book.title}
           </Link>
           <p className="text-sm text-gray-500">N/A</p>
-          <p>
+          <>
             {(item.book.discount as number) > 0 ? (
               <>
                 <p className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
@@ -40,7 +40,7 @@ export default function CartItemCard({ item }: { item: ICartItem }) {
                 ৳ {item.book.price}
               </p>
             )}
-          </p>
+          </>
         </div>
       </td>
 

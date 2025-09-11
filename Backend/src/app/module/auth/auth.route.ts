@@ -15,11 +15,11 @@ router.post("/logout", AuthControllers.logout);
 router.get(
   "/google",
   async (req: Request, res: Response, next: NextFunction) => {
-    passport.authenticate("google", { scope: ["profile", "email"] })(
-      req,
-      res,
-      next
-    );
+    const redirect = req.query.redirect || "/";
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      state: redirect as string,
+    })(req, res, next);
   }
 );
 
@@ -31,10 +31,5 @@ router.get(
   }),
   AuthControllers.googleCallbackController
 );
-
-
-
-
-
 
 export const AuthRoutes = router;

@@ -7,6 +7,7 @@ const auth_route_1 = require("../module/auth/auth.route");
 const book_route_1 = require("../module/book/book.route");
 const cart_route_1 = require("../module/cart/cart.route");
 const order_route_1 = require("../module/order/order.route");
+const genre_route_1 = require("../module/genre/genre.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -16,6 +17,10 @@ const moduleRoutes = [
     {
         path: "/auth",
         route: auth_route_1.AuthRoutes,
+    },
+    {
+        path: "/genre",
+        route: genre_route_1.GenreRoutes,
     },
     {
         path: "/book",

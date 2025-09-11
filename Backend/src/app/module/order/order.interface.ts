@@ -16,6 +16,7 @@ export enum OrderStatus {
   Shipped = "Shipped",
   Delivered = "Delivered",
   Cancelled = "Cancelled",
+  Returned = "Returned",
 }
 
 export interface IOrderStatusLog {
@@ -52,5 +53,5 @@ export interface IOrder {
   orderStatusLog: IOrderStatusLog[];
   currentStatus: string;
   orderId: string;
-  totalDiscountedPrice:number;
+  totalDiscountedPrice: number;
 }

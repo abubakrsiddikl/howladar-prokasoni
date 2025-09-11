@@ -18,6 +18,7 @@ export function GenreSwiper({ books }: { books: IBook[] }) {
         spaceBetween={10}
         breakpoints={{
           0: { slidesPerView: 2 }, // Mobile
+          500:{slidesPerView: 3},
           768: { slidesPerView: 4 }, // md
           1024: { slidesPerView: 4 }, // lg
         }}

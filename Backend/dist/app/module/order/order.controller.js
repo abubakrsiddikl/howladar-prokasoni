@@ -76,11 +76,11 @@ const getSingleOrder = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void
     });
 }));
 const updateOrderStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const orderId = req.params.orderId;
+    const orderId = req.params.id;
     if (!orderId) {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Order ID is required");
     }
-    const updatedOrder = yield order_service_1.OrderService.updateOrderStatus(orderId, req.body.orderStatus);
+    const updatedOrder = yield order_service_1.OrderService.updateOrderStatus(orderId, req.body.status);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,

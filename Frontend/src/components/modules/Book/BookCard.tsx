@@ -17,7 +17,7 @@ export default function BookCard({
   const { addToCart } = useCart();
   const handleAddToCart = async () => {
     const cartItem: ICartItem = {
-      book: { _id, title, coverImage, price },
+      book: { _id, title, coverImage, price,discount,discountedPrice },
       quantity: 1,
     };
     await addToCart(cartItem);
@@ -25,7 +25,7 @@ export default function BookCard({
 
   return (
     <div>
-      <div className="bg-white  hover:shadow-2xl transition-shadow duration-300 rounded-lg flex flex-col border  md:hover:border-[#ff8600] sm:border-[#ff8600]">
+      <div className="bg-white  hover:shadow-2xl transition-shadow duration-300 rounded-lg flex flex-col border  md:hover:border-[#ff8600] border-[#ff8600]">
         {/* image wrapper */}
         <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
           <img
@@ -36,7 +36,7 @@ export default function BookCard({
 
           {/* discount sticker */}
           {discount > 0 && (
-            <div className="absolute top-2 left-3 bg-red-600 text-white text-xs sm:text-sm md:text-sm font-bold px-2 rounded-full shadow-lg tracking-wider">
+            <div className="absolute top-2 left-3 sm:left-3 md:left-3 bg-red-600 text-white text-xs sm:text-sm md:text-sm font-bold px-2 rounded-full shadow-lg tracking-wider">
               {discount}%<br /> OFF
             </div>
           )}

@@ -26,6 +26,7 @@ export default function LoginForm({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [login] = useLoginMutation();
   const navigate = useNavigate();
+
   const form = useForm();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -39,13 +40,12 @@ export default function LoginForm({
         // } else {
         //   navigate("/", { replace: true });
         // }
-        navigate("/")
+
+        navigate("/", { replace: true });
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.error(err);
-
       if (err.data.message === "Password does not match") {
         toast.error("Invalid credentials");
       }

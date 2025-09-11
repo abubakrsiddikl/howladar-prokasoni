@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Order } from "./order.model";
-import { IOrder, IOrderStatusLog, OrderStatus } from "./order.interface";
+import {
+  IOrder,
+  IOrderStatusLog,
+  OrderStatus,
+  PaymentStatus,
+} from "./order.interface";
 import { Book } from "../book/book.model";
 import AppError from "../../errorHelper/AppError";
 import httpStatus from "http-status-codes";
@@ -9,6 +14,8 @@ import { Role } from "../user/user.interface";
 import { generateOrderId } from "../../utils/generateOrderId";
 import { User } from "../user/user.model";
 import { sendEmail } from "../../utils/sendEmail";
+import { orderSearchableFields } from "./order.constant";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
   const session = await Book.startSession();
@@ -139,7 +146,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
 
 // get order by customer id
 const getMyOrders = async (decodedToken: JwtPayload) => {
-  const orders = await Order.find({ user: decodedToken?.userId }).populate(
+  const orders = await Order.find({ user: decodedToken?.userId }).sort("-createdAt").populate(
     "items.book",
     "title coverImage"
   );
@@ -147,8 +154,18 @@ const getMyOrders = async (decodedToken: JwtPayload) => {
 };
 
 // get all order
-const getAllOrders = async () => {
-  return await Order.find().populate("user").populate("items.book");
+const getAllOrders = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Order.find(), query);
+
+  await queryBuilder.filter();
+  queryBuilder.search(orderSearchableFields).sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build().populate("user", "-password").populate("items.book"),
+    queryBuilder.getMeta(),
+  ]);
+
+  return { data, meta };
 };
 
 const getTraceOrder = async (orderId: string) => {
@@ -163,33 +180,73 @@ const getSingleOrder = async (orderId: string) => {
 };
 
 // Update order status
+// Allowed status transitions
+const allowedStatusFlow: Record<OrderStatus, OrderStatus[]> = {
+  Processing: [OrderStatus.Approved, OrderStatus.Cancelled],
+  Approved: [OrderStatus.Shipped, OrderStatus.Cancelled],
+  Shipped: [OrderStatus.Delivered],
+  Delivered: [OrderStatus.Returned],
+  Cancelled: [],
+  Returned: [],
+};
+
+// Status এর note
+const statusNotes: Record<OrderStatus, string> = {
+  Processing: "অর্ডারটি গ্রহণ করা হয়েছে। কনফার্মেশনের জন্য অপেক্ষমান।",
+  Approved: "অর্ডারটি প্রস্তুত করা হচ্ছে",
+  Shipped: "অর্ডারটি কুরিয়ারের কাছে দেয়া হয়েছে",
+  Delivered: "অর্ডারটি ডেলিভারি দেয়া হয়েছে",
+  Cancelled: "অর্ডারটি বাতিল করা হয়েছে",
+  Returned: "অর্ডারটি কাস্টমার দ্বারা ফেরত দেয়া হয়েছে",
+};
+
+// Update order status function
 const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
   const order = await Order.findById(orderId);
   if (!order) {
-    throw new AppError(httpStatus.NOT_FOUND, "Order not found");
+    throw new AppError(httpStatus.NOT_FOUND, "অর্ডারটি পাওয়া যায়নি");
   }
+
   if (order.currentStatus === newStatus) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `Order status already ${newStatus} `
+      `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`
     );
   }
-  let note = "";
-  if (newStatus === OrderStatus.Approved) {
-    note = "অর্ডারটি প্রস্তুত করা হচ্ছে";
-  } else if (newStatus === OrderStatus.Shipped) {
-    note = "অর্ডারটি কুরিয়ারের কাছে দেয়ার জন্য প্রস্তুত হয়েছে";
-  } else if (newStatus === OrderStatus.Delivered) {
-    note = "অর্ডারটি ডেলিভারি দেয়া হয়েছে";
-  } else if (newStatus === OrderStatus.Cancelled) {
-    note = "অর্ডারটি Cancelled করা হয়েছে ";
+
+  // Check duplicate in log
+  const isDuplicate = order.orderStatusLog.some(
+    (item) => item.status === newStatus
+  );
+  if (isDuplicate) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`
+    );
   }
+
+  // Check allowed status flow
+  const allowedNextStatus =
+    allowedStatusFlow[order.currentStatus as OrderStatus];
+  if (!allowedNextStatus.includes(newStatus)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `অর্ডারের স্ট্যাটাস ${order.currentStatus} থেকে ${newStatus} সম্ভব নয়`
+    );
+  }
+
+  // Update status & add note
   order.currentStatus = newStatus;
+  if (newStatus === OrderStatus.Delivered) {
+    order.paymentStatus = PaymentStatus.Paid;
+  }
+
   order.orderStatusLog.push({
     status: newStatus,
-    note: note,
+    note: statusNotes[newStatus],
     timestamp: new Date(),
   });
+
   await order.save();
   return order;
 };

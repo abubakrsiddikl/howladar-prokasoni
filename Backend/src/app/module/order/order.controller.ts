@@ -35,12 +35,15 @@ const getMyOrders = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
-  const orders = await OrderService.getAllOrders();
+  const orders = await OrderService.getAllOrders(
+    req.query as Record<string, string>
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Orders retrieved successfully",
-    data: orders,
+    data: orders.data,
+    meta: orders.meta,
   });
 });
 

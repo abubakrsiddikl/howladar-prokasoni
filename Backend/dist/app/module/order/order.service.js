@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const order_model_1 = require("./order.model");
+const order_interface_1 = require("./order.interface");
 const book_model_1 = require("../book/book.model");
 const AppError_1 = __importDefault(require("../../errorHelper/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
@@ -23,6 +24,7 @@ const generateOrderId_1 = require("../../utils/generateOrderId");
 const user_model_1 = require("../user/user.model");
 const sendEmail_1 = require("../../utils/sendEmail");
 const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const session = yield book_model_1.Book.startSession();
     try {
         session.startTransaction();
@@ -43,8 +45,17 @@ const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0,
             // Add to total
             totalAmount += book.price * item.quantity;
         }
+        const initialOrderStatusLog = {
+            status: order_interface_1.OrderStatus.Processing,
+            location: "N/A",
+            note: "অর্ডারটি গ্রহণ করা হয়েছে। কনফার্মেশনের জন্য অপেক্ষমান।",
+            timestamp: new Date(),
+        };
+        // delivery charge include of totalAmount
+        const deliveryCharge = (_a = payload.deliveryCharge) !== null && _a !== void 0 ? _a : 120;
+        const subTotal = totalAmount + deliveryCharge;
         // Prepare order data
-        const orderData = Object.assign(Object.assign({}, payload), { user: decodedToken.userId, totalAmount, orderId: yield (0, generateOrderId_1.generateOrderId)() });
+        const orderData = Object.assign(Object.assign({}, payload), { user: decodedToken.userId, totalAmount: subTotal, orderStatusLog: [initialOrderStatusLog], orderId: yield (0, generateOrderId_1.generateOrderId)() });
         // Create order within transaction
         const [order] = yield order_model_1.Order.create([orderData], { session });
         // Update stock after order creation
@@ -117,7 +128,7 @@ const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield order_model_1.Order.find().populate("user").populate("items.book");
 });
 const getTraceOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield order_model_1.Order.findOne({ orderId }).select("orderStatus createdAt -_id");
+    return yield order_model_1.Order.findOne({ orderId }).select("orderStatusLog createdAt -_id");
 });
 const getSingleOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield order_model_1.Order.findOne({ orderId })
@@ -125,9 +136,35 @@ const getSingleOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* 
         .populate("items.book");
 });
 // Update order status
-const updateOrderStatus = (orderId, status) => __awaiter(void 0, void 0, void 0, function* () {
-    const orderStatus = yield order_model_1.Order.findByIdAndUpdate(orderId, { orderStatus: status }, { new: true });
-    return orderStatus;
+const updateOrderStatus = (orderId, newStatus) => __awaiter(void 0, void 0, void 0, function* () {
+    const order = yield order_model_1.Order.findById(orderId);
+    if (!order) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "Order not found");
+    }
+    if (order.currentStatus === newStatus) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `Order status already ${newStatus} `);
+    }
+    let note = "";
+    if (newStatus === order_interface_1.OrderStatus.Approved) {
+        note = "অর্ডারটি প্রস্তুত করা হচ্ছে";
+    }
+    else if (newStatus === order_interface_1.OrderStatus.Shipped) {
+        note = "অর্ডারটি কুরিয়ারের কাছে দেয়ার জন্য প্রস্তুত হয়েছে";
+    }
+    else if (newStatus === order_interface_1.OrderStatus.Delivered) {
+        note = "অর্ডারটি ডেলিভারি দেয়া হয়েছে";
+    }
+    else if (newStatus === order_interface_1.OrderStatus.Cancelled) {
+        note = "অর্ডারটি Cancelled করা হয়েছে ";
+    }
+    order.currentStatus = newStatus;
+    order.orderStatusLog.push({
+        status: newStatus,
+        note: note,
+        timestamp: new Date(),
+    });
+    yield order.save();
+    return order;
 });
 // Update payment status
 const updatePaymentStatus = (orderId, paymentStatus) => __awaiter(void 0, void 0, void 0, function* () {

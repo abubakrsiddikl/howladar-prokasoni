@@ -56,7 +56,7 @@ const googleCallbackController = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
     let redirectTo = req.query.state ? (req.query.state as string) : "";
-
+    console.log(req.query.state)
     if (redirectTo.startsWith("/")) {
       redirectTo = redirectTo.slice(1);
     }
@@ -69,7 +69,7 @@ const googleCallbackController = catchAsync(
     const tokenInfo = createUserToken(user);
 
     setAuthCookie(res, tokenInfo);
-
+    
     res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`);
   }
 );

@@ -38,7 +38,7 @@ export function useCart() {
   // guest cart
   const guestCart = useSelector((s: RootState) => s.guestCart.items);
 
-  // 🔥 Merge localCart → serverCart যখন user login করে
+  //  Merge localCart → serverCart যখন user login করে
   useEffect(() => {
     const syncGuestCart = async () => {
       if (user && guestCart.length > 0) {
@@ -62,6 +62,7 @@ export function useCart() {
 
   // wrapper methods
   const addToCart = async (item: ICartItem) => {
+    
     if (user) {
       const res = await addToCartServer({
         bookId: item.book._id as string,

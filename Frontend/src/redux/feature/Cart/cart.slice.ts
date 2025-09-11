@@ -1,5 +1,6 @@
 import type { ICartItem } from "@/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { toast } from "sonner";
 
 type CartState = { items: ICartItem[] };
 
@@ -30,11 +31,12 @@ const cartSlice = createSlice({
   reducers: {
     addLocal: (state, action: PayloadAction<ICartItem>) => {
       const item = action.payload;
-      const exist = state.items.find((i) => i._id === item._id);
+      const exist = state.items.find((i) => i.book._id === item.book._id);
       if (exist) {
         exist.quantity += item.quantity;
       } else {
         state.items.push(item);
+         toast.success("Item added to cart .")
       }
       saveToLS(state.items);
     },

@@ -11,13 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Book = void 0;
 const mongoose_1 = require("mongoose");
-const book_interface_1 = require("./book.interface");
 const bookSchema = new mongoose_1.Schema({
     title: { type: String, required: true, trim: true },
     author: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
     stock: { type: Number, required: true, min: 0 },
-    genre: { type: String, enum: Object.values(book_interface_1.Genre), required: true },
+    genre: { type: mongoose_1.Schema.Types.ObjectId, ref: "Genre", required: true },
     discount: { type: Number, min: 0, max: 100 },
     // If discount is applied, this field will be calculated
     // and stored in the database.
@@ -26,6 +25,7 @@ const bookSchema = new mongoose_1.Schema({
     coverImage: { type: String, required: true },
     previewImages: [{ type: String }],
     available: { type: Boolean, default: true },
+    publisher: { type: String, required: false },
     slug: { type: String, unique: true, trim: true },
 }, {
     timestamps: true,

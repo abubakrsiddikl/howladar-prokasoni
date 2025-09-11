@@ -23,7 +23,7 @@ exports.createOrderSchema = zod_1.z.object({
     paymentStatus: zod_1.z.nativeEnum(order_interface_1.PaymentStatus).default(order_interface_1.PaymentStatus.Pending),
 });
 exports.updateOrderStatusZodSchema = zod_1.z.object({
-    orderStatus: zod_1.z.nativeEnum(order_interface_1.OrderStatus),
+    status: zod_1.z.nativeEnum(order_interface_1.OrderStatus),
 });
 exports.updatePaymentStatusZodSchema = zod_1.z.object({
     paymentStatus: zod_1.z.nativeEnum(order_interface_1.PaymentStatus),

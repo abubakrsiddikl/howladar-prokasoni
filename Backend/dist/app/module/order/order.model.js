@@ -3,10 +3,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Order = void 0;
 const mongoose_1 = require("mongoose");
 const order_interface_1 = require("./order.interface");
+const orderStatusLogSchema = new mongoose_1.Schema({
+    status: {
+        type: String,
+        enum: Object.values(order_interface_1.OrderStatus),
+        required: true,
+    },
+    location: {
+        type: String,
+        trim: true,
+    },
+    note: {
+        type: String,
+        trim: true,
+    },
+    updatedBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now,
+    },
+}, { _id: false });
+// order item schema
 const orderItemSchema = new mongoose_1.Schema({
     book: { type: mongoose_1.Schema.Types.ObjectId, ref: "Book", required: true },
     quantity: { type: Number, required: true, min: 1 },
 }, { _id: false });
+// shipping schema
 const shippingInfoSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
@@ -32,11 +57,10 @@ const orderSchema = new mongoose_1.Schema({
         default: order_interface_1.PaymentStatus.Pending,
     },
     totalAmount: { type: Number, required: true, min: 0 },
-    orderStatus: {
-        type: String,
-        enum: Object.values(order_interface_1.OrderStatus),
-        default: order_interface_1.OrderStatus.Processing,
-    },
+    deliveryCharge: { type: Number, default: 120 },
+    orderStatusLog: [orderStatusLogSchema],
+    currentStatus: { type: String, default: order_interface_1.OrderStatus.Processing },
     orderId: { type: String, required: true, unique: true },
+    totalDiscountedPrice: { type: Number, required: true, default: 0 },
 }, { timestamps: true });
 exports.Order = (0, mongoose_1.model)("Order", orderSchema);

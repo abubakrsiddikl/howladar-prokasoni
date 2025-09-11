@@ -3,14 +3,26 @@ import StoreManagerBooksTable from "../../components/modules/StoreManager/StoreM
 import {
   useDeleteSingleBookMutation,
   useGetAllBookQuery,
-  
 } from "@/redux/feature/Book/book.api";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import Swal from "sweetalert2";
+import { useState } from "react";
 
 export default function AddBook() {
-  const { data: books } = useGetAllBookQuery(undefined);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+  const { data: books } = useGetAllBookQuery({
+    page: currentPage,
+    limit: limit,
+  });
   const [deleteBook] = useDeleteSingleBookMutation();
-  
 
   const handleDelete = (id: string, name: string) => {
     Swal.fire({
@@ -35,6 +47,8 @@ export default function AddBook() {
       }
     });
   };
+  const totalPage = books?.meta?.totalPage || 1;
+
   return (
     <div>
       <div className="flex justify-end mb-2">
@@ -47,6 +61,49 @@ export default function AddBook() {
           onDelete={handleDelete}
         ></StoreManagerBooksTable>
       </div>
+      {totalPage > 1 && (
+        <div className="flex justify-end mt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setCurrentPage((prv) => prv - 1)}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              <div className="flex">
+                {Array.from({ length: totalPage }, (_, index) => index + 1).map(
+                  (page) => (
+                    <PaginationItem
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      <PaginationLink isActive={currentPage === page}>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+              </div>
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setCurrentPage((prv) => prv + 1)}
+                  className={
+                    currentPage === totalPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

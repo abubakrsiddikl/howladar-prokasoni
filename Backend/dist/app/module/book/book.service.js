@@ -19,8 +19,14 @@ const book_model_1 = require("./book.model");
 const book_constants_1 = require("./book.constants");
 const QueryBuilder_1 = require("../../utils/QueryBuilder");
 const cloudinary_config_1 = require("../../config/cloudinary.config");
+const cart_model_1 = require("../cart/cart.model");
+const order_model_1 = require("../order/order.model");
 // create book
 const createBook = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const existingBook = yield book_model_1.Book.findOne({ title: payload.title });
+    if (existingBook) {
+        throw new AppError_1.default(401, `${payload.title} এই বইটি পোস্ট করা আছে . `);
+    }
     if (payload.discount) {
         const discount = payload.discount;
         if (discount < 0 || discount > 100) {
@@ -39,20 +45,13 @@ const createBook = (payload) => __awaiter(void 0, void 0, void 0, function* () {
 // get all book
 const getAllBook = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const queryBuilder = new QueryBuilder_1.QueryBuilder(book_model_1.Book.find(), query);
-    const books = queryBuilder
-        .search(book_constants_1.bookSearchableFields)
-        .filter()
-        .sort()
-        .paginate();
-    // const meta = await queryBuilder.getMeta();
+    yield queryBuilder.filter();
+    queryBuilder.search(book_constants_1.bookSearchableFields).sort().paginate();
     const [data, meta] = yield Promise.all([
-        books.build(),
+        queryBuilder.build().populate("genre", "name"),
         queryBuilder.getMeta(),
     ]);
-    return {
-        data,
-        meta,
-    };
+    return { data, meta };
 });
 // get single book with slug
 const getSingleBook = (slug) => __awaiter(void 0, void 0, void 0, function* () {
@@ -114,10 +113,19 @@ const deleteBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isBookExist) {
         throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Book Not Found");
     }
-    // delete coverImage
+    // 1. delete coverImage from cloudinary
     (0, cloudinary_config_1.deleteImageFromCLoudinary)(isBookExist.coverImage);
-    // delete preview image
+    // 2. delete preview images from cloudinary
     (_a = isBookExist.previewImages) === null || _a === void 0 ? void 0 : _a.map((img) => (0, cloudinary_config_1.deleteImageFromCLoudinary)(img));
+    // 3. remove book references from OrderItems
+    yield order_model_1.Order.updateMany({}, {
+        $pull: {
+            items: { book: isBookExist._id },
+        },
+    });
+    // 4. remove book references from CartItems
+    yield cart_model_1.Cart.deleteMany({ book: isBookExist._id });
+    // 5. finally delete the book
     yield book_model_1.Book.findByIdAndDelete(id);
     return isBookExist;
 });
