@@ -46,7 +46,7 @@ export default function OrderDetails() {
         ❌ অর্ডার ডিটেইলস আনা যায়নি।
       </p>
     );
-  console.log(order);
+ 
   // totals
   const subTotal = order.totalAmount - 120;
   // handle order status update

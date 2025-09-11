@@ -9,6 +9,15 @@ const getStats = async () => {
   const totalBook = await Book.countDocuments();
 
   // Count orders by currentStatus
+  const allStatuses = [
+    "Processing",
+    "Approved",
+    "Shipped",
+    "Delivered",
+    "Cancelled",
+    "Returned",
+  ];
+
   const statusStats = await Order.aggregate([
     {
       $group: {
@@ -18,6 +27,12 @@ const getStats = async () => {
     },
   ]);
 
+  // Map results to ensure all statuses are present
+  const currentStatusByCount = allStatuses.map((status) => {
+    const stat = statusStats.find((s) => s._id === status);
+    return { status, count: stat ? stat.count : 0 };
+  });
+
   // Total orders
   const totalOrders = await Order.countDocuments();
 
@@ -25,7 +40,7 @@ const getStats = async () => {
     totalOrders,
     totalUsers,
     totalBook,
-    statusStats: statusStats.map((s) => ({ status: s._id, count: s.count })),
+    statusStats: currentStatusByCount,
   };
 };
 

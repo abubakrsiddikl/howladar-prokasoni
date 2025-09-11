@@ -5,10 +5,10 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
+
 export default function SingleImageUploader({ onChange }: any) {
   const maxSizeMB = 2;
   const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
-
   const [
     { files, isDragging, errors },
     {
@@ -25,6 +25,7 @@ export default function SingleImageUploader({ onChange }: any) {
     maxSize,
   });
   const previewUrl = files[0]?.preview || null;
+  
   useEffect(() => {
     if (files.length > 0) {
       onChange(files[0]?.file);

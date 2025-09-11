@@ -10,7 +10,7 @@ import { store } from "./redux/store";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReactProvider store={store}>
-      <RouterProvider router={router} />,
+      <RouterProvider router={router} />
     </ReactProvider>
   </StrictMode>
 );

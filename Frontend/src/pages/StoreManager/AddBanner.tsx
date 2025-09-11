@@ -1,5 +1,6 @@
 import BannerModal from "@/components/modules/StoreManager/BannerModal";
 import StoreManagerBannerTable from "@/components/modules/StoreManager/StoreManagerBannerTable";
+import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useGetAllBannerQuery } from "@/redux/feature/Banner/banner.api";
 import { useState } from "react";
@@ -15,6 +16,7 @@ export default function AddBanner() {
     <div>
       {/* Add Banner Modal */}
       <div>
+        <Button onClick={() => setOpen(true)}>Add Banner</Button>
         <BannerModal open={open} setOpen={setOpen}></BannerModal>
       </div>
       {/* Banner Table */}

@@ -22,7 +22,7 @@ const SearchInput = () => {
       {/*  Shadcn Input */}
       <Input
         type="text"
-        placeholder="🔍 খুঁজুন বইয়ের নাম, লেখক বা genre"
+        placeholder="🔍 বইয়ের শিরোনাম, লেখক বা প্রকাশক লিখুন"
         className="w-full"
         value={search}
         onChange={(e) => setSearch(e.target.value)}

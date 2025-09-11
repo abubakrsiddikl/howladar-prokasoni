@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -37,7 +36,6 @@ import {
 
 interface BannerModalProps {
   bannerData?: IBannerUpdatePayload;
-  triggerText?: string;
   onSuccess?: () => void;
   open: boolean;
   setOpen: (value: boolean) => void;
@@ -49,20 +47,18 @@ const bannerSchema = z.object({
   active: z.boolean(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  image: z.any(), // File | string
+  image: z.any(),
 });
 
 type BannerFormValues = z.infer<typeof bannerSchema>;
 
 export default function BannerModal({
   bannerData,
-  triggerText = "Add Banner",
   open,
   setOpen,
   onSuccess,
 }: BannerModalProps) {
   const [image, setImage] = useState<File | string | null>(null);
-  // const [open, setOpen] = useState(false);
   const [createBanner, { isLoading: creating }] = useCreateBannerMutation();
   const [updateBanner, { isLoading: updating }] = useUpdateBannerMutation();
 
@@ -116,9 +112,6 @@ export default function BannerModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>{triggerText}</Button>
-      </DialogTrigger>
       <DialogContent className="max-w-lg w-full">
         <DialogHeader>
           <DialogTitle>
@@ -230,7 +223,15 @@ export default function BannerModal({
               <FormLabel>
                 Banner Image <small className="font-bold">(Max 01 image)</small>
               </FormLabel>
+
               <SingleImageUploader onChange={setImage} defaultFile={image} />
+              {bannerData?.image && !image && (
+                <img
+                  src={bannerData?.image as string}
+                  alt="Current Cover"
+                  className="mt-2 h-24 rounded"
+                />
+              )}
             </div>
 
             <Button type="submit" className="w-full">

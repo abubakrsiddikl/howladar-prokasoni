@@ -92,7 +92,7 @@ const Navbar = () => {
                       className="text-lg font-bold text-white flex items-center gap-2"
                     >
                       <img
-                        src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+                        src="/logo.jpg"
                         className="max-h-6 dark:invert"
                         alt="logo"
                       />
@@ -101,13 +101,9 @@ const Navbar = () => {
 
                   <div className="mt-6 flex flex-col gap-2">
                     {navLink("/", "হোম")}
-                    {navLink("#", "উপন্যাস")}
-                    {navLink("#", "গল্প")}
-                    {navLink("#", "বিজ্ঞান")}
-                    {navLink("#", "ইতিহাস")}
-                    {navLink("#", "জীবনী")}
-                    {navLink("#", "ফ্যান্টাসি")}
-                    {navLink("#", "প্রযুক্তি")}
+                    {navLink("#", "ক্যাটাগরি")}
+                    {navLink("#", " লেখকগণ")}
+                    {navLink("#", " প্রকাশক")}
                     {navLink("/order-track", " অর্ডার ট্র্যাক করুন")}
 
                   </div>

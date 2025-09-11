@@ -235,11 +235,13 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     );
   }
 
+
   // Update status & add note
   order.currentStatus = newStatus;
   if (newStatus === OrderStatus.Delivered) {
     order.paymentStatus = PaymentStatus.Paid;
   }
+   
 
   order.orderStatusLog.push({
     status: newStatus,

@@ -19,6 +19,7 @@ import GoogleLogin from "./GoogleLogin";
 import { useLoginMutation } from "@/redux/feature/Authentication/auth.api";
 // import { role } from "@/constants/role";
 import { useNavigate } from "react-router";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function LoginForm({
   className,
@@ -26,6 +27,7 @@ export default function LoginForm({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [login] = useLoginMutation();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
 
   const form = useForm();
 
@@ -40,7 +42,7 @@ export default function LoginForm({
         // } else {
         //   navigate("/", { replace: true });
         // }
-
+        trackEvent("login", { method: "email" });
         navigate("/", { replace: true });
       }
 

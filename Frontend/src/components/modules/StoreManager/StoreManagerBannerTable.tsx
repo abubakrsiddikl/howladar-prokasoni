@@ -31,11 +31,12 @@ export default function StoreManagerBannerTable({ banners }: Props) {
       skip: !selectedBannerId,
     }
   );
-  console.log(updateBanner);
+  
 
   //   handel banner update
   const handleUpdateBanner = (id: string) => {
     setSelectedBannerId(id);
+    setOpen(true)
   };
   //   handle delete banner
   const handleDeleteBanner = (id: string) => {
@@ -108,7 +109,7 @@ export default function StoreManagerBannerTable({ banners }: Props) {
             open={open}
             setOpen={setOpen}
             bannerData={updateBanner.data || {}}
-            triggerText="Update"
+            
           ></BannerModal>
         </>
       )}

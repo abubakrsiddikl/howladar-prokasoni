@@ -38,6 +38,19 @@ export const bannerApi = baseApi.injectEndpoints({
       }),
     }),
 
+    // get Active Banner
+    // get All Banner
+    getAllActiveBanner: builder.query<
+      IResponse<IBanner[]>,
+      Record<string, unknown> | void
+    >({
+      query: () => ({
+        url: "/banner/active-banners",
+        method: "GET",
+      }),
+      providesTags: ["BANNER"],
+    }),
+
     // update
     updateBanner: builder.mutation<
       IResponse<IBannerUpdatePayload>,
@@ -68,4 +81,5 @@ export const {
   useUpdateBannerMutation,
   useGetAllBannerQuery,
   useGetSingleBannerQuery,
+  useGetAllActiveBannerQuery,
 } = bannerApi;
