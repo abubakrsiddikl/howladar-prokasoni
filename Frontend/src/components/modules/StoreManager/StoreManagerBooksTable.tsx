@@ -12,9 +12,9 @@ import type { IBook } from "@/types";
 import { Link } from "react-router";
 
 
-// import UpdateBookModal from "./UpdateBookModal";
-// import { useGetSingleBookQuery } from "@/redux/feature/Book/book.api";
-// import { useState } from "react";
+import UpdateBookModal from "./UpdateBookModal";
+import { useGetSingleBookQuery } from "@/redux/feature/Book/book.api";
+import { useState } from "react";
 
 interface Props {
   books: IBook[];
@@ -23,21 +23,19 @@ interface Props {
 }
 
 export default function StoreManagerBooksTable({ books, onDelete }: Props) {
-  // const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-  // const [selectedBookSlug, setSelectedBookSlug] = useState<string | null>(null);
-  // const [open, setOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [selectedBookSlug, setSelectedBookSlug] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   // fetch single book only if selectedBookId exists
-  // const { data: updatedBook } = useGetSingleBookQuery(selectedBookSlug!, {
-  //   skip: !selectedBookSlug,
-  // });
+  const { data: updatedBook } = useGetSingleBookQuery(selectedBookSlug!, {
+    skip: !selectedBookSlug,
+  });
   const handleUpdateBook = (slug: string, id: string) => {
-    if (slug || id) {
-      alert("Coming Soon")
-    }
-    // setSelectedBookSlug(slug);
-    // setSelectedBookId(id);
-    // setOpen(true);
+    
+    setSelectedBookSlug(slug);
+    setSelectedBookId(id);
+    setOpen(true);
   };
   return (
     <div className="w-full overflow-x-auto rounded-lg shadow-md">
@@ -108,13 +106,13 @@ export default function StoreManagerBooksTable({ books, onDelete }: Props) {
       </Table>
 
       {/* Update Modal Open */}
-      {/* {selectedBookSlug && selectedBookId && updatedBook?.data && (
+      {selectedBookSlug && selectedBookId && updatedBook?.data && (
         <UpdateBookModal
           book={updatedBook?.data}
           open={open}
           setOpen={setOpen}
         />
-      )} */}
+      )}
     </div>
   );
 }

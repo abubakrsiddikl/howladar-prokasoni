@@ -49,9 +49,9 @@ const bookApi = baseApi.injectEndpoints({
     // update book
     updateBook: builder.mutation<any, { id: string; formData: FormData }>({
       query: ({ id, formData }) => ({
-        url: `/book/${id}`,
+        url: `/book/update/${id}`,
         method: "PATCH",
-        body: formData,
+        data: formData,
       }),
       invalidatesTags: ["BOOK"],
     }),
@@ -59,7 +59,7 @@ const bookApi = baseApi.injectEndpoints({
     // delete a book
     deleteSingleBook: builder.mutation({
       query: (id) => ({
-        url: `/book/${id}`,
+        url: `/book/delete/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["BOOK"],

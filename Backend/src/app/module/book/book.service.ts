@@ -66,6 +66,7 @@ const getBookByGenre = async (genre: string) => {
 
 // update a book
 const updateBook = async (id: string, payload: Partial<IBook>) => {
+  console.log(payload);
   const isBookExist = await Book.findById(id);
   if (!isBookExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "Book Not Found");
@@ -106,7 +107,9 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
 
     payload.previewImages = [...restDBImages, ...updatedPayloadImages];
   }
+
   const updatedBook = await Book.findByIdAndUpdate(id, payload, { new: true });
+
   if (
     payload.deletePreviewImages &&
     payload.deletePreviewImages.length > 0 &&

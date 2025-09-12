@@ -87,19 +87,33 @@ export default function UpdateBookModal({
     try {
       const payload = {
         ...data,
-       deletePreviewImages
+        deletePreviewImages,
+        previewImages:
+        images.length > 0
+          ? undefined // নতুন ইমেজ দিলে backend append করবে
+          : book.previewImages?.filter(
+              (url) => !deletePreviewImages.includes(url)
+            ),
       };
-     console.log(payload)
+     console.log({ payload });
+
       const formData = new FormData();
       formData.append("data", JSON.stringify(payload));
 
-      if (image) formData.append("file", image);
-      if (images.length) {
-        images.forEach((img) => formData.append("files", img as File));
+      if (image instanceof File) {
+        formData.append("file", image);
       }
-   console.log(formData.get("data"))
-   console.log("This is file",formData.get("file"))
-  console.log("This files", formData.getAll("files"))
+      if (images.length) {
+        images.forEach((img) => {
+          if (img instanceof File) {
+            formData.append("files", img);
+          }
+        });
+      }
+
+      console.log(formData.get("data"));
+      console.log("This is file", formData.get("file"));
+      console.log("This files", formData.getAll("files"));
       const res = await updateBook({ id: book._id, formData }).unwrap();
       if (res.success) {
         toast.success("Book updated successfully!");
@@ -203,7 +217,10 @@ export default function UpdateBookModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Genre</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || book?.genre?.name}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Choose genre" />
@@ -292,26 +309,28 @@ export default function UpdateBookModal({
 
               {/* Existing images with delete option */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
-                {book?.previewImages?.map((url: string) => (
-                  <div key={url} className="relative">
-                    <img
-                      src={url}
-                      alt="Preview"
-                      className="rounded-md h-24 w-full object-cover"
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="destructive"
-                      className="absolute top-1 right-1"
-                      onClick={() =>
-                        setDeletePreviewImages((prev) => [...prev, url])
-                      }
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ))}
+                {book?.previewImages
+                  ?.filter((url) => !deletePreviewImages.includes(url))
+                  .map((url: string) => (
+                    <div key={url} className="relative">
+                      <img
+                        src={url}
+                        alt="Preview"
+                        className="rounded-md h-24 w-full object-cover"
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-1 right-1"
+                        onClick={() =>
+                          setDeletePreviewImages((prev) => [...prev, url])
+                        }
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
               </div>
             </div>
 

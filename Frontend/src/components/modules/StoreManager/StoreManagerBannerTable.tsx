@@ -31,12 +31,11 @@ export default function StoreManagerBannerTable({ banners }: Props) {
       skip: !selectedBannerId,
     }
   );
-  
 
   //   handel banner update
   const handleUpdateBanner = (id: string) => {
     setSelectedBannerId(id);
-    setOpen(true)
+    setOpen(true);
   };
   //   handle delete banner
   const handleDeleteBanner = (id: string) => {
@@ -73,13 +72,13 @@ export default function StoreManagerBannerTable({ banners }: Props) {
               </TableCell>
 
               <TableCell className="p-2 border">
-                {banner?.createdAt
-                  ? format(new Date(banner?.createdAt), "MMM dd, yyyy")
+                {banner?.startDate
+                  ? format(new Date(banner?.startDate), "MMM dd, yyyy")
                   : "N/A"}
               </TableCell>
               <TableCell className="p-2 border">
-                {banner?.createdAt
-                  ? format(new Date(banner?.createdAt), "MMM dd, yyyy")
+                {banner?.endDate
+                  ? format(new Date(banner?.endDate), "MMM dd, yyyy")
                   : "N/A"}
               </TableCell>
               {/* Action cell */}
@@ -109,7 +108,6 @@ export default function StoreManagerBannerTable({ banners }: Props) {
             open={open}
             setOpen={setOpen}
             bannerData={updateBanner.data || {}}
-            
           ></BannerModal>
         </>
       )}

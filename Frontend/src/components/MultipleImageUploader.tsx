@@ -30,7 +30,7 @@ export default function MultipleImageUploader({
     multiple: true,
     maxFiles,
   });
-
+ console.log(files)
   useEffect(() => {
     if (files.length > 0) {
       const imageList = files.map((item) => item.file);

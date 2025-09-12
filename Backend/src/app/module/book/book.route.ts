@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateRequest } from "../../middleware/validateRequest";
-import { createBookZodSchema } from "./book.validation";
+import { createBookZodSchema, updateBookZodSchema } from "./book.validation";
 import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../user/user.interface";
 import { BookControllers } from "./book.controller";
@@ -27,18 +27,18 @@ router.get("/:slug", BookControllers.getSingleBook);
 router.get("/genre/:genre", BookControllers.getBookByGenre);
 // update a book
 router.patch(
-  "/:id",
+  "/update/:id",
   multerUpload.fields([
     { name: "file", maxCount: 1 },
-    { name: "files", maxCount: 5 },
+    { name: "files", maxCount: 10 },
   ]),
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
-  // validateRequest(updateBookZodSchema),
+  validateRequest(updateBookZodSchema),
   BookControllers.updateBook
 );
 // delete a book
 router.delete(
-  "/:id",
+  "/delete/:id",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   BookControllers.deleteBook
 );
