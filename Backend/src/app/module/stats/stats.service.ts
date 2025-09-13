@@ -33,6 +33,29 @@ const getStats = async () => {
     return { status, count: stat ? stat.count : 0 };
   });
 
+  // total revenue by payment
+  const allPaymentStatuses = ["Paid", "Pending", "Cancelled"];
+
+  const paymentRevenueStats = await Order.aggregate([
+    {
+      $group: {
+        _id: "$paymentStatus",
+        totalRevenue: { $sum: "$totalAmount" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const paymentStatsWithAll = allPaymentStatuses.map((status) => {
+    const stat = paymentRevenueStats.find((s) => s._id === status);
+    return {
+      status,
+      count: stat ? stat.count : 0,
+      totalAmount: stat ? stat.totalRevenue : 0,
+    };
+  });
+
+
   // Total orders
   const totalOrders = await Order.countDocuments();
 
@@ -41,6 +64,7 @@ const getStats = async () => {
     totalUsers,
     totalBook,
     statusStats: currentStatusByCount,
+    revenue: paymentStatsWithAll,
   };
 };
 

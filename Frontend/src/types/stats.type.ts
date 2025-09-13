@@ -1,21 +1,21 @@
-
-
-
 export interface StatusStat {
-  status: string
-  count: number
+  status: string;
+  count: number;
 }
 
 export interface IStats {
-  totalOrders: number
-  totalUsers: number
-  totalBook: number
-  statusStats: StatusStat[]
+  totalOrders: number;
+  totalUsers: number;
+  totalBook: number;
+  statusStats: StatusStat[];
+  revenue: Revenue[];
 }
 
-
-
-
+export interface Revenue {
+  status: string;
+  count: number;
+  totalAmount: number;
+}
 
 export interface IMonthlyStats {
   year: number;

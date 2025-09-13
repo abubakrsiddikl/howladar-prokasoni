@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 
 // import required modules
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Link } from "react-router";
 
 export default function Banner() {
   const { data: banners, isLoading } = useGetAllActiveBannerQuery();
@@ -39,11 +40,13 @@ export default function Banner() {
       >
         {banners?.data.map((banner) => (
           <SwiperSlide>
-            <img
-              src={banner.image}
-              className="w-full h-[194px] md:h-[300px] rounded-md"
-              alt={banner.title}
-            />
+            <Link to={banner.link ? banner.link : "/"}>
+              <img
+                src={banner.image}
+                className="w-full h-[194px] md:h-[300px] rounded-md"
+                alt={banner.title}
+              />
+            </Link>
           </SwiperSlide>
         ))}
 

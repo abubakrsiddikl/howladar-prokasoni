@@ -8,6 +8,7 @@ export enum PaymentMethod {
 export enum PaymentStatus {
   Paid = "Paid",
   Pending = "Pending",
+  Cancelled = "Cancelled"
 }
 
 export enum OrderStatus {

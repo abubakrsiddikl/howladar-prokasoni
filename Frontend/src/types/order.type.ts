@@ -31,7 +31,7 @@ export interface IOrder {
   items: IOrderItem[];
   shippingInfo: IShippingInfo;
   paymentMethod: IPaymentMethod;
-  paymentStatus: "Paid" | "Pending";
+  paymentStatus: "Paid" | "Pending" | "Cancelled";
   totalAmount: number;
   orderStatusLog: IOrderStatusLog[];
   currentStatus: string;

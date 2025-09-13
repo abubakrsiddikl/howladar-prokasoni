@@ -55,7 +55,7 @@ const getAllBook = async (query: Record<string, string>) => {
 
 // get single book with slug
 const getSingleBook = async (slug: string) => {
-  const book = await Book.findOne({ slug });
+  const book = await Book.findOne({ slug }).populate("genre");
   return book;
 };
 
@@ -66,10 +66,19 @@ const getBookByGenre = async (genre: string) => {
 
 // update a book
 const updateBook = async (id: string, payload: Partial<IBook>) => {
-  console.log(payload);
+  const titleExist = await Book.findOne({
+    title: payload.title,
+    _id: { $ne: id },
+  });
+  if (titleExist) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `${payload.title} এই নামের বই ইতিমধ্যেই আপলোড করা আছে !`
+    );
+  }
   const isBookExist = await Book.findById(id);
   if (!isBookExist) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Book Not Found");
+    throw new AppError(httpStatus.NOT_FOUND, "Book Not Found");
   }
 
   if (payload.coverImage) {
@@ -81,45 +90,43 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
     // if cover image is not provided, keep the existing coverImage
     payload.coverImage = isBookExist.coverImage;
   }
-  if (
-    payload.previewImages &&
-    payload.previewImages.length > 0 &&
-    isBookExist.previewImages &&
-    isBookExist.previewImages.length > 0
-  ) {
-    payload.previewImages = [
-      ...payload.previewImages,
-      ...isBookExist.previewImages,
-    ];
-  }
-  if (
-    payload.deletePreviewImages &&
-    payload.deletePreviewImages.length > 0 &&
-    isBookExist.previewImages &&
-    isBookExist.previewImages.length > 0
-  ) {
-    const restDBImages = isBookExist.previewImages.filter(
-      (imageUrl) => !payload.deletePreviewImages?.includes(imageUrl)
-    );
-    const updatedPayloadImages = (payload.previewImages || [])
-      .filter((imageUrl) => !payload.deletePreviewImages?.includes(imageUrl))
-      .filter((imageUrl) => !restDBImages.includes(imageUrl));
 
-    payload.previewImages = [...restDBImages, ...updatedPayloadImages];
+  // calculate discount price
+  if (payload.discount !== undefined) {
+    const discount = payload.discount;
+
+    if (discount < 0 || discount > 100) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Discount must be between 0 and 100"
+      );
+    }
+
+    // frontend থেকে সবসময় মূল price আসবে
+    const originalPrice = payload.price;
+    if (originalPrice === undefined) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Price is required");
+    }
+    if (originalPrice < 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Price must be a positive number"
+      );
+    }
+
+    // discount amount
+    const discountAmount = (originalPrice * discount) / 100;
+
+    // ডিসকাউন্টের পর দাম
+    const finalPrice = Math.round(originalPrice - discountAmount);
+
+    // DB তে overwrite করো
+    payload.discountedPrice = discountAmount; // কত টাকা ছাড় হলো
+    payload.price = finalPrice; // ডিসকাউন্টের পর দাম
   }
+
 
   const updatedBook = await Book.findByIdAndUpdate(id, payload, { new: true });
-
-  if (
-    payload.deletePreviewImages &&
-    payload.deletePreviewImages.length > 0 &&
-    isBookExist.previewImages &&
-    isBookExist.previewImages.length > 0
-  ) {
-    await Promise.all(
-      payload.deletePreviewImages.map((url) => deleteImageFromCLoudinary(url))
-    );
-  }
   return updatedBook;
 };
 

@@ -1,4 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
+import type { IErrorResponse } from "@/types";
 import { type BaseQueryFn } from "@reduxjs/toolkit/query";
 import { AxiosError, type AxiosRequestConfig } from "axios";
 
@@ -25,7 +26,7 @@ const axiosBaseQuery =
       });
       return { data: result.data };
     } catch (axiosError) {
-      const err = axiosError as AxiosError;
+      const err = axiosError as AxiosError<IErrorResponse>;
       return {
         error: {
           status: err.response?.status,

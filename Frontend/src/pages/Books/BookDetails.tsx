@@ -85,6 +85,8 @@ export default function BookDetails() {
                 </p>
               )}
 
+              <p>প্রকাশক: {book?.publisher ? book?.publisher : "N/A"}</p>
+
               {/* Price & Discount */}
               <div className="flex items-center gap-3 mb-4">
                 {book.discount ? (

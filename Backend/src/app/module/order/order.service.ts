@@ -146,10 +146,9 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
 
 // get order by customer id
 const getMyOrders = async (decodedToken: JwtPayload) => {
-  const orders = await Order.find({ user: decodedToken?.userId }).sort("-createdAt").populate(
-    "items.book",
-    "title coverImage"
-  );
+  const orders = await Order.find({ user: decodedToken?.userId })
+    .sort("-createdAt")
+    .populate("items.book", "title coverImage");
   return orders;
 };
 
@@ -235,13 +234,20 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     );
   }
 
-
   // Update status & add note
   order.currentStatus = newStatus;
   if (newStatus === OrderStatus.Delivered) {
     order.paymentStatus = PaymentStatus.Paid;
   }
-   
+
+  // update order status is Cancelled to update  payment status by Cancelled
+
+  if (
+    newStatus === OrderStatus.Cancelled ||
+    newStatus === OrderStatus.Returned
+  ) {
+    order.paymentStatus = PaymentStatus.Cancelled;
+  }
 
   order.orderStatusLog.push({
     status: newStatus,

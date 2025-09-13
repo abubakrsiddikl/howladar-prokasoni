@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { baseApi } from "@/redux/baseApi";
 import type { IBook, IBookCreate, IResponse } from "@/types";
 
@@ -47,7 +47,10 @@ const bookApi = baseApi.injectEndpoints({
     }),
 
     // update book
-    updateBook: builder.mutation<any, { id: string; formData: FormData }>({
+    updateBook: builder.mutation<
+      IResponse<IBook>,
+      { id: string; formData: FormData }
+    >({
       query: ({ id, formData }) => ({
         url: `/book/update/${id}`,
         method: "PATCH",

@@ -164,11 +164,13 @@ export default function AddBookModal() {
                     <FormLabel>Price</FormLabel>
                     <FormControl>
                       <Input
-                        className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         type="number"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                        // Remove spinner arrows & scroll wheel
+                        onWheel={(e) => e.currentTarget.blur()}
+                        className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -183,11 +185,13 @@ export default function AddBookModal() {
                     <FormLabel>Stock</FormLabel>
                     <FormControl>
                       <Input
-                        className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         type="number"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                        // Remove spinner arrows & scroll wheel
+                        onWheel={(e) => e.currentTarget.blur()}
+                        className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -249,11 +253,13 @@ export default function AddBookModal() {
                   <FormLabel>Discount %</FormLabel>
                   <FormControl>
                     <Input
-                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       type="number"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      // Remove spinner arrows & scroll wheel
+                      onWheel={(e) => e.currentTarget.blur()}
+                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </FormControl>
                   <FormMessage />

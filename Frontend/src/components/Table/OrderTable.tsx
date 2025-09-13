@@ -6,6 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { role } from "@/constants/role";
+import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 
 import type { IOrder } from "@/types";
 import { format } from "date-fns";
@@ -19,6 +21,7 @@ interface Props {
 }
 
 export default function OrderTable({ orders }: Props) {
+  const { data: user } = useUserProfileQuery();
   return (
     <div className="w-full overflow-x-auto rounded-lg shadow-md">
       <Table>
@@ -28,6 +31,10 @@ export default function OrderTable({ orders }: Props) {
             <TableHead className="p-2 border">Order ID</TableHead>
             <TableHead className="p-2 border">Status</TableHead>
             <TableHead className="p-2 border">Payment</TableHead>
+            {user?.data.role === role.admin ||
+              (user?.data.role === role.storeManager && (
+                <TableHead className="p-2 border">Payment Status</TableHead>
+              ))}
             <TableHead className="p-2 border">More</TableHead>
           </TableRow>
         </TableHeader>
@@ -49,8 +56,19 @@ export default function OrderTable({ orders }: Props) {
               <TableCell className="p-2 border">
                 {order.paymentMethod}
               </TableCell>
+              {user?.data.role === role.admin ||
+                (user?.data.role === role.storeManager && (
+                  <TableCell className="p-2 border">
+                    {order.paymentStatus}
+                  </TableCell>
+                ))}
               <TableCell className="p-2 border">
-                <Link to={`/order-details/${order.orderId}`} className="border hover:rounded border-blue-300 p-1 hover:bg-blue-300">...</Link>
+                <Link
+                  to={`/order-details/${order.orderId}`}
+                  className="border hover:rounded border-blue-300 p-1 hover:bg-blue-300"
+                >
+                  ...
+                </Link>
               </TableCell>
             </TableRow>
           ))}
