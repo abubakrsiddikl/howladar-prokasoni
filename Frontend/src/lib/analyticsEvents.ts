@@ -1,4 +1,3 @@
-
 export type AnalyticsEventName =
   | "page_view"
   | "signup"
@@ -11,7 +10,6 @@ export type AnalyticsEventName =
   | "checkout_complete"
   | "share";
 
-
 export interface AnalyticsEventParams {
   signup: { method: "email" | "google" | "facebook" };
   login: { method: "email" | "google" | "facebook" };
@@ -20,7 +18,7 @@ export interface AnalyticsEventParams {
   add_to_cart: { item_id: string; item_name: string; price: number };
   remove_from_cart: { item_id: string };
   checkout_start: { step: number };
-  checkout_complete: { transaction_id: string; value: number };
+  checkout_complete: { name: string; totalPrice: number };
   share: { method: "facebook" | "twitter" | "whatsapp"; content_id: string };
 
   // fallback for others

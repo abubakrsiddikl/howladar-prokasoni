@@ -24,7 +24,11 @@ router.post("/login", auth_controller_1.AuthControllers.credentialsLogin);
 router.post("/logout", auth_controller_1.AuthControllers.logout);
 // google login
 router.get("/google", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    passport_1.default.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+    const redirect = req.query.redirect || "/";
+    passport_1.default.authenticate("google", {
+        scope: ["profile", "email"],
+        state: redirect,
+    })(req, res, next);
 }));
 // google callback
 router.get("/google/callback", passport_1.default.authenticate("google", {

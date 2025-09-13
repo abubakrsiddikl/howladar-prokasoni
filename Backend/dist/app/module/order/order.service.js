@@ -23,6 +23,8 @@ const user_interface_1 = require("../user/user.interface");
 const generateOrderId_1 = require("../../utils/generateOrderId");
 const user_model_1 = require("../user/user.model");
 const sendEmail_1 = require("../../utils/sendEmail");
+const order_constant_1 = require("./order.constant");
+const QueryBuilder_1 = require("../../utils/QueryBuilder");
 const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const session = yield book_model_1.Book.startSession();
@@ -120,12 +122,21 @@ const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0,
 });
 // get order by customer id
 const getMyOrders = (decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
-    const orders = yield order_model_1.Order.find({ user: decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.userId }).populate("items.book", "title coverImage");
+    const orders = yield order_model_1.Order.find({ user: decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.userId })
+        .sort("-createdAt")
+        .populate("items.book", "title coverImage");
     return orders;
 });
 // get all order
-const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield order_model_1.Order.find().populate("user").populate("items.book");
+const getAllOrders = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const queryBuilder = new QueryBuilder_1.QueryBuilder(order_model_1.Order.find(), query);
+    yield queryBuilder.filter();
+    queryBuilder.search(order_constant_1.orderSearchableFields).sort().paginate();
+    const [data, meta] = yield Promise.all([
+        queryBuilder.build().populate("user", "-password").populate("items.book"),
+        queryBuilder.getMeta(),
+    ]);
+    return { data, meta };
 });
 const getTraceOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield order_model_1.Order.findOne({ orderId }).select("orderStatusLog createdAt -_id");
@@ -136,31 +147,56 @@ const getSingleOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* 
         .populate("items.book");
 });
 // Update order status
+// Allowed status transitions
+const allowedStatusFlow = {
+    Processing: [order_interface_1.OrderStatus.Approved, order_interface_1.OrderStatus.Cancelled],
+    Approved: [order_interface_1.OrderStatus.Shipped, order_interface_1.OrderStatus.Cancelled],
+    Shipped: [order_interface_1.OrderStatus.Delivered],
+    Delivered: [order_interface_1.OrderStatus.Returned],
+    Cancelled: [],
+    Returned: [],
+};
+// Status এর note
+const statusNotes = {
+    Processing: "অর্ডারটি গ্রহণ করা হয়েছে। কনফার্মেশনের জন্য অপেক্ষমান।",
+    Approved: "অর্ডারটি প্রস্তুত করা হচ্ছে",
+    Shipped: "অর্ডারটি কুরিয়ারের কাছে দেয়া হয়েছে",
+    Delivered: "অর্ডারটি ডেলিভারি দেয়া হয়েছে",
+    Cancelled: "অর্ডারটি বাতিল করা হয়েছে",
+    Returned: "অর্ডারটি কাস্টমার দ্বারা ফেরত দেয়া হয়েছে",
+};
+// Update order status function
 const updateOrderStatus = (orderId, newStatus) => __awaiter(void 0, void 0, void 0, function* () {
     const order = yield order_model_1.Order.findById(orderId);
     if (!order) {
-        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "Order not found");
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "অর্ডারটি পাওয়া যায়নি");
     }
     if (order.currentStatus === newStatus) {
-        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `Order status already ${newStatus} `);
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`);
     }
-    let note = "";
-    if (newStatus === order_interface_1.OrderStatus.Approved) {
-        note = "অর্ডারটি প্রস্তুত করা হচ্ছে";
+    // Check duplicate in log
+    const isDuplicate = order.orderStatusLog.some((item) => item.status === newStatus);
+    if (isDuplicate) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`);
     }
-    else if (newStatus === order_interface_1.OrderStatus.Shipped) {
-        note = "অর্ডারটি কুরিয়ারের কাছে দেয়ার জন্য প্রস্তুত হয়েছে";
+    // Check allowed status flow
+    const allowedNextStatus = allowedStatusFlow[order.currentStatus];
+    if (!allowedNextStatus.includes(newStatus)) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `অর্ডারের স্ট্যাটাস ${order.currentStatus} থেকে ${newStatus} সম্ভব নয়`);
     }
-    else if (newStatus === order_interface_1.OrderStatus.Delivered) {
-        note = "অর্ডারটি ডেলিভারি দেয়া হয়েছে";
-    }
-    else if (newStatus === order_interface_1.OrderStatus.Cancelled) {
-        note = "অর্ডারটি Cancelled করা হয়েছে ";
-    }
+    // Update status & add note
     order.currentStatus = newStatus;
+    if (newStatus === order_interface_1.OrderStatus.Delivered) {
+        order.paymentStatus = order_interface_1.PaymentStatus.Paid;
+    }
+    // update order status is Cancelled to update  payment status by Cancelled
+    if (newStatus === order_interface_1.OrderStatus.Cancelled ||
+        newStatus === order_interface_1.OrderStatus.Returned) {
+        order.paymentStatus = order_interface_1.PaymentStatus.Cancelled;
+    }
     order.orderStatusLog.push({
         status: newStatus,
-        note: note,
+        note: statusNotes[newStatus],
         timestamp: new Date(),
     });
     yield order.save();

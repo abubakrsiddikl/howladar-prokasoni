@@ -5,6 +5,7 @@ import {
   authApi,
   useLogoutMutation,
 } from "@/redux/feature/Authentication/auth.api";
+import { sendErrorMessageToUser } from "@/utils/sendErrorMessageToUser";
 
 export default function Logout() {
   const [logout] = useLogoutMutation();
@@ -16,14 +17,14 @@ export default function Logout() {
       try {
         await logout(undefined).unwrap();
         dispatch(authApi.util.resetApiState());
-        navigate("/"); 
+        navigate("/");
       } catch (error) {
-        console.error("Logout failed", error);
+        sendErrorMessageToUser(error);
       }
     };
 
     handleLogout();
   }, [logout, dispatch, navigate]);
 
-  return<></>; 
+  return <></>;
 }

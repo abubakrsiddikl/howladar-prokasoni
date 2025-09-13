@@ -10,6 +10,7 @@ var PaymentStatus;
 (function (PaymentStatus) {
     PaymentStatus["Paid"] = "Paid";
     PaymentStatus["Pending"] = "Pending";
+    PaymentStatus["Cancelled"] = "Cancelled";
 })(PaymentStatus || (exports.PaymentStatus = PaymentStatus = {}));
 var OrderStatus;
 (function (OrderStatus) {
@@ -18,4 +19,5 @@ var OrderStatus;
     OrderStatus["Shipped"] = "Shipped";
     OrderStatus["Delivered"] = "Delivered";
     OrderStatus["Cancelled"] = "Cancelled";
+    OrderStatus["Returned"] = "Returned";
 })(OrderStatus || (exports.OrderStatus = OrderStatus = {}));

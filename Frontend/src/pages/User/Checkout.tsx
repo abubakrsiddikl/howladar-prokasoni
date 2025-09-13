@@ -1,10 +1,12 @@
 import OrderSummary from "@/components/modules/Checkout/OrderSummary";
 import PaymentMethod from "@/components/modules/Checkout/PaymentMethod";
 import ShippingForm from "@/components/modules/Checkout/ShippingForm";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { useCart } from "@/hooks/useCart";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 import { useCreateOrderMutation } from "@/redux/feature/Order/order.api";
 import type { ICartItem, ICreateOrderPayload, IPaymentMethod } from "@/types";
+import { sendErrorMessageToUser } from "@/utils/sendErrorMessageToUser";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -16,7 +18,7 @@ export default function CheckoutPage() {
 
   const navigate = useNavigate();
 
-
+  const { trackEvent } = useAnalytics();
   const [paymentMethod, setPaymentMethod] = useState<IPaymentMethod>("COD");
   const [loading, setLoading] = useState(false);
 
@@ -56,6 +58,10 @@ export default function CheckoutPage() {
       const res = await createOrder(payload).unwrap();
 
       if (res.success) {
+        trackEvent("checkout_complete", {
+          name: shippingInfo.name,
+          totalPrice: res.data.totalAmount,
+        });
         toast.success("🎉 Your order has been saved successfully");
         clearCart();
         navigate(`/ordersuccess/${res.data?.orderId}`);
@@ -69,8 +75,7 @@ export default function CheckoutPage() {
         navigate(`/ordersuccess/${res.data?.orderId}`);
       }
     } catch (error) {
-      console.error(error);
-      toast.error("❌ অর্ডার করতে সমস্যা হয়েছে।");
+      sendErrorMessageToUser(error);
     } finally {
       setLoading(false);
     }

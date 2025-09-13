@@ -14,12 +14,13 @@ import { cn } from "@/lib/utils";
 
 import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
 
-import { toast } from "sonner";
 import GoogleLogin from "./GoogleLogin";
 import { useLoginMutation } from "@/redux/feature/Authentication/auth.api";
 // import { role } from "@/constants/role";
 import { useNavigate } from "react-router";
 import { useAnalytics } from "@/hooks/useAnalytics";
+
+import { sendErrorMessageToUser } from "@/utils/sendErrorMessageToUser";
 
 export default function LoginForm({
   className,
@@ -45,12 +46,8 @@ export default function LoginForm({
         trackEvent("login", { method: "email" });
         navigate("/", { replace: true });
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      if (err.data.message === "Password does not match") {
-        toast.error("Invalid credentials");
-      }
+    } catch (error) {
+      sendErrorMessageToUser(error);
     }
   };
 

@@ -17,6 +17,7 @@ import type { RootState } from "@/redux/store";
 import type { ICartItem } from "@/types";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 import { toast } from "sonner";
+import { useAnalytics } from "./useAnalytics";
 
 export function useCart() {
   const { data: user } = useUserProfileQuery(undefined);
@@ -34,11 +35,12 @@ export function useCart() {
   const [removeFromCartServer] = useRemoveFromCartMutation();
   const [updateQtyServer] = useUpdateCartQuantityMutation();
   const [clearCartServer] = useClearCartMutation();
+  const { trackEvent } = useAnalytics();
 
   // guest cart
   const guestCart = useSelector((s: RootState) => s.guestCart.items);
 
-  //  Merge localCart → serverCart যখন user login করে
+  //  Merge localCart → serverCart
   useEffect(() => {
     const syncGuestCart = async () => {
       if (user && guestCart.length > 0) {
@@ -62,15 +64,19 @@ export function useCart() {
 
   // wrapper methods
   const addToCart = async (item: ICartItem) => {
-    
+    trackEvent("add_to_cart", {
+      item_id: item.book._id,
+      item_name: item.book.title,
+      price: item.book.price,
+    });
     if (user) {
       const res = await addToCartServer({
         bookId: item.book._id as string,
         quantity: item.quantity,
       });
-     if (res.data?.success) {
-      toast.success("Item added to cart .")
-     }
+      if (res.data?.success) {
+        toast.success("Item added to cart .");
+      }
     } else {
       dispatch(addLocal(item));
     }

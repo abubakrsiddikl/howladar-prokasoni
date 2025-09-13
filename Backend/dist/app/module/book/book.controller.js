@@ -70,15 +70,13 @@ const getBookByGenre = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void
 }));
 // update a book
 const updateBook = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c;
     const id = req.params.id;
     let coverImagePath;
-    let previewImagePaths = [];
     if (!Array.isArray(req.files)) {
         coverImagePath = (_c = (_b = (_a = req.files) === null || _a === void 0 ? void 0 : _a.file) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.path;
-        previewImagePaths = ((_e = (_d = req.files) === null || _d === void 0 ? void 0 : _d.files) === null || _e === void 0 ? void 0 : _e.map((file) => file.path)) || [];
     }
-    const payload = Object.assign(Object.assign({}, req.body), { coverImage: coverImagePath, previewImages: previewImagePaths });
+    const payload = Object.assign(Object.assign({}, req.body), { coverImage: coverImagePath });
     const updatedBook = yield book_service_1.BookServices.updateBook(id, payload);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,

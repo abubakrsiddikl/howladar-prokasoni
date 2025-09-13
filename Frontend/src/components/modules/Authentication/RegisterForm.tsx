@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Password from "@/components/Password";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,12 +19,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegisterMutation } from "@/redux/feature/Authentication/auth.api";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
+
+import { sendErrorMessageToUser } from "@/utils/sendErrorMessageToUser";
 
 export default function RegisterForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [register] = useRegisterMutation();
+  const navigate = useNavigate();
   const registerSchema = z
     .object({
       name: z
@@ -76,10 +81,11 @@ export default function RegisterForm({
     try {
       const res = await register(data).unwrap();
       if (res.success) {
-        toast("Register successfully", { id: toastId });
+        toast.success("Register successfully", { id: toastId });
+        navigate("/auth/login");
       }
     } catch (error) {
-      console.log(error);
+      sendErrorMessageToUser(error);
     }
   };
 

@@ -55,7 +55,7 @@ const getAllBook = (query) => __awaiter(void 0, void 0, void 0, function* () {
 });
 // get single book with slug
 const getSingleBook = (slug) => __awaiter(void 0, void 0, void 0, function* () {
-    const book = yield book_model_1.Book.findOne({ slug });
+    const book = yield book_model_1.Book.findOne({ slug }).populate("genre");
     return book;
 });
 // get book by genre
@@ -64,9 +64,16 @@ const getBookByGenre = (genre) => __awaiter(void 0, void 0, void 0, function* ()
 });
 // update a book
 const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const titleExist = yield book_model_1.Book.findOne({
+        title: payload.title,
+        _id: { $ne: id },
+    });
+    if (titleExist) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, `${payload.title} এই নামের বই ইতিমধ্যেই আপলোড করা আছে !`);
+    }
     const isBookExist = yield book_model_1.Book.findById(id);
     if (!isBookExist) {
-        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Book Not Found");
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "Book Not Found");
     }
     if (payload.coverImage) {
         // if cover image is provided, delete the old coverImage
@@ -78,32 +85,29 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         // if cover image is not provided, keep the existing coverImage
         payload.coverImage = isBookExist.coverImage;
     }
-    if (payload.previewImages &&
-        payload.previewImages.length > 0 &&
-        isBookExist.previewImages &&
-        isBookExist.previewImages.length > 0) {
-        payload.previewImages = [
-            ...payload.previewImages,
-            ...isBookExist.previewImages,
-        ];
-    }
-    if (payload.deletePreviewImages &&
-        payload.deletePreviewImages.length > 0 &&
-        isBookExist.previewImages &&
-        isBookExist.previewImages.length > 0) {
-        const restDBImages = isBookExist.previewImages.filter((imageUrl) => { var _a; return !((_a = payload.deletePreviewImages) === null || _a === void 0 ? void 0 : _a.includes(imageUrl)); });
-        const updatedPayloadImages = (payload.previewImages || [])
-            .filter((imageUrl) => { var _a; return !((_a = payload.deletePreviewImages) === null || _a === void 0 ? void 0 : _a.includes(imageUrl)); })
-            .filter((imageUrl) => !restDBImages.includes(imageUrl));
-        payload.previewImages = [...restDBImages, ...updatedPayloadImages];
+    // calculate discount price
+    if (payload.discount !== undefined) {
+        const discount = payload.discount;
+        if (discount < 0 || discount > 100) {
+            throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Discount must be between 0 and 100");
+        }
+        // frontend থেকে সবসময় মূল price আসবে
+        const originalPrice = payload.price;
+        if (originalPrice === undefined) {
+            throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Price is required");
+        }
+        if (originalPrice < 0) {
+            throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Price must be a positive number");
+        }
+        // discount amount
+        const discountAmount = (originalPrice * discount) / 100;
+        // ডিসকাউন্টের পর দাম
+        const finalPrice = Math.round(originalPrice - discountAmount);
+        // DB তে overwrite করো
+        payload.discountedPrice = discountAmount; // কত টাকা ছাড় হলো
+        payload.price = finalPrice; // ডিসকাউন্টের পর দাম
     }
     const updatedBook = yield book_model_1.Book.findByIdAndUpdate(id, payload, { new: true });
-    if (payload.deletePreviewImages &&
-        payload.deletePreviewImages.length > 0 &&
-        isBookExist.previewImages &&
-        isBookExist.previewImages.length > 0) {
-        yield Promise.all(payload.deletePreviewImages.map((url) => (0, cloudinary_config_1.deleteImageFromCLoudinary)(url)));
-    }
     return updatedBook;
 });
 // delete a book

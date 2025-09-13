@@ -40,12 +40,13 @@ const getMyOrders = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0,
     });
 }));
 const getAllOrders = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const orders = yield order_service_1.OrderService.getAllOrders();
+    const orders = yield order_service_1.OrderService.getAllOrders(req.query);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,
         message: "Orders retrieved successfully",
-        data: orders,
+        data: orders.data,
+        meta: orders.meta,
     });
 }));
 // order trace

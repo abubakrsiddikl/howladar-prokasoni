@@ -102,7 +102,7 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
       );
     }
 
-    // frontend থেকে সবসময় মূল price আসবে
+    // frontend send original price 
     const originalPrice = payload.price;
     if (originalPrice === undefined) {
       throw new AppError(httpStatus.BAD_REQUEST, "Price is required");
@@ -117,12 +117,12 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
     // discount amount
     const discountAmount = (originalPrice * discount) / 100;
 
-    // ডিসকাউন্টের পর দাম
+    // discount after price
     const finalPrice = Math.round(originalPrice - discountAmount);
 
-    // DB তে overwrite করো
-    payload.discountedPrice = discountAmount; // কত টাকা ছাড় হলো
-    payload.price = finalPrice; // ডিসকাউন্টের পর দাম
+    // DB to overwrite 
+    payload.discountedPrice = discountAmount; // amount of discount
+    payload.price = finalPrice; // final price off discountPrice
   }
 
 

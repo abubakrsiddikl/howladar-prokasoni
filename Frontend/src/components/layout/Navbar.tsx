@@ -75,7 +75,7 @@ const Navbar = () => {
 
       {/* this navbar */}
       <nav className="bg-[#727088] shadow ">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 mb-5">
           <div className="flex items-center justify-between">
             {/* Left: Drawer Icon and Logo */}
             <div className="flex items-center gap-2">

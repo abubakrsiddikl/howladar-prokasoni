@@ -31,10 +31,10 @@ export default function OrderTable({ orders }: Props) {
             <TableHead className="p-2 border">Order ID</TableHead>
             <TableHead className="p-2 border">Status</TableHead>
             <TableHead className="p-2 border">Payment</TableHead>
-            {user?.data.role === role.admin ||
-              (user?.data.role === role.storeManager && (
-                <TableHead className="p-2 border">Payment Status</TableHead>
-              ))}
+            {(user?.data.role === role.admin ||
+              user?.data.role === role.storeManager) && (
+              <TableHead className="p-2 border">Payment Status</TableHead>
+            )}
             <TableHead className="p-2 border">More</TableHead>
           </TableRow>
         </TableHeader>
@@ -56,12 +56,12 @@ export default function OrderTable({ orders }: Props) {
               <TableCell className="p-2 border">
                 {order.paymentMethod}
               </TableCell>
-              {user?.data.role === role.admin ||
-                (user?.data.role === role.storeManager && (
-                  <TableCell className="p-2 border">
-                    {order.paymentStatus}
-                  </TableCell>
-                ))}
+              {(user?.data.role === role.admin ||
+                user?.data.role === role.storeManager) && (
+                <TableCell className="p-2 border">
+                  {order.paymentStatus}
+                </TableCell>
+              )}
               <TableCell className="p-2 border">
                 <Link
                   to={`/order-details/${order.orderId}`}

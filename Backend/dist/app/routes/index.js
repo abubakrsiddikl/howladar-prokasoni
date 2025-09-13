@@ -8,6 +8,8 @@ const book_route_1 = require("../module/book/book.route");
 const cart_route_1 = require("../module/cart/cart.route");
 const order_route_1 = require("../module/order/order.route");
 const genre_route_1 = require("../module/genre/genre.route");
+const banner_route_1 = require("../module/banner/banner.route");
+const stats_route_1 = require("../module/stats/stats.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -33,6 +35,14 @@ const moduleRoutes = [
     {
         path: "/order",
         route: order_route_1.OrderRoutes,
+    },
+    {
+        path: "/banner",
+        route: banner_route_1.BannerRoutes,
+    },
+    {
+        path: "/stats",
+        route: stats_route_1.StatsRoutes,
     },
 ];
 moduleRoutes.forEach((route) => {
