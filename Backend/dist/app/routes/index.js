@@ -10,6 +10,7 @@ const order_route_1 = require("../module/order/order.route");
 const genre_route_1 = require("../module/genre/genre.route");
 const banner_route_1 = require("../module/banner/banner.route");
 const stats_route_1 = require("../module/stats/stats.route");
+const sitempa_route_1 = require("../module/sitemap/sitempa.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -43,6 +44,10 @@ const moduleRoutes = [
     {
         path: "/stats",
         route: stats_route_1.StatsRoutes,
+    },
+    {
+        path: "/sitemap.xml",
+        route: sitempa_route_1.SitemapRoutes,
     },
 ];
 moduleRoutes.forEach((route) => {

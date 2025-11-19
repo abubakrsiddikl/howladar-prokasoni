@@ -15,6 +15,7 @@ export interface IBook {
   available: boolean;
   deletePreviewImages?: string[];
   publisher: string;
+  updatedAt?: Date;
 }
 
 export interface IBookFilterOptions {

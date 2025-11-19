@@ -91,7 +91,7 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         if (discount < 0 || discount > 100) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Discount must be between 0 and 100");
         }
-        // frontend থেকে সবসময় মূল price আসবে
+        // frontend send original price 
         const originalPrice = payload.price;
         if (originalPrice === undefined) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Price is required");
@@ -101,11 +101,11 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         }
         // discount amount
         const discountAmount = (originalPrice * discount) / 100;
-        // ডিসকাউন্টের পর দাম
+        // discount after price
         const finalPrice = Math.round(originalPrice - discountAmount);
-        // DB তে overwrite করো
-        payload.discountedPrice = discountAmount; // কত টাকা ছাড় হলো
-        payload.price = finalPrice; // ডিসকাউন্টের পর দাম
+        // DB to overwrite 
+        payload.discountedPrice = discountAmount; // amount of discount
+        payload.price = finalPrice; // final price off discountPrice
     }
     const updatedBook = yield book_model_1.Book.findByIdAndUpdate(id, payload, { new: true });
     return updatedBook;
