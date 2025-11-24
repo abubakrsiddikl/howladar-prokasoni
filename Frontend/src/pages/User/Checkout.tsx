@@ -3,6 +3,7 @@ import PaymentMethod from "@/components/modules/Checkout/PaymentMethod";
 import ShippingForm from "@/components/modules/Checkout/ShippingForm";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useCart } from "@/hooks/useCart";
+import { metaPixelTrackEvent } from "@/lib/metaPixel";
 import { useUserProfileQuery } from "@/redux/feature/Authentication/auth.api";
 import { useCreateOrderMutation } from "@/redux/feature/Order/order.api";
 import type { ICartItem, ICreateOrderPayload, IPaymentMethod } from "@/types";
@@ -61,6 +62,11 @@ export default function CheckoutPage() {
         trackEvent("checkout_complete", {
           name: shippingInfo.name,
           totalPrice: res.data.totalAmount,
+        });
+        metaPixelTrackEvent("Purchase", {
+          value: res.data.totalAmount,
+          currency: "BDT",
+          orderId: res.data.orderId,
         });
         toast.success("🎉 Your order has been saved successfully");
         clearCart();

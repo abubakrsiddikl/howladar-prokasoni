@@ -14,6 +14,7 @@ import PreviewGalleryDialog from "@/components/modules/Book/PreviewGalleryDialog
 import { useCart } from "@/hooks/useCart";
 import type { ICartItem } from "@/types";
 import Seo from "@/components/modules/Seo/Seo";
+import { metaPixelTrackEvent } from "@/lib/metaPixel";
 
 export default function BookDetails() {
   const { slug } = useParams();
@@ -31,7 +32,12 @@ export default function BookDetails() {
   if (isLoading) return <LoadingSpinner />;
 
   if (!book) return <p className="text-center py-10">❌ Book not found</p>;
-
+  if (book) {
+    metaPixelTrackEvent("BookDetailsView", {
+      title: book?.title,
+      price: book?.price,
+    });
+  }
   // seo data
   const seoTitle = `${book.title} | হাওলাদার প্রকাশনী`;
   const seoDescription =
@@ -84,7 +90,14 @@ export default function BookDetails() {
       quantity: 1,
     };
     await addToCart(cartItem);
+    metaPixelTrackEvent("AddToCart", {
+      bookId: book._id,
+      title: book.title,
+      price: book.price,
+      quantity: 1,
+    });
   };
+
   return (
     <>
       <Seo

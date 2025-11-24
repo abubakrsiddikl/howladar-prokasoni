@@ -7,7 +7,7 @@ function App() {
 
   return (
     <CommonLayout>
-       <Toaster position="top-center" />
+       <Toaster position="top-center" richColors/>
        <GATracker></GATracker>
       <Outlet></Outlet>
     </CommonLayout>

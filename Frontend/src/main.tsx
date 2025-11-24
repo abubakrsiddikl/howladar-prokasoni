@@ -7,6 +7,9 @@ import { Provider as ReactProvider } from "react-redux";
 import { router } from "./router";
 import { store } from "./redux/store";
 import { HelmetProvider } from "react-helmet-async";
+import { initPixel } from "./lib/metaPixel";
+
+initPixel();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
