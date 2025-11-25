@@ -1,9 +1,9 @@
-import { Router } from "express";
+import {type Request,type Response, Router } from "express";
 import { Book } from "../book/book.model";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const books = await Book.find().select("slug updatedAt");
 
