@@ -7,6 +7,8 @@ import passport from "passport";
 import expressSession from "express-session";
 import { envVars } from "./app/config/env";
 import cors from "cors";
+import prerender from "prerender-node";
+
 import "./app/config/passport";
 
 const app = express();
@@ -23,6 +25,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(prerender.set("prerenderToken", envVars.PRERENDER_IO_TOKEN));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
@@ -30,7 +33,6 @@ app.use(express.json());
 app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", router);
-
 
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "welcome to the server" });

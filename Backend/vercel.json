@@ -8,6 +8,24 @@
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+
+    {
+      "src": "/api/v1/(.*)",
+      "dest": "dist/server.js"
+    },
+
+    {
       "src": "/(.*)",
       "dest": "dist/server.js"
     }

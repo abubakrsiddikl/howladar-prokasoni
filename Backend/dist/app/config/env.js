@@ -29,6 +29,7 @@ const loadEnvVariables = () => {
         "SMTP_USER",
         "SMTP_PASS",
         "SMTP_FROM",
+        "PRERENDER_IO_TOKEN"
     ];
     requiredEnvVariables.forEach((key) => {
         if (!process.env[key]) {
@@ -64,6 +65,7 @@ const loadEnvVariables = () => {
             SMTP_PASS: process.env.SMTP_PASS,
             SMTP_FROM: process.env.SMTP_FROM,
         },
+        PRERENDER_IO_TOKEN: process.env.PRERENDER_IO_TOKEN,
     };
 };
 exports.envVars = loadEnvVariables();

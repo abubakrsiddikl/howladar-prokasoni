@@ -28,6 +28,7 @@ interface EnvConfig {
     SMTP_PASS: string;
     SMTP_FROM: string;
   };
+  PRERENDER_IO_TOKEN: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -53,6 +54,7 @@ const loadEnvVariables = (): EnvConfig => {
     "SMTP_USER",
     "SMTP_PASS",
     "SMTP_FROM",
+    "PRERENDER_IO_TOKEN"
   ];
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
@@ -88,6 +90,7 @@ const loadEnvVariables = (): EnvConfig => {
       SMTP_PASS: process.env.SMTP_PASS as string,
       SMTP_FROM: process.env.SMTP_FROM as string,
     },
+    PRERENDER_IO_TOKEN: process.env.PRERENDER_IO_TOKEN as string,
   };
 };
 
