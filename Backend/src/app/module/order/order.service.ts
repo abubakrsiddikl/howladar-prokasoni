@@ -144,12 +144,18 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
   }
 };
 
+
+
+
+
+
 // get order by customer id
 const getMyOrders = async (decodedToken: JwtPayload) => {
   const orders = await Order.find({ user: decodedToken?.userId })
     .sort("-createdAt")
     .populate("items.book", "title coverImage");
   return orders;
+   
 };
 
 // get all order

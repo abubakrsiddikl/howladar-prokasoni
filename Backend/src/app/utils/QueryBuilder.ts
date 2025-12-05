@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Query } from "mongoose";
 import { excludeField } from "../constants";
 import { Genre } from "../module/genre/genre.model";
+
 
 export class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
@@ -12,8 +14,42 @@ export class QueryBuilder<T> {
   }
 
   async filter(): Promise<this> {
-    const filter = { ...this.query };
-    if (filter.genre) {
+    // const filter = { ...this.query };
+    // if (filter.genre) {
+    //   const genreDoc = await Genre.findOne({
+    //     name: { $regex: filter.genre, $options: "i" },
+    //   });
+    //   if (genreDoc) {
+    //     filter.genre = genreDoc._id;
+    //   } else {
+    //     delete filter.genre;
+    //   }
+    // }
+    // for (const field of excludeField) {
+    //   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    //   delete filter[field];
+    // }
+
+    // this.modelQuery = this.modelQuery.find(filter);
+
+    // return this;
+    const filter: any = { ...this.query };
+
+    if (filter.genre && Array.isArray(filter.genre)) {
+      const genreNames = filter.genre as string[];
+
+      const genreDocs = await Genre.find({
+        name: { $in: genreNames.map((name) => new RegExp(name, "i")) },
+      });
+
+      const validGenreIds = genreDocs.map((doc) => doc._id);
+
+      if (validGenreIds.length > 0) {
+        filter.genre = { $in: validGenreIds };
+      } else {
+        delete filter.genre;
+      }
+    } else if (filter.genre && typeof filter.genre === "string") {
       const genreDoc = await Genre.findOne({
         name: { $regex: filter.genre, $options: "i" },
       });
@@ -23,12 +59,13 @@ export class QueryBuilder<T> {
         delete filter.genre;
       }
     }
+
     for (const field of excludeField) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete filter[field];
     }
 
-    this.modelQuery = this.modelQuery.find(filter); // Tour.find().find(filter)
+    this.modelQuery = this.modelQuery.find(filter);
 
     return this;
   }
@@ -47,7 +84,6 @@ export class QueryBuilder<T> {
 
   sort(): this {
     const sort = this.query.sort || "-createdAt";
-
     this.modelQuery = this.modelQuery.sort(sort);
 
     return this;
@@ -75,7 +111,6 @@ export class QueryBuilder<T> {
 
   async getMeta() {
     const totalDocuments = await this.modelQuery.model.countDocuments();
-
     const page = Number(this.query.page) || 1;
     const limit = Number(this.query.limit) || 10;
 

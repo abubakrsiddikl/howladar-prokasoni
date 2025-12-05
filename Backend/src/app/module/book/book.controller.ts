@@ -9,6 +9,8 @@ import httpStatus from "http-status-codes";
 const createBook = catchAsync(async (req: Request, res: Response) => {
   let coverImagePath: string | undefined;
   let previewImagePaths: string[] = [];
+   
+
 
   if (!Array.isArray(req.files)) {
     coverImagePath = req.files?.file?.[0]?.path;

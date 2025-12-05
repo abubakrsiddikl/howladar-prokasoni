@@ -18,13 +18,16 @@ const createGenre = catchAsync(async (req: Request, res: Response) => {
 
 // Get All Genres
 const getAllGenres = catchAsync(async (req: Request, res: Response) => {
-  const result = await GenreService.getAllGenres();
+  const result = await GenreService.getAllGenres(
+    req.query as Record<string, string>
+  );
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Genres retrieved successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 

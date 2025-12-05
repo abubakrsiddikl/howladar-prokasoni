@@ -3,14 +3,25 @@ import { IBanner } from "./banner.interface";
 import AppError from "../../errorHelper/AppError";
 import httpStatus from "http-status-codes";
 import { deleteImageFromCLoudinary } from "../../config/cloudinary.config";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const createBanner = async (payload: IBanner) => {
   const banner = await Banner.create(payload);
   return banner;
 };
 
-const getAllBanners = async () => {
-  return await Banner.find({}).sort({ createdAt: -1 });
+const getAllBanners = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Banner.find(), query);
+
+  await queryBuilder.filter();
+  queryBuilder.search(["title"]).sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return { data, meta };
 };
 
 const getActiveBanners = async () => {

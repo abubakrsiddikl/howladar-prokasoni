@@ -51,6 +51,7 @@ const getAllBook = async (query: Record<string, string>) => {
   ]);
 
   return { data, meta };
+ 
 };
 
 // get single book with slug
@@ -102,7 +103,7 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
       );
     }
 
-    // frontend send original price 
+    // frontend send original price
     const originalPrice = payload.price;
     if (originalPrice === undefined) {
       throw new AppError(httpStatus.BAD_REQUEST, "Price is required");
@@ -120,11 +121,10 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
     // discount after price
     const finalPrice = Math.round(originalPrice - discountAmount);
 
-    // DB to overwrite 
+    // DB to overwrite
     payload.discountedPrice = discountAmount; // amount of discount
     payload.price = finalPrice; // final price off discountPrice
   }
-
 
   const updatedBook = await Book.findByIdAndUpdate(id, payload, { new: true });
   return updatedBook;

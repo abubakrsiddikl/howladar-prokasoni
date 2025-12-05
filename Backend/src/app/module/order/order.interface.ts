@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 
 export enum PaymentMethod {
   COD = "COD",
@@ -55,4 +56,5 @@ export interface IOrder {
   currentStatus: string;
   orderId: string;
   totalDiscountedPrice: number;
+  sslCommerzPaymentInfo?: ISSLCommerz;
 }

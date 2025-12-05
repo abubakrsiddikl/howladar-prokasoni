@@ -1,9 +1,6 @@
 export const orderSearchableFields = [
   "orderId",
-  "customerName",
-  "phone",
-  "email",
-  "shippingAddress",
-  "currentStatus",
-  "paymentStatus"
+  "shippingInfo.name",
+  "shippingInfo.email",
+  "shippingInfo.phone",
 ];

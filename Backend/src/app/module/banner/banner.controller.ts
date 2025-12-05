@@ -20,12 +20,15 @@ const createBanner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllBanners = catchAsync(async (req: Request, res: Response) => {
-  const banners = await BannerServices.getAllBanners();
+  const result = await BannerServices.getAllBanners(
+    req.query as Record<string, string>
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Banners retrieved successfully",
-    data: banners,
+    data: result.data,
+    meta: result.meta,
   });
 });
 
