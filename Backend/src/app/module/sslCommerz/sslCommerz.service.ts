@@ -6,7 +6,6 @@ import { ISSLCommerz } from "./sslCommerz.interface";
 import axios from "axios";
 import httpStatus from "http-status-codes";
 
-
 const sslPaymentInit = async (payload: ISSLCommerz) => {
   try {
     const data = {
@@ -15,7 +14,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       total_amount: payload.amount,
       currency: "BDT",
       tran_id: payload.transactionId,
-      success_url: `${envVars.SSL.SSL_SUCCESS_FRONTEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=success`,
+      success_url: `${envVars.SSL.SSL_SUCCESS_BACKEND_URL}?tran_id=${payload.transactionId}&amount=${payload.amount}&status=success`,
       fail_url: `${envVars.SSL.SSL_FAIL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=fail`,
       cancel_url: `${envVars.SSL.SSL_CANCEL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=cancel`,
       ipn_url: envVars.SSL.SSL_IPN_URL,
@@ -52,29 +51,50 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
   } catch (error: any) {
     console.log("Payment error Occured", error);
     throw new AppError(httpStatus.BAD_REQUEST, error.message);
-  }  
+  }
 };
-// const validatePayment = async (payload: any) => {
-//   try {
-//     const response = await axios({
-//       method: "GET",
-//       url: `${envVars.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_PASS}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
-//     });
-//     console.log("sslcomeerz validate api response", response.data);
+// sslCommerz.service.ts
+const validatePayment = async (payload: any) => {
+  try {
+    const response = await axios({
+      method: "GET",
+      url: `${envVars.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_PASS}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
+    });
 
-//     // update payment info
-//     await Payment.updateOne(
-//       { transactionId: payload.tran_id },
-//       { paymentGateway: response.data },
-//       { runValidators: true }
-//     );
-//   } catch (error: any) {
-//     console.log(error);
-//     throw new AppError(401, `Payment Error : ${error.message}`);
-//   }
-// };
+    const validationData = response.data;
+
+    console.log("sslcommerz validate api response", validationData);
+
+    if (
+      validationData?.status === "VALID" ||
+      validationData?.status === "VALIDATED"
+    ) {
+      return {
+        success: true,
+        message: "Payment validated successfully.",
+        validationData: validationData,
+      };
+    } else {
+      return {
+        success: false,
+        message:
+          validationData.failedreason ||
+          "Payment validation failed at SSLCommerz.",
+        validationData: validationData,
+      };
+    }
+  } catch (error: any) {
+    console.log(error);
+
+    return {
+      success: false,
+      message: `Payment validation API call failed: ${error.message}`,
+      validationData: null,
+    };
+  }
+};
 
 export const SSLService = {
   sslPaymentInit,
-  // validatePayment,
+  validatePayment,
 };

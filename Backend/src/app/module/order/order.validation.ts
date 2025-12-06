@@ -20,7 +20,7 @@ export const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, "At least one item is required"),
   shippingInfo: shippingInfoSchema,
   paymentMethod: z.nativeEnum(PaymentMethod).default(PaymentMethod.COD),
-  paymentStatus: z.nativeEnum(PaymentStatus).default(PaymentStatus.Pending),
+  paymentStatus: z.nativeEnum(PaymentStatus).default(PaymentStatus.PENDING),
 });
 
 export const updateOrderStatusZodSchema = z.object({

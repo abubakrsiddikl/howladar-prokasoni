@@ -8,6 +8,7 @@ import { GenreRoutes } from "../module/genre/genre.route";
 import { BannerRoutes } from "../module/banner/banner.route";
 import { StatsRoutes } from "../module/stats/stats.route";
 import { SitemapRoutes } from "../module/sitemap/sitempa.route";
+import { PaymentRoutes } from "../module/payment/payment.route";
 
 export const router = Router();
 
@@ -43,6 +44,10 @@ const moduleRoutes = [
   {
     path: "/stats",
     route: StatsRoutes,
+  },
+  {
+    path: "/payment",
+    route: PaymentRoutes,
   },
   {
     path: "/sitemap.xml",

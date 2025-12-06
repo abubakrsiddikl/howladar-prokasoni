@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Order } from "./order.model";
+import { v4 as uuidv4 } from "uuid";
 import {
   IOrder,
   IOrderStatusLog,
@@ -16,6 +17,8 @@ import { User } from "../user/user.model";
 import { sendEmail } from "../../utils/sendEmail";
 import { orderSearchableFields } from "./order.constant";
 import { QueryBuilder } from "../../utils/QueryBuilder";
+import { SSLService } from "../sslCommerz/sslCommerz.service";
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 
 const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
   const session = await Book.startSession();
@@ -71,6 +74,51 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       orderStatusLog: [initialOrderStatusLog],
       orderId: await generateOrderId(),
     };
+
+    // * SSLCommerz payment initiate
+    if (orderData.paymentMethod === "SSLCommerz") {
+      // generate tranId
+      const transactionId = uuidv4();
+      // 1. ssl payment data
+      const sslPayload: ISSLCommerz = {
+        amount: orderData.totalAmount,
+        transactionId: transactionId,
+        name: payload.shippingInfo.name,
+        email: payload.shippingInfo.email,
+        phoneNumber: payload.shippingInfo.phone,
+        address: payload.shippingInfo.address,
+      };
+
+      // 2. SSL initiate
+      const sslResponse = await SSLService.sslPaymentInit(sslPayload);
+
+      //  check ssl res
+      if (sslResponse.status === "SUCCESS") {
+        orderData.transactionId = sslPayload.transactionId;
+
+        // 4. crete order
+        const [order] = await Order.create([orderData], { session });
+
+        // Update stock after order creation
+        for (const item of payload.items) {
+          await Book.findByIdAndUpdate(
+            item.book,
+            { $inc: { stock: -item.quantity } },
+            { session }
+          );
+        }
+        await session.commitTransaction();
+        return {
+          order,
+          redirectUrl: sslResponse.GatewayPageURL,
+        };
+      } else {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Failed to initiate SSLCommerz payment."
+        );
+      }
+    }
 
     // Create order within transaction
     const [order] = await Order.create([orderData], { session });
@@ -144,18 +192,12 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
   }
 };
 
-
-
-
-
-
 // get order by customer id
 const getMyOrders = async (decodedToken: JwtPayload) => {
   const orders = await Order.find({ user: decodedToken?.userId })
     .sort("-createdAt")
     .populate("items.book", "title coverImage");
   return orders;
-   
 };
 
 // get all order
@@ -192,6 +234,7 @@ const allowedStatusFlow: Record<OrderStatus, OrderStatus[]> = {
   Shipped: [OrderStatus.Delivered],
   Delivered: [OrderStatus.Returned],
   Cancelled: [],
+  Failed: [],
   Returned: [],
 };
 
@@ -202,6 +245,7 @@ const statusNotes: Record<OrderStatus, string> = {
   Shipped: "অর্ডারটি কুরিয়ারের কাছে দেয়া হয়েছে",
   Delivered: "অর্ডারটি ডেলিভারি দেয়া হয়েছে",
   Cancelled: "অর্ডারটি বাতিল করা হয়েছে",
+  Failed: "",
   Returned: "অর্ডারটি কাস্টমার দ্বারা ফেরত দেয়া হয়েছে",
 };
 
@@ -243,7 +287,7 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
   // Update status & add note
   order.currentStatus = newStatus;
   if (newStatus === OrderStatus.Delivered) {
-    order.paymentStatus = PaymentStatus.Paid;
+    order.paymentStatus = PaymentStatus.PAID;
   }
 
   // update order status is Cancelled to update  payment status by Cancelled
@@ -252,7 +296,7 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     newStatus === OrderStatus.Cancelled ||
     newStatus === OrderStatus.Returned
   ) {
-    order.paymentStatus = PaymentStatus.Cancelled;
+    order.paymentStatus = PaymentStatus.CANCELLED;
   }
 
   order.orderStatusLog.push({

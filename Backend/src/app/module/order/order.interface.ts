@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from "mongoose";
-import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 
 export enum PaymentMethod {
   COD = "COD",
@@ -7,9 +7,10 @@ export enum PaymentMethod {
 }
 
 export enum PaymentStatus {
-  Paid = "Paid",
-  Pending = "Pending",
-  Cancelled = "Cancelled"
+  PAID = "PAID",
+  PENDING = "PENDING",
+  CANCELLED = "CANCELLED",
+  FAILED = "FAILED",
 }
 
 export enum OrderStatus {
@@ -19,6 +20,7 @@ export enum OrderStatus {
   Delivered = "Delivered",
   Cancelled = "Cancelled",
   Returned = "Returned",
+  Failed = "Failed"
 }
 
 export interface IOrderStatusLog {
@@ -56,5 +58,6 @@ export interface IOrder {
   currentStatus: string;
   orderId: string;
   totalDiscountedPrice: number;
-  sslCommerzPaymentInfo?: ISSLCommerz;
+  paymentGateway?: any;
+  transactionId?: string;
 }
