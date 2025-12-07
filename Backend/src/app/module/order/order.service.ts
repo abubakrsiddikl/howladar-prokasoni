@@ -64,7 +64,8 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       timestamp: new Date(),
     };
     // delivery charge include of totalAmount
-    const deliveryCharge = payload.deliveryCharge ?? 120;
+    const deliveryCharge = payload.shippingInfo.district === "ঢাকা" ? 60 : 120;
+
     const subTotal = totalAmount + deliveryCharge;
     // Prepare order data
     const orderData = {
@@ -73,6 +74,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       totalAmount: subTotal,
       orderStatusLog: [initialOrderStatusLog],
       orderId: await generateOrderId(),
+      deliveryCharge: deliveryCharge,
     };
 
     // * SSLCommerz payment initiate
@@ -81,6 +83,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       const transactionId = uuidv4();
       // 1. ssl payment data
       const sslPayload: ISSLCommerz = {
+        orderId: orderData.orderId,
         amount: orderData.totalAmount,
         transactionId: transactionId,
         name: payload.shippingInfo.name,
@@ -99,10 +102,17 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
         // 4. crete order
         const [order] = await Order.create([orderData], { session });
         // update stock
+        for (const item of payload.items) {
+          await Book.findByIdAndUpdate(
+            item.book,
+            { $inc: { stock: -item.quantity } },
+            { session }
+          );
+        }
         await session.commitTransaction();
         return {
           order,
-          redirectUrl: sslResponse.GatewayPageURL,
+          paymentUrl: sslResponse.GatewayPageURL,
         };
       } else {
         throw new AppError(

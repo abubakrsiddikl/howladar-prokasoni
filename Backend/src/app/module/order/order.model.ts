@@ -74,7 +74,7 @@ const orderSchema = new Schema<IOrder>(
       default: PaymentStatus.PENDING,
     },
     totalAmount: { type: Number, required: true, min: 0 },
-    deliveryCharge: { type: Number, default: 120 },
+    deliveryCharge: { type: Number, required: false },
     orderStatusLog: [orderStatusLogSchema],
     currentStatus: { type: String, default: OrderStatus.Processing },
     orderId: { type: String, required: true, unique: true },

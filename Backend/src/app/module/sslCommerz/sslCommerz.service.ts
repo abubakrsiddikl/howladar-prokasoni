@@ -14,7 +14,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       total_amount: payload.amount,
       currency: "BDT",
       tran_id: payload.transactionId,
-      success_url: `${envVars.SSL.SSL_SUCCESS_BACKEND_URL}?tran_id=${payload.transactionId}&amount=${payload.amount}&status=success`,
+      success_url: `${envVars.SSL.SSL_SUCCESS_BACKEND_URL}?orderId=${payload.orderId}&tran_id=${payload.transactionId}&amount=${payload.amount}&status=success`,
       fail_url: `${envVars.SSL.SSL_FAIL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=fail`,
       cancel_url: `${envVars.SSL.SSL_CANCEL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=cancel`,
       ipn_url: envVars.SSL.SSL_IPN_URL,
@@ -53,7 +53,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
     throw new AppError(httpStatus.BAD_REQUEST, error.message);
   }
 };
-// sslCommerz.service.ts
+// sslCommerz validate
 const validatePayment = async (payload: any) => {
   try {
     const response = await axios({

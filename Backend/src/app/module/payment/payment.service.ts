@@ -66,11 +66,8 @@ const successPayment = async (query: Record<string, string>) => {
 };
 
 // ssl fail
-
 const failPayment = async (query: Record<string, string>) => {
-  if (query.status === "cancel" || query.status === "CANCELLED") {
-    return await PaymentService.cancelPayment(query);
-  }
+
   const session = await Order.startSession();
   session.startTransaction();
 

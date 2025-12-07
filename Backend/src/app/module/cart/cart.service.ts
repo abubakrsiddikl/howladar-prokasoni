@@ -55,6 +55,7 @@ const updateCartQuantity = async (
   quantity: number
 ) => {
   const cartItem = await Cart.findOne({ _id: cartItemId, user: userId });
+  
   if (!cartItem) throw new AppError(404, "Cart item not found");
 
   const book = await Book.findById(cartItem.book);
