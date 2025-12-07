@@ -9,6 +9,7 @@ import {
 } from "../order/order.interface";
 import AppError from "../../errorHelper/AppError";
 import { Book } from "../book/book.model";
+import { sendOrderEmails } from "../../utils/sendOrderEmail";
 
 const successPayment = async (query: Record<string, string>) => {
   const session = await Order.startSession();
@@ -36,7 +37,7 @@ const successPayment = async (query: Record<string, string>) => {
         $push: { orderStatusLog: updateOrderStatusLog },
       },
       { new: true, session: session }
-    );
+    ).populate("user", "-password");
 
     if (!updatedOrder) {
       throw new AppError(httpStatus.NOT_FOUND, "Order not found!");
@@ -44,6 +45,11 @@ const successPayment = async (query: Record<string, string>) => {
 
     await session.commitTransaction();
     session.endSession();
+    await sendOrderEmails({
+      order: updatedOrder,
+      user: updatedOrder.user,
+      shippingInfo: updatedOrder.shippingInfo,
+    });
     return {
       success: true,
       message: "Payment Completed Successfully",
@@ -61,9 +67,7 @@ const successPayment = async (query: Record<string, string>) => {
 
 // ssl fail
 
-
 const failPayment = async (query: Record<string, string>) => {
-
   if (query.status === "cancel" || query.status === "CANCELLED") {
     return await PaymentService.cancelPayment(query);
   }
@@ -117,8 +121,6 @@ const failPayment = async (query: Record<string, string>) => {
     throw new AppError(error.statusCode || 500, error.message);
   }
 };
-
-
 
 // ssl cancel
 const cancelPayment = async (query: Record<string, string>) => {
