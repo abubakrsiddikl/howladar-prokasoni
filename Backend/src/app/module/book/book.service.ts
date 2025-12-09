@@ -46,12 +46,11 @@ const getAllBook = async (query: Record<string, string>) => {
   queryBuilder.search(bookSearchableFields).sort().paginate();
 
   const [data, meta] = await Promise.all([
-    queryBuilder.build().populate("genre", "name"),
+    queryBuilder.build().populate("genre", "name").populate("author", "name"),
     queryBuilder.getMeta(),
   ]);
 
   return { data, meta };
- 
 };
 
 // get single book with slug

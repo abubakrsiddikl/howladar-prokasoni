@@ -1,1 +1,1 @@
-export const bookSearchableFields = ["title", "author", "description"];
+export const bookSearchableFields = ["title", "description"];

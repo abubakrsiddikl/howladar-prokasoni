@@ -1,9 +1,82 @@
+import { Types } from "mongoose";
 import { Book } from "../book/book.model";
 import { Order } from "../order/order.model";
+import { User } from "../user/user.model";
+import { JwtPayload } from "jsonwebtoken";
 
+const getCustomerDashboardStats = async (decodedToken: JwtPayload) => {
+  const customerId = new Types.ObjectId(decodedToken?.userId);
+
+  const totalOrders = await Order.countDocuments({ user: customerId });
+
+  const statusStats = await Order.aggregate([
+    {
+      $match: { user: customerId },
+    },
+    {
+      $group: {
+        _id: "$currentStatus",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const allStatuses = [
+    "Processing",
+    "Approved",
+    "Shipped",
+    "Delivered",
+    "Cancelled",
+    "Returned",
+  ];
+
+  const currentStatusByCount = allStatuses.map((status) => {
+    const stat = statusStats.find((s) => s._id === status);
+    return { status, count: stat ? stat.count : 0 };
+  });
+
+  const lastOrder = await Order.findOne({ user: customerId })
+    .sort({ createdAt: -1 })
+    .select("orderId currentStatus createdAt totalAmount")
+    .lean();
+
+  // 4.  (Total Lifetime Spend)
+  const lifetimeSpend = await Order.aggregate([
+    {
+      $match: {
+        user: customerId,
+        paymentStatus: "PAID",
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalSpend: { $sum: "$totalAmount" },
+      },
+    },
+  ]);
+
+  return {
+    totalOrders,
+    orderStatusStats: currentStatusByCount,
+    lastOrder: lastOrder
+      ? {
+          orderId: lastOrder.orderId,
+          status: lastOrder.currentStatus,
+          amount: lastOrder.totalAmount,
+          date: lastOrder.createdAt,
+        }
+      : null,
+    totalLifetimeSpend:
+      lifetimeSpend.length > 0 ? lifetimeSpend[0].totalSpend : 0,
+  };
+};
+
+// get admin
 const getStats = async () => {
   // Total users who placed orders
-  const totalUsers = await Order.distinct("user").then((arr) => arr.length);
+  // const totalUsers = await Order.distinct("user").then((arr) => arr.length);
+  const totalUsers = await User.countDocuments();
 
   //   Total Book
   const totalBook = await Book.countDocuments();
@@ -34,7 +107,7 @@ const getStats = async () => {
   });
 
   // total revenue by payment
-  const allPaymentStatuses = ["Paid", "Pending", "Cancelled"];
+  const allPaymentStatuses = ["PAID", "PENDING", "CANCELLED"];
 
   const paymentRevenueStats = await Order.aggregate([
     {
@@ -55,7 +128,6 @@ const getStats = async () => {
     };
   });
 
-
   // Total orders
   const totalOrders = await Order.countDocuments();
 
@@ -72,7 +144,7 @@ const getStats = async () => {
 const getMonthlySalesStats = async () => {
   const stats = await Order.aggregate([
     {
-      $match: { paymentStatus: "Paid" }, // শুধু Paid order
+      $match: { paymentStatus: "PAID" }, // শুধু Paid order
     },
     {
       $group: {
@@ -111,6 +183,7 @@ const getMonthlySalesStats = async () => {
 };
 
 export const StatsServices = {
+  getCustomerDashboardStats,
   getStats,
   getMonthlySalesStats,
 };

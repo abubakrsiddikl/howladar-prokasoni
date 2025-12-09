@@ -9,6 +9,7 @@ import { BannerRoutes } from "../module/banner/banner.route";
 import { StatsRoutes } from "../module/stats/stats.route";
 import { SitemapRoutes } from "../module/sitemap/sitempa.route";
 import { PaymentRoutes } from "../module/payment/payment.route";
+import { AuthorRoutes } from "../module/author/author.route";
 
 export const router = Router();
 
@@ -24,6 +25,10 @@ const moduleRoutes = [
   {
     path: "/genre",
     route: GenreRoutes,
+  },
+  {
+    path: "/author",
+    route: AuthorRoutes,
   },
   {
     path: "/book",

@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { BookServices } from "./book.service";
@@ -9,8 +8,6 @@ import httpStatus from "http-status-codes";
 const createBook = catchAsync(async (req: Request, res: Response) => {
   let coverImagePath: string | undefined;
   let previewImagePaths: string[] = [];
-   
-
 
   if (!Array.isArray(req.files)) {
     coverImagePath = req.files?.file?.[0]?.path;
@@ -69,6 +66,8 @@ const getBookByGenre = catchAsync(async (req: Request, res: Response) => {
     data: book,
   });
 });
+
+
 
 // update a book
 const updateBook = catchAsync(async (req: Request, res: Response) => {

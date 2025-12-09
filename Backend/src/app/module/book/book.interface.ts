@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 export interface IBook {
   title: string;
   slug: string;
-  author: string;
+  author: Types.ObjectId;
   price: number;
   stock: number;
   genre: Types.ObjectId;

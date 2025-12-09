@@ -4,7 +4,8 @@ import { IBook } from "./book.interface";
 const bookSchema = new Schema<IBook>(
   {
     title: { type: String, required: true, trim: true },
-    author: { type: String, required: true, trim: true },
+    author: { type: Schema.Types.ObjectId, ref: "Author", required: true },
+    // author: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
     stock: { type: Number, required: true, min: 0 },
     genre: { type: Schema.Types.ObjectId, ref: "Genre", required: true },

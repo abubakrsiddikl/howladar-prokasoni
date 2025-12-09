@@ -5,6 +5,8 @@ import { StatsControllers } from "./stats.controller";
 
 const router = express.Router();
 
+router.get("/customer", checkAuth(Role.CUSTOMER), StatsControllers.getCustomerDashboardStats);
+
 router.get(
   "/",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),

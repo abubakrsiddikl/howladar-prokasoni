@@ -22,8 +22,12 @@ const createUser = catchAsync(
 
 const updateUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const picture = req.file?.path;
     const userId = req.params.id;
-    const payload = req.body;
+    const payload = {
+      picture,
+      ...req.body,
+    };
     const verifiedToken = req.user;
     const user = await UserServices.updateUser(
       userId,

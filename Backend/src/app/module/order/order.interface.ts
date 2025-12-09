@@ -20,7 +20,7 @@ export enum OrderStatus {
   Delivered = "Delivered",
   Cancelled = "Cancelled",
   Returned = "Returned",
-  Failed = "Failed"
+  Failed = "Failed",
 }
 
 export interface IOrderStatusLog {
@@ -60,4 +60,6 @@ export interface IOrder {
   totalDiscountedPrice: number;
   paymentGateway?: any;
   transactionId?: string;
+
+  createdAt?: string;
 }
