@@ -21,7 +21,7 @@ router.post(
 router.get("/", AuthorControllers.getAllAuthors);
 
 // Get single author by ID (Public)
-router.get("/:id", AuthorControllers.getSingleAuthor);
+router.get("/:slug", AuthorControllers.getSingleAuthor);
 
 // Update an author by ID (Admin/Store Manager only)
 router.patch(

@@ -37,6 +37,46 @@ const getAllGenres = async (query: Record<string, string>) => {
   return { data, meta };
 };
 
+// get sorted genre by book
+const getSortedGenresByBookCount = async () => {
+  const sortedGenres = await Genre.aggregate([
+    // 1. জেনরগুলোকে তাদের বইয়ের সাথে যুক্ত করা
+    {
+      $lookup: {
+        from: "books", // বই কালেকশনের নাম (ছোট হাতের এবং plural)
+        localField: "_id",
+        foreignField: "genre",
+        as: "books",
+      },
+    },
+    // 2. বইয়ের সংখ্যা (count) গণনা করা
+    {
+      $addFields: {
+        bookCount: { $size: "$books" },
+      },
+    },
+    // 3. বইয়ের সংখ্যা অনুসারে ডিসেন্ডিং অর্ডারে সাজানো
+    {
+      $sort: { bookCount: -1 },
+    },
+    // 4. যে জেনরগুলোর বই নেই (bookCount: 0) সেগুলোকে ফিল্টার করে বাদ দেওয়া
+    {
+      $match: {
+        bookCount: { $gt: 0 }, // 0 এর বেশি বই আছে এমন জেনরগুলো রাখো
+      },
+    },
+    // 5. অপ্রয়োজনীয় 'books' অ্যারে বাদ দেওয়া
+    {
+      $project: {
+        books: 0,
+      },
+    },
+  ]);
+  
+
+  return sortedGenres;
+};
+
 // Get Single Genre by slug
 const getGenreBySlug = async (slug: string) => {
   return await Genre.findOne({ slug });
@@ -137,6 +177,7 @@ const deleteGenre = async (id: string) => {
 export const GenreService = {
   createGenre,
   getAllGenres,
+  getSortedGenresByBookCount,
   getGenreBySlug,
   updateGenre,
   deleteGenre,

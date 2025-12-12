@@ -11,6 +11,8 @@ const genre_route_1 = require("../module/genre/genre.route");
 const banner_route_1 = require("../module/banner/banner.route");
 const stats_route_1 = require("../module/stats/stats.route");
 const sitempa_route_1 = require("../module/sitemap/sitempa.route");
+const payment_route_1 = require("../module/payment/payment.route");
+const author_route_1 = require("../module/author/author.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -24,6 +26,10 @@ const moduleRoutes = [
     {
         path: "/genre",
         route: genre_route_1.GenreRoutes,
+    },
+    {
+        path: "/author",
+        route: author_route_1.AuthorRoutes,
     },
     {
         path: "/book",
@@ -44,6 +50,10 @@ const moduleRoutes = [
     {
         path: "/stats",
         route: stats_route_1.StatsRoutes,
+    },
+    {
+        path: "/payment",
+        route: payment_route_1.PaymentRoutes,
     },
     {
         path: "/sitemap.xml",

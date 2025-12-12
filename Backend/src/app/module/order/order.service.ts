@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Order } from "./order.model";
-import { v4 as uuidv4 } from "uuid";
 import {
   IOrder,
   IOrderStatusLog,
@@ -19,6 +18,7 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { SSLService } from "../sslCommerz/sslCommerz.service";
 import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 import { sendOrderEmails } from "../../utils/sendOrderEmail";
+import { generateSecureTransactionId } from "../../utils/generateTransactionId";
 
 const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
   const session = await Book.startSession();
@@ -80,7 +80,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
     // * SSLCommerz payment initiate
     if (orderData.paymentMethod === "SSLCommerz") {
       // generate tranId
-      const transactionId = uuidv4();
+      const transactionId = generateSecureTransactionId(20);
       // 1. ssl payment data
       const sslPayload: ISSLCommerz = {
         orderId: orderData.orderId,
@@ -182,9 +182,16 @@ const getAllOrders = async (query: Record<string, string>) => {
 };
 
 const getTraceOrder = async (orderId: string) => {
-  return await Order.findOne({ orderId }).select(
+  const orderInfo = await Order.findOne({ orderId }).select(
     "orderStatusLog createdAt -_id"
   );
+  if (!orderInfo) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "এই অর্ডার আইডি তে কোনো অর্ডার পাওয়া যায় নি দয়া সঠিক অর্ডার আইডি দিন "
+    );
+  }
+  return orderInfo;
 };
 const getSingleOrder = async (orderId: string) => {
   return await Order.findOne({ orderId })

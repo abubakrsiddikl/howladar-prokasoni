@@ -10,6 +10,7 @@ import {
 import AppError from "../../errorHelper/AppError";
 import { Book } from "../book/book.model";
 import { sendOrderEmails } from "../../utils/sendOrderEmail";
+import { Cart } from "../cart/cart.model";
 
 const successPayment = async (query: Record<string, string>) => {
   const session = await Order.startSession();
@@ -43,6 +44,8 @@ const successPayment = async (query: Record<string, string>) => {
       throw new AppError(httpStatus.NOT_FOUND, "Order not found!");
     }
 
+    await Cart.findOneAndDelete({ user: updatedOrder.user._id }, { session });
+
     await session.commitTransaction();
     session.endSession();
     await sendOrderEmails({
@@ -67,7 +70,6 @@ const successPayment = async (query: Record<string, string>) => {
 
 // ssl fail
 const failPayment = async (query: Record<string, string>) => {
-
   const session = await Order.startSession();
   session.startTransaction();
 

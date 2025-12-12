@@ -17,12 +17,20 @@ const banner_model_1 = require("./banner.model");
 const AppError_1 = __importDefault(require("../../errorHelper/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const cloudinary_config_1 = require("../../config/cloudinary.config");
+const QueryBuilder_1 = require("../../utils/QueryBuilder");
 const createBanner = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const banner = yield banner_model_1.Banner.create(payload);
     return banner;
 });
-const getAllBanners = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield banner_model_1.Banner.find({}).sort({ createdAt: -1 });
+const getAllBanners = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const queryBuilder = new QueryBuilder_1.QueryBuilder(banner_model_1.Banner.find(), query);
+    yield queryBuilder.filter();
+    queryBuilder.search(["title"]).sort().paginate();
+    const [data, meta] = yield Promise.all([
+        queryBuilder.build(),
+        queryBuilder.getMeta(),
+    ]);
+    return { data, meta };
 });
 const getActiveBanners = () => __awaiter(void 0, void 0, void 0, function* () {
     const today = new Date();

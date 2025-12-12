@@ -3,7 +3,6 @@ import { Query } from "mongoose";
 import { excludeField } from "../constants";
 import { Genre } from "../module/genre/genre.model";
 
-
 export class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
   public readonly query: Record<string, string>;
@@ -41,7 +40,6 @@ export class QueryBuilder<T> {
       const genreDocs = await Genre.find({
         name: { $in: genreNames.map((name) => new RegExp(name, "i")) },
       });
-
       const validGenreIds = genreDocs.map((doc) => doc._id);
 
       if (validGenreIds.length > 0) {
@@ -50,9 +48,12 @@ export class QueryBuilder<T> {
         delete filter.genre;
       }
     } else if (filter.genre && typeof filter.genre === "string") {
+      const regexPattern = new RegExp(`^${filter.genre}$`, "i");
+
       const genreDoc = await Genre.findOne({
-        name: { $regex: filter.genre, $options: "i" },
+        name: { $regex: regexPattern },
       });
+
       if (genreDoc) {
         filter.genre = genreDoc._id;
       } else {

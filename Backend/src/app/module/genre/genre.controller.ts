@@ -31,6 +31,21 @@ const getAllGenres = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// sorted genre by book
+const getSortedGenresByBookCount = catchAsync(
+  async (req: Request, res: Response) => {
+    
+    const result = await GenreService.getSortedGenresByBookCount();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Sorted Genres retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 // Get Single Genre by Slug
 const getGenreBySlug = catchAsync(async (req: Request, res: Response) => {
   const { slug } = req.params;
@@ -73,6 +88,7 @@ const deleteGenre = catchAsync(async (req: Request, res: Response) => {
 export const GenreController = {
   createGenre,
   getAllGenres,
+  getSortedGenresByBookCount,
   getGenreBySlug,
   updateGenre,
   deleteGenre,

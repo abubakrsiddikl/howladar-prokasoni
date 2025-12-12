@@ -15,6 +15,8 @@ const router = express_1.default.Router();
 router.post("/create", (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.STORE_MANAGER), (0, validateRequest_1.validateRequest)(genre_validation_1.createGenreValidationSchema), genre_controller_1.GenreController.createGenre);
 //  Get All Genres
 router.get("/", genre_controller_1.GenreController.getAllGenres);
+// get genre sorted by book count
+router.get("/sorted", genre_controller_1.GenreController.getSortedGenresByBookCount);
 // Get Single Genre by Slug
 router.get("/:slug", genre_controller_1.GenreController.getGenreBySlug);
 //  Update Genre

@@ -21,6 +21,9 @@ router.post(
 //  Get All Genres
 router.get("/", GenreController.getAllGenres);
 
+// get genre sorted by book count
+router.get("/sorted", GenreController.getSortedGenresByBookCount);
+
 // Get Single Genre by Slug
 router.get("/:slug", GenreController.getGenreBySlug);
 

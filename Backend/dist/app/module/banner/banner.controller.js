@@ -29,12 +29,13 @@ const createBanner = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
     });
 }));
 const getAllBanners = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const banners = yield banner_service_1.BannerServices.getAllBanners();
+    const result = yield banner_service_1.BannerServices.getAllBanners(req.query);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
         message: "Banners retrieved successfully",
-        data: banners,
+        data: result.data,
+        meta: result.meta,
     });
 }));
 const getActiveBanners = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

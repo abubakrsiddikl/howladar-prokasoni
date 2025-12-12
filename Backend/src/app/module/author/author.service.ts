@@ -31,8 +31,8 @@ const getAllAuthors = async (query: Record<string, string>) => {
 };
 
 // Get a single author by ID
-const getSingleAuthor = async (id: string) => {
-  const author = await Author.findById(id);
+const getSingleAuthor = async (slug: string) => {
+  const author = await Author.findOne({slug: slug}).populate("books");
   if (!author) {
     throw new AppError(httpStatus.NOT_FOUND, "Author not found.");
   }

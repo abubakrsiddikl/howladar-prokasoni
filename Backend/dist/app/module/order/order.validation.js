@@ -20,7 +20,7 @@ exports.createOrderSchema = zod_1.z.object({
     items: zod_1.z.array(exports.orderItemSchema).min(1, "At least one item is required"),
     shippingInfo: exports.shippingInfoSchema,
     paymentMethod: zod_1.z.nativeEnum(order_interface_1.PaymentMethod).default(order_interface_1.PaymentMethod.COD),
-    paymentStatus: zod_1.z.nativeEnum(order_interface_1.PaymentStatus).default(order_interface_1.PaymentStatus.Pending),
+    paymentStatus: zod_1.z.nativeEnum(order_interface_1.PaymentStatus).default(order_interface_1.PaymentStatus.PENDING),
 });
 exports.updateOrderStatusZodSchema = zod_1.z.object({
     status: zod_1.z.nativeEnum(order_interface_1.OrderStatus),

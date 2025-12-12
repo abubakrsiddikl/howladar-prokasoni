@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelper/AppError";
+import { Order } from "../order/order.model";
 
 import { ISSLCommerz } from "./sslCommerz.interface";
 import axios from "axios";
@@ -58,39 +59,19 @@ const validatePayment = async (payload: any) => {
   try {
     const response = await axios({
       method: "GET",
-      url: `${envVars.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_PASS}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
+      url: `${envVars.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_ID}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
     });
 
-    const validationData = response.data;
-
-    console.log("sslcommerz validate api response", validationData);
-
-    if (
-      validationData?.status === "VALID" ||
-      validationData?.status === "VALIDATED"
-    ) {
-      return {
-        success: true,
-        message: "Payment validated successfully.",
-        validationData: validationData,
-      };
-    } else {
-      return {
-        success: false,
-        message:
-          validationData.failedreason ||
-          "Payment validation failed at SSLCommerz.",
-        validationData: validationData,
-      };
-    }
+    console.log("sslcomeerz validate api response", response.data);
+    await Order.updateOne(
+      {
+        transactionId: payload.tran_id,
+      },
+      { paymentGateway: response.data }
+    );
   } catch (error: any) {
     console.log(error);
-
-    return {
-      success: false,
-      message: `Payment validation API call failed: ${error.message}`,
-      validationData: null,
-    };
+    throw new AppError(401, `Payment Validation Error, ${error.message}`);
   }
 };
 

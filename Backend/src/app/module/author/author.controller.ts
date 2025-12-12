@@ -41,8 +41,8 @@ const getAllAuthors = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to get a single author
 const getSingleAuthor = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const author = await AuthorServices.getSingleAuthor(id);
+  const { slug } = req.params;
+  const author = await AuthorServices.getSingleAuthor(slug);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

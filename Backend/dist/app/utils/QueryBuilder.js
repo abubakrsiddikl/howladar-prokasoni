@@ -19,10 +19,41 @@ class QueryBuilder {
     }
     filter() {
         return __awaiter(this, void 0, void 0, function* () {
+            // const filter = { ...this.query };
+            // if (filter.genre) {
+            //   const genreDoc = await Genre.findOne({
+            //     name: { $regex: filter.genre, $options: "i" },
+            //   });
+            //   if (genreDoc) {
+            //     filter.genre = genreDoc._id;
+            //   } else {
+            //     delete filter.genre;
+            //   }
+            // }
+            // for (const field of excludeField) {
+            //   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+            //   delete filter[field];
+            // }
+            // this.modelQuery = this.modelQuery.find(filter);
+            // return this;
             const filter = Object.assign({}, this.query);
-            if (filter.genre) {
+            if (filter.genre && Array.isArray(filter.genre)) {
+                const genreNames = filter.genre;
+                const genreDocs = yield genre_model_1.Genre.find({
+                    name: { $in: genreNames.map((name) => new RegExp(name, "i")) },
+                });
+                const validGenreIds = genreDocs.map((doc) => doc._id);
+                if (validGenreIds.length > 0) {
+                    filter.genre = { $in: validGenreIds };
+                }
+                else {
+                    delete filter.genre;
+                }
+            }
+            else if (filter.genre && typeof filter.genre === "string") {
+                const regexPattern = new RegExp(`^${filter.genre}$`, "i");
                 const genreDoc = yield genre_model_1.Genre.findOne({
-                    name: { $regex: filter.genre, $options: "i" },
+                    name: { $regex: regexPattern },
                 });
                 if (genreDoc) {
                     filter.genre = genreDoc._id;
@@ -35,7 +66,7 @@ class QueryBuilder {
                 // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete filter[field];
             }
-            this.modelQuery = this.modelQuery.find(filter); // Tour.find().find(filter)
+            this.modelQuery = this.modelQuery.find(filter);
             return this;
         });
     }

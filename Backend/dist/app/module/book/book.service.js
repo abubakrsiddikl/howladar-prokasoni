@@ -48,7 +48,7 @@ const getAllBook = (query) => __awaiter(void 0, void 0, void 0, function* () {
     yield queryBuilder.filter();
     queryBuilder.search(book_constants_1.bookSearchableFields).sort().paginate();
     const [data, meta] = yield Promise.all([
-        queryBuilder.build().populate("genre", "name"),
+        queryBuilder.build().populate("genre", "name").populate("author", "name"),
         queryBuilder.getMeta(),
     ]);
     return { data, meta };
@@ -91,7 +91,7 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         if (discount < 0 || discount > 100) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Discount must be between 0 and 100");
         }
-        // frontend send original price 
+        // frontend send original price
         const originalPrice = payload.price;
         if (originalPrice === undefined) {
             throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Price is required");
@@ -103,7 +103,7 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         const discountAmount = (originalPrice * discount) / 100;
         // discount after price
         const finalPrice = Math.round(originalPrice - discountAmount);
-        // DB to overwrite 
+        // DB to overwrite
         payload.discountedPrice = discountAmount; // amount of discount
         payload.price = finalPrice; // final price off discountPrice
     }

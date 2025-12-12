@@ -22,11 +22,12 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_interface_1 = require("../user/user.interface");
 const generateOrderId_1 = require("../../utils/generateOrderId");
 const user_model_1 = require("../user/user.model");
-const sendEmail_1 = require("../../utils/sendEmail");
 const order_constant_1 = require("./order.constant");
 const QueryBuilder_1 = require("../../utils/QueryBuilder");
+const sslCommerz_service_1 = require("../sslCommerz/sslCommerz.service");
+const sendOrderEmail_1 = require("../../utils/sendOrderEmail");
+const generateTransactionId_1 = require("../../utils/generateTransactionId");
 const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const session = yield book_model_1.Book.startSession();
     try {
         session.startTransaction();
@@ -54,11 +55,46 @@ const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0,
             timestamp: new Date(),
         };
         // delivery charge include of totalAmount
-        const deliveryCharge = (_a = payload.deliveryCharge) !== null && _a !== void 0 ? _a : 120;
+        const deliveryCharge = payload.shippingInfo.district === "ঢাকা" ? 60 : 120;
         const subTotal = totalAmount + deliveryCharge;
         // Prepare order data
-        const orderData = Object.assign(Object.assign({}, payload), { user: decodedToken.userId, totalAmount: subTotal, orderStatusLog: [initialOrderStatusLog], orderId: yield (0, generateOrderId_1.generateOrderId)() });
-        // Create order within transaction
+        const orderData = Object.assign(Object.assign({}, payload), { user: decodedToken.userId, totalAmount: subTotal, orderStatusLog: [initialOrderStatusLog], orderId: yield (0, generateOrderId_1.generateOrderId)(), deliveryCharge: deliveryCharge });
+        // * SSLCommerz payment initiate
+        if (orderData.paymentMethod === "SSLCommerz") {
+            // generate tranId
+            const transactionId = (0, generateTransactionId_1.generateSecureTransactionId)(20);
+            // 1. ssl payment data
+            const sslPayload = {
+                orderId: orderData.orderId,
+                amount: orderData.totalAmount,
+                transactionId: transactionId,
+                name: payload.shippingInfo.name,
+                email: payload.shippingInfo.email,
+                phoneNumber: payload.shippingInfo.phone,
+                address: payload.shippingInfo.address,
+            };
+            // 2. SSL initiate
+            const sslResponse = yield sslCommerz_service_1.SSLService.sslPaymentInit(sslPayload);
+            //  check ssl res
+            if (sslResponse.status === "SUCCESS") {
+                orderData.transactionId = sslPayload.transactionId;
+                // 4. crete order
+                const [order] = yield order_model_1.Order.create([orderData], { session });
+                // update stock
+                for (const item of payload.items) {
+                    yield book_model_1.Book.findByIdAndUpdate(item.book, { $inc: { stock: -item.quantity } }, { session });
+                }
+                yield session.commitTransaction();
+                return {
+                    order,
+                    paymentUrl: sslResponse.GatewayPageURL,
+                };
+            }
+            else {
+                throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "Failed to initiate SSLCommerz payment.");
+            }
+        }
+        //* Create order within transaction and cod
         const [order] = yield order_model_1.Order.create([orderData], { session });
         // Update stock after order creation
         for (const item of payload.items) {
@@ -69,43 +105,10 @@ const createOrder = (payload, decodedToken) => __awaiter(void 0, void 0, void 0,
         if (!user) {
             throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
         }
-        const adminsAndStoreManagers = yield user_model_1.User.find({
-            role: { $in: [user_interface_1.Role.ADMIN, user_interface_1.Role.STORE_MANAGER] },
-        });
-        const adminsAndStoreManagersEmails = adminsAndStoreManagers.map((admin) => admin.email);
-        // Notify admins and store managers about the new order
-        yield (0, sendEmail_1.sendEmail)({
-            to: adminsAndStoreManagersEmails.join(", "),
-            subject: "New Order Created",
-            templateName: "adminOrderEmail",
-            templateData: {
-                orderId: order.orderId,
-                customerName: user.name,
-                total: order.totalAmount,
-                phone: payload.shippingInfo.phone || user.phone,
-                paymentMethod: order.paymentMethod,
-                shippingAddress: payload.shippingInfo.address,
-                city: payload.shippingInfo.city,
-                district: payload.shippingInfo.district,
-                division: payload.shippingInfo.division,
-            },
-        });
-        // Notify the customer about their order
-        yield (0, sendEmail_1.sendEmail)({
-            to: user.email,
-            subject: "Order Confirmation",
-            templateName: "customerOrderEmail",
-            templateData: {
-                orderId: order.orderId,
-                customerName: user.name,
-                total: order.totalAmount,
-                phone: payload.shippingInfo.phone || user.phone,
-                paymentMethod: order.paymentMethod,
-                shippingAddress: payload.shippingInfo.address,
-                city: payload.shippingInfo.city,
-                district: payload.shippingInfo.district,
-                division: payload.shippingInfo.division,
-            },
+        yield (0, sendOrderEmail_1.sendOrderEmails)({
+            order: order,
+            user: user,
+            shippingInfo: order.shippingInfo,
         });
         return order;
     }
@@ -139,7 +142,11 @@ const getAllOrders = (query) => __awaiter(void 0, void 0, void 0, function* () {
     return { data, meta };
 });
 const getTraceOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield order_model_1.Order.findOne({ orderId }).select("orderStatusLog createdAt -_id");
+    const orderInfo = yield order_model_1.Order.findOne({ orderId }).select("orderStatusLog createdAt -_id");
+    if (!orderInfo) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "এই অর্ডার আইডি তে কোনো অর্ডার পাওয়া যায় নি দয়া সঠিক অর্ডার আইডি দিন ");
+    }
+    return orderInfo;
 });
 const getSingleOrder = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield order_model_1.Order.findOne({ orderId })
@@ -154,6 +161,7 @@ const allowedStatusFlow = {
     Shipped: [order_interface_1.OrderStatus.Delivered],
     Delivered: [order_interface_1.OrderStatus.Returned],
     Cancelled: [],
+    Failed: [],
     Returned: [],
 };
 // Status এর note
@@ -163,6 +171,7 @@ const statusNotes = {
     Shipped: "অর্ডারটি কুরিয়ারের কাছে দেয়া হয়েছে",
     Delivered: "অর্ডারটি ডেলিভারি দেয়া হয়েছে",
     Cancelled: "অর্ডারটি বাতিল করা হয়েছে",
+    Failed: "",
     Returned: "অর্ডারটি কাস্টমার দ্বারা ফেরত দেয়া হয়েছে",
 };
 // Update order status function
@@ -187,12 +196,12 @@ const updateOrderStatus = (orderId, newStatus) => __awaiter(void 0, void 0, void
     // Update status & add note
     order.currentStatus = newStatus;
     if (newStatus === order_interface_1.OrderStatus.Delivered) {
-        order.paymentStatus = order_interface_1.PaymentStatus.Paid;
+        order.paymentStatus = order_interface_1.PaymentStatus.PAID;
     }
     // update order status is Cancelled to update  payment status by Cancelled
     if (newStatus === order_interface_1.OrderStatus.Cancelled ||
         newStatus === order_interface_1.OrderStatus.Returned) {
-        order.paymentStatus = order_interface_1.PaymentStatus.Cancelled;
+        order.paymentStatus = order_interface_1.PaymentStatus.CANCELLED;
     }
     order.orderStatusLog.push({
         status: newStatus,

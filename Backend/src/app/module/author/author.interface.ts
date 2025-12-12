@@ -1,8 +1,7 @@
-
-
 // Interface for the Author document
 export interface IAuthor {
   name: string;
+  slug: string;
   bio?: string;
   birthDate?: Date;
   profileImage?: string;
@@ -10,10 +9,9 @@ export interface IAuthor {
   updatedAt?: Date;
 }
 
-
-export interface IAuthorPayload{
+export interface IAuthorPayload {
   name: string;
   bio?: string;
   birthDate?: Date;
   profileImage?: string;
-};
+}

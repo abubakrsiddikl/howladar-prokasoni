@@ -8,9 +8,10 @@ var PaymentMethod;
 })(PaymentMethod || (exports.PaymentMethod = PaymentMethod = {}));
 var PaymentStatus;
 (function (PaymentStatus) {
-    PaymentStatus["Paid"] = "Paid";
-    PaymentStatus["Pending"] = "Pending";
-    PaymentStatus["Cancelled"] = "Cancelled";
+    PaymentStatus["PAID"] = "PAID";
+    PaymentStatus["PENDING"] = "PENDING";
+    PaymentStatus["CANCELLED"] = "CANCELLED";
+    PaymentStatus["FAILED"] = "FAILED";
 })(PaymentStatus || (exports.PaymentStatus = PaymentStatus = {}));
 var OrderStatus;
 (function (OrderStatus) {
@@ -20,4 +21,5 @@ var OrderStatus;
     OrderStatus["Delivered"] = "Delivered";
     OrderStatus["Cancelled"] = "Cancelled";
     OrderStatus["Returned"] = "Returned";
+    OrderStatus["Failed"] = "Failed";
 })(OrderStatus || (exports.OrderStatus = OrderStatus = {}));

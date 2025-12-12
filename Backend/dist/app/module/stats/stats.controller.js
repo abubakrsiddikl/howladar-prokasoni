@@ -17,6 +17,16 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const stats_service_1 = require("./stats.service");
+const getCustomerDashboardStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const customerId = req.user;
+    const stats = yield stats_service_1.StatsServices.getCustomerDashboardStats(customerId);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: "Order statistics retrieved successfully",
+        data: stats,
+    });
+}));
 const getStats = (0, catchAsync_1.catchAsync)((_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const stats = yield stats_service_1.StatsServices.getStats();
     (0, sendResponse_1.sendResponse)(res, {
@@ -36,6 +46,7 @@ const getMonthlySalesStatsController = (0, catchAsync_1.catchAsync)((_req, res) 
     });
 }));
 exports.StatsControllers = {
+    getCustomerDashboardStats,
     getStats,
     getMonthlySalesStatsController,
 };

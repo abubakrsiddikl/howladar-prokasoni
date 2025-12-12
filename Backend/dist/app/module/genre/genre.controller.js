@@ -29,11 +29,22 @@ const createGenre = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0,
 }));
 // Get All Genres
 const getAllGenres = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield genre_service_1.GenreService.getAllGenres();
+    const result = yield genre_service_1.GenreService.getAllGenres(req.query);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
         message: "Genres retrieved successfully",
+        data: result.data,
+        meta: result.meta,
+    });
+}));
+// sorted genre by book
+const getSortedGenresByBookCount = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield genre_service_1.GenreService.getSortedGenresByBookCount();
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "Sorted Genres retrieved successfully",
         data: result,
     });
 }));
@@ -73,6 +84,7 @@ const deleteGenre = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0,
 exports.GenreController = {
     createGenre,
     getAllGenres,
+    getSortedGenresByBookCount,
     getGenreBySlug,
     updateGenre,
     deleteGenre,
