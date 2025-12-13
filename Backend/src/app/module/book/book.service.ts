@@ -50,13 +50,14 @@ const getAllBook = async (query: Record<string, string>) => {
     queryBuilder.getMeta(),
   ]);
 
-
   return { data, meta };
 };
 
 // get single book with slug
 const getSingleBook = async (slug: string) => {
-  const book = await Book.findOne({ slug }).populate("genre");
+  const book = await Book.findOne({ slug })
+    .populate("genre")
+    .populate("author");
   return book;
 };
 

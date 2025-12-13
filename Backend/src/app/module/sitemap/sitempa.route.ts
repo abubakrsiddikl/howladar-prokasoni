@@ -19,7 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
     books.forEach((b) => {
       xml += `
   <url>
-    <loc>https://howladarporkasoni.com.bd/book-details/${b.slug}</loc>
+    <loc>https://howladarporkasoni.com.bd/book/${b.slug}</loc>
     <lastmod>${new Date(b?.updatedAt as Date).toISOString()}</lastmod>
     <priority>0.80</priority>
   </url>
