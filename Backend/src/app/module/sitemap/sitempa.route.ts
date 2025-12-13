@@ -15,7 +15,7 @@ router.get("/", async (req: Request, res: Response) => {
     <priority>1.0</priority>
   </url>
 `;
-
+    
     books.forEach((b) => {
       xml += `
   <url>
