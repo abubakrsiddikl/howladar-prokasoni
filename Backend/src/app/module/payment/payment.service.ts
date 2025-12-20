@@ -11,14 +11,16 @@ import AppError from "../../errorHelper/AppError";
 import { Book } from "../book/book.model";
 import { sendOrderEmails } from "../../utils/sendOrderEmail";
 import { Cart } from "../cart/cart.model";
+import { saveInvoiceURLToDB } from "../../utils/invoiceUrlSaveToDB";
 
 const successPayment = async (query: Record<string, string>) => {
   const session = await Order.startSession();
-  session.startTransaction();
-
-  const transactionId = query.tran_id;
+  let transactionCommitted = false;
 
   try {
+    session.startTransaction();
+
+    const transactionId = query.tran_id;
     if (!transactionId) {
       throw new AppError(httpStatus.BAD_REQUEST, "Missing transaction ID.");
     }
@@ -31,42 +33,56 @@ const successPayment = async (query: Record<string, string>) => {
     };
 
     const updatedOrder = await Order.findOneAndUpdate(
-      { transactionId: transactionId },
+      { transactionId },
       {
         paymentStatus: PaymentStatus.PAID,
         currentStatus: OrderStatus.Approved,
         $push: { orderStatusLog: updateOrderStatusLog },
       },
-      { new: true, session: session }
-    ).populate("user", "-password");
+      { new: true, session }
+    ).populate("user", "-password").populate("items.book");
 
     if (!updatedOrder) {
       throw new AppError(httpStatus.NOT_FOUND, "Order not found!");
     }
 
-    await Cart.findOneAndDelete({ user: updatedOrder.user._id }, { session });
+    await Cart.findOneAndDelete(
+      { user: updatedOrder.user._id },
+      { session }
+    );
 
+    await saveInvoiceURLToDB(updatedOrder._id.toString(), session);
+
+    // ✅ Commit only DB stuff
     await session.commitTransaction();
+    transactionCommitted = true;
     session.endSession();
+
+    // ✅ OUTSIDE transaction
     await sendOrderEmails({
       order: updatedOrder,
       user: updatedOrder.user,
       shippingInfo: updatedOrder.shippingInfo,
     });
+
     return {
       success: true,
       message: "Payment Completed Successfully",
       orderId: updatedOrder.orderId,
     };
   } catch (error: any) {
-    await session.abortTransaction();
+    if (!transactionCommitted) {
+      await session.abortTransaction();
+    }
     session.endSession();
+
     throw new AppError(
       error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
       error.message
     );
   }
 };
+
 
 // ssl fail
 const failPayment = async (query: Record<string, string>) => {

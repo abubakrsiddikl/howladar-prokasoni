@@ -60,6 +60,6 @@ export interface IOrder {
   totalDiscountedPrice: number;
   paymentGateway?: any;
   transactionId?: string;
-
+  invoiceURL?: string;
   createdAt?: string;
 }

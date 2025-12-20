@@ -3,6 +3,8 @@
 import { IOrder } from "../module/order/order.interface";
 import { Role } from "../module/user/user.interface";
 import { User } from "../module/user/user.model";
+import { generateOrderInvoicePDF } from "./invoice";
+
 import { sendEmail } from "./sendEmail";
 
 interface OrderEmailPayload {
@@ -28,6 +30,7 @@ export const sendOrderEmails = async ({
   });
 
   const emails = adminsAndStoreManagers.map((admin) => admin.email);
+  const pdfBuffer = await generateOrderInvoicePDF(order);
 
   // 2. Send admin email
   await sendEmail({
@@ -46,6 +49,13 @@ export const sendOrderEmails = async ({
       district: shippingInfo.district,
       division: shippingInfo.division,
     },
+    attachments: [
+      {
+        filename: `Invoice_${order.orderId}.pdf`,
+        content: pdfBuffer,
+        contentType: "application/pdf",
+      },
+    ],
   });
 
   // 3. Send customer email
@@ -65,5 +75,12 @@ export const sendOrderEmails = async ({
       district: shippingInfo.district,
       division: shippingInfo.division,
     },
+    attachments: [
+      {
+        filename: `Invoice_${order.orderId}.pdf`,
+        content: pdfBuffer,
+        contentType: "application/pdf",
+      },
+    ],
   });
 };

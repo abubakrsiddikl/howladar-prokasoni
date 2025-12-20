@@ -19,6 +19,7 @@ import { SSLService } from "../sslCommerz/sslCommerz.service";
 import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 import { sendOrderEmails } from "../../utils/sendOrderEmail";
 import { generateSecureTransactionId } from "../../utils/generateTransactionId";
+import { saveInvoiceURLToDB } from "../../utils/invoiceUrlSaveToDB";
 
 const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
   const session = await Book.startSession();
@@ -67,6 +68,13 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
     const deliveryCharge = payload.shippingInfo.district === "ঢাকা" ? 60 : 120;
 
     const subTotal = totalAmount + deliveryCharge;
+    const totalDiscountedPrice = payload.items.reduce(
+      (sum: number, item: any) =>
+        sum + (item.book.discountedPrice || 0) * item.quantity,
+
+      0
+    );
+
     // Prepare order data
     const orderData = {
       ...payload,
@@ -75,6 +83,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       orderStatusLog: [initialOrderStatusLog],
       orderId: await generateOrderId(),
       deliveryCharge: deliveryCharge,
+      totalDiscountedPrice: totalDiscountedPrice,
     };
 
     // * SSLCommerz payment initiate
@@ -134,6 +143,15 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       );
     }
 
+    // populate order to use send email pdf attachment
+    const populateOrder = await Order.findById(order._id)
+      .populate("items.book")
+      .session(session);
+    if (!populateOrder) {
+      throw new AppError(httpStatus.NOT_FOUND, "Order could not be populated");
+    }
+    // invoice pdf generate and upload and save url to db
+    await saveInvoiceURLToDB(order._id.toString(), session);
     await session.commitTransaction();
     const user = await User.findById(decodedToken.userId, "-password").session(
       session
@@ -142,7 +160,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
     await sendOrderEmails({
-      order: order,
+      order: populateOrder as IOrder,
       user: user,
       shippingInfo: order.shippingInfo,
     });

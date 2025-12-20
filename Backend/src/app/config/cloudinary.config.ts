@@ -18,7 +18,7 @@ export const uploadBufferToCloudinary = async (
 ): Promise<UploadApiResponse | undefined> => {
   try {
     return new Promise((resolve, reject) => {
-      const public_id = `pdf/${fileName}-${Date.now()}`;
+      const public_id = `pdf/howladar-store-invoice/${fileName}-${Date.now()}`;
       const bufferStream = new stream.PassThrough();
       bufferStream.end(buffer);
       cloudinary.uploader

@@ -82,7 +82,18 @@ const orderSchema = new Schema<IOrder>(
     paymentGateway: {
       type: Schema.Types.Mixed,
     },
-    transactionId: { type: String, required: false, unique: true },
+    transactionId: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
+    },
+    invoiceURL: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
+    },
   },
   { timestamps: true }
 );
