@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
@@ -11,6 +10,7 @@ import { envVars } from "../../config/env";
 import { setAuthCookie } from "../../utils/setCookie";
 import { IUser } from "../user/user.interface";
 import { AuthServices } from "./auth.service";
+import { JwtPayload } from "jsonwebtoken";
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -57,20 +57,38 @@ const logout = catchAsync(async (req: Request, res: Response) => {
 
 // forgot password
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
-
+const forgotPassword = catchAsync(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
 
     await AuthServices.forgotPassword(email);
 
     sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "Email Sent Successfully",
-        data: null,
-    })
-})
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Email Sent Successfully",
+      data: null,
+    });
+  },
+);
+
+// reset password
+const resetPassword = catchAsync(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user;
+
+    await AuthServices.resetPassword(req.body, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password Changed Successfully",
+      data: null,
+    });
+  },
+);
 // google
 const googleCallbackController = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -106,5 +124,6 @@ export const AuthControllers = {
   credentialsLogin,
   logout,
   forgotPassword,
+  resetPassword,
   googleCallbackController,
 };

@@ -2,6 +2,8 @@ import { NextFunction, Request, Response, Router } from "express";
 import { AuthControllers } from "./auth.controller";
 import passport from "passport";
 import { envVars } from "../../config/env";
+import { checkAuth } from "../../middleware/checkAuth";
+import { Role } from "../user/user.interface";
 
 const router = Router();
 
@@ -10,6 +12,9 @@ router.post("/login", AuthControllers.credentialsLogin);
 
 // forgot password
 router.post("/forgot-password", AuthControllers.forgotPassword)
+
+// reset password
+router.post("/reset-password", checkAuth(...Object.values(Role)), AuthControllers.resetPassword)
 
 // logout
 router.post("/logout", AuthControllers.logout);
