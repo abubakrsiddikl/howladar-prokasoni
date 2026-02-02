@@ -8,6 +8,9 @@ const router = Router();
 // login
 router.post("/login", AuthControllers.credentialsLogin);
 
+// forgot password
+router.post("/forgot-password", AuthControllers.forgotPassword)
+
 // logout
 router.post("/logout", AuthControllers.logout);
 

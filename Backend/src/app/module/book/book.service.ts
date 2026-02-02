@@ -21,14 +21,14 @@ const createBook = async (payload: IBook) => {
     if (discount < 0 || discount > 100) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        "Discount must be between 0 and 100"
+        "Discount must be between 0 and 100",
       );
     }
     const price = payload.price;
     if (price < 0) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        "Price must be a positive number"
+        "Price must be a positive number",
       );
     }
     payload.discountedPrice = (price * discount) / 100;
@@ -53,6 +53,55 @@ const getAllBook = async (query: Record<string, string>) => {
   return { data, meta };
 };
 
+// get home books
+
+const getHomeBooks = async () => {
+  // step 1: get distinct categories from the books collection
+  const categories = await Book.distinct("genre");
+  const targetCategories = categories.slice(0, 10);
+
+  const data = await Book.aggregate([
+    //  filter stage to get books only from the target categories
+    { $match: { genre: { $in: targetCategories } } },
+
+    // grouping stage to group books by genre
+    {
+      $group: {
+        _id: "$genre",
+        books: { $push: "$$ROOT" },
+        totalBooksInCategory: { $sum: 1 },
+      },
+    },
+
+    // maximum books sorting by totalBooksInCategory
+    { $sort: { totalBooksInCategory: -1 } },
+
+    // data formatting stage
+    {
+      $project: {
+        genreId: "$_id",
+        totalBooks: "$totalBooksInCategory",
+        books: {
+          $slice: ["$books", 10],
+        },
+        _id: 0,
+      },
+    },
+
+    // joining genre details
+    {
+      $lookup: {
+        from: "genres",
+        localField: "genreId",
+        foreignField: "_id",
+        as: "genreDetails",
+      },
+    },
+    { $unwind: "$genreDetails" },
+  ]);
+
+  return data;
+};
 // get single book with slug
 const getSingleBook = async (slug: string) => {
   const book = await Book.findOne({ slug })
@@ -75,7 +124,7 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
   if (titleExist) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `${payload.title} এই নামের বই ইতিমধ্যেই আপলোড করা আছে !`
+      `${payload.title} এই নামের বই ইতিমধ্যেই আপলোড করা আছে !`,
     );
   }
   const isBookExist = await Book.findById(id);
@@ -100,7 +149,7 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
     if (discount < 0 || discount > 100) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        "Discount must be between 0 and 100"
+        "Discount must be between 0 and 100",
       );
     }
 
@@ -112,7 +161,7 @@ const updateBook = async (id: string, payload: Partial<IBook>) => {
     if (originalPrice < 0) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        "Price must be a positive number"
+        "Price must be a positive number",
       );
     }
 
@@ -151,7 +200,7 @@ const deleteBook = async (id: string) => {
       $pull: {
         items: { book: isBookExist._id },
       },
-    }
+    },
   );
 
   // 4. remove book references from CartItems
@@ -165,6 +214,7 @@ const deleteBook = async (id: string) => {
 
 export const BookServices = {
   createBook,
+  getHomeBooks,
   getAllBook,
   getSingleBook,
   getBookByGenre,

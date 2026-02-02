@@ -1,3 +1,4 @@
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
@@ -8,6 +9,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { envVars } from "../../config/env";
 import { setAuthCookie } from "../../utils/setCookie";
+import { IUser } from "../user/user.interface";
+import { AuthServices } from "./auth.service";
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -18,6 +21,7 @@ const credentialsLogin = catchAsync(
       if (!user) {
         return next(new AppError(401, info.message));
       }
+
       const userToken = await createUserToken(user);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,7 +37,7 @@ const credentialsLogin = catchAsync(
         },
       });
     })(req, res, next);
-  }
+  },
 );
 
 //  logout
@@ -51,6 +55,22 @@ const logout = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// forgot password
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const { email } = req.body;
+
+    await AuthServices.forgotPassword(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Email Sent Successfully",
+        data: null,
+    })
+})
 // google
 const googleCallbackController = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,20 +80,31 @@ const googleCallbackController = catchAsync(
       redirectTo = redirectTo.slice(1);
     }
 
-    const user = req.user;
+    const user = req.user as IUser;
 
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
     }
+
     const tokenInfo = createUserToken(user);
 
     setAuthCookie(res, tokenInfo);
+    if (!redirectTo) {
+      if (user.role === "ADMIN") {
+        redirectTo = "admin/dashboard";
+      } else if (user.role === "STORE_MANAGER") {
+        redirectTo = "storemanager/dashboard";
+      } else {
+        redirectTo = "customer/dashboard"; // default for customer
+      }
+    }
 
     res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`);
-  }
+  },
 );
 export const AuthControllers = {
   credentialsLogin,
   logout,
+  forgotPassword,
   googleCallbackController,
 };

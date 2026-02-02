@@ -37,7 +37,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       ship_add1: "N/A",
       ship_add2: "N/A",
       ship_city: "N/A",
-
+      ship_country: "N/A",
       ship_state: "N/A",
       ship_postcode: 1000,
     };
@@ -47,6 +47,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       data: data,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
+    console.log(response.data);
 
     return response.data;
   } catch (error: any) {
@@ -67,7 +68,7 @@ const validatePayment = async (payload: any) => {
       {
         transactionId: payload.tran_id,
       },
-      { paymentGateway: response.data }
+      { paymentGateway: response.data },
     );
   } catch (error: any) {
     console.log(error);

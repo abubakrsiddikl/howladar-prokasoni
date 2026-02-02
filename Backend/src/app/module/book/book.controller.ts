@@ -43,6 +43,17 @@ const getAllBook = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get home books
+const getHomeBooks = catchAsync(async (req: Request, res: Response) => {
+  const books = await BookServices.getHomeBooks();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Home page books retrieved successfully",
+    data: books,
+  });
+});
 // get single book with slug
 const getSingleBook = catchAsync(async (req: Request, res: Response) => {
   const slug = req.params.slug;
@@ -108,6 +119,7 @@ const deleteBook = catchAsync(async (req: Request, res: Response) => {
 export const BookControllers = {
   createBook,
   getAllBook,
+  getHomeBooks,
   getSingleBook,
   getBookByGenre,
   updateBook,
