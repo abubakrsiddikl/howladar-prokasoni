@@ -47,7 +47,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       data: data,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
-    console.log(response.data);
+    // console.log(response.data);
 
     return response.data;
   } catch (error: any) {

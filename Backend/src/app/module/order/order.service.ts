@@ -29,7 +29,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
     if (decodedToken.role !== Role.CUSTOMER) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "Only customers can place orders!"
+        "Only customers can place orders!",
       );
     }
 
@@ -42,7 +42,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       if (!book) {
         throw new AppError(
           httpStatus.NOT_FOUND,
-          `Book not found: ${item.book}`
+          `Book not found: ${item.book}`,
         );
       }
 
@@ -50,7 +50,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       if (book.stock < item.quantity) {
         throw new AppError(
           httpStatus.BAD_REQUEST,
-          `Not enough stock for book: ${book.title}`
+          `Not enough stock for book: ${book.title}`,
         );
       }
 
@@ -72,7 +72,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       (sum: number, item: any) =>
         sum + (item.book.discountedPrice || 0) * item.quantity,
 
-      0
+      0,
     );
 
     // Prepare order data
@@ -103,7 +103,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
 
       // 2. SSL initiate
       const sslResponse = await SSLService.sslPaymentInit(sslPayload);
-
+      // console.log("ssl initiate res", sslResponse);
       //  check ssl res
       if (sslResponse.status === "SUCCESS") {
         orderData.transactionId = sslPayload.transactionId;
@@ -115,7 +115,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
           await Book.findByIdAndUpdate(
             item.book,
             { $inc: { stock: -item.quantity } },
-            { session }
+            { session },
           );
         }
         await session.commitTransaction();
@@ -126,7 +126,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       } else {
         throw new AppError(
           httpStatus.BAD_REQUEST,
-          "Failed to initiate SSLCommerz payment."
+          "Failed to initiate SSLCommerz payment.",
         );
       }
     }
@@ -139,7 +139,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
       await Book.findByIdAndUpdate(
         item.book,
         { $inc: { stock: -item.quantity } },
-        { session }
+        { session },
       );
     }
 
@@ -154,7 +154,7 @@ const createOrder = async (payload: IOrder, decodedToken: JwtPayload) => {
     await saveInvoiceURLToDB(order._id.toString(), session);
     await session.commitTransaction();
     const user = await User.findById(decodedToken.userId, "-password").session(
-      session
+      session,
     );
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, "User not found");
@@ -201,12 +201,12 @@ const getAllOrders = async (query: Record<string, string>) => {
 
 const getTraceOrder = async (orderId: string) => {
   const orderInfo = await Order.findOne({ orderId }).select(
-    "orderStatusLog createdAt -_id"
+    "orderStatusLog createdAt -_id",
   );
   if (!orderInfo) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      "এই অর্ডার আইডি তে কোনো অর্ডার পাওয়া যায় নি দয়া সঠিক অর্ডার আইডি দিন "
+      "এই অর্ডার আইডি তে কোনো অর্ডার পাওয়া যায় নি দয়া সঠিক অর্ডার আইডি দিন ",
     );
   }
   return orderInfo;
@@ -250,18 +250,18 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
   if (order.currentStatus === newStatus) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`
+      `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`,
     );
   }
 
   // Check duplicate in log
   const isDuplicate = order.orderStatusLog.some(
-    (item) => item.status === newStatus
+    (item) => item.status === newStatus,
   );
   if (isDuplicate) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`
+      `অর্ডারের স্ট্যাটাস ইতিমধ্যেই ${newStatus}`,
     );
   }
 
@@ -271,7 +271,7 @@ const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
   if (!allowedNextStatus.includes(newStatus)) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `অর্ডারের স্ট্যাটাস ${order.currentStatus} থেকে ${newStatus} সম্ভব নয়`
+      `অর্ডারের স্ট্যাটাস ${order.currentStatus} থেকে ${newStatus} সম্ভব নয়`,
     );
   }
 
@@ -305,7 +305,7 @@ const updatePaymentStatus = async (orderId: string, paymentStatus: string) => {
   const updatedOrder = await Order.findByIdAndUpdate(
     orderId,
     { paymentStatus: paymentStatus },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
   return updatedOrder;
 };
