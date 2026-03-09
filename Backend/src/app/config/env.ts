@@ -44,6 +44,7 @@ interface EnvConfig {
     SMTP_FROM: string;
   };
   PRERENDER_IO_TOKEN: string;
+  OPENAI_API_KEY?: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -81,6 +82,7 @@ const loadEnvVariables = (): EnvConfig => {
     "SMTP_PASS",
     "SMTP_FROM",
     "PRERENDER_IO_TOKEN",
+    "OPENAI_API_KEY",
   ];
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
@@ -133,6 +135,7 @@ const loadEnvVariables = (): EnvConfig => {
       SMTP_FROM: process.env.SMTP_FROM as string,
     },
     PRERENDER_IO_TOKEN: process.env.PRERENDER_IO_TOKEN as string,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY as string,
   };
 };
 

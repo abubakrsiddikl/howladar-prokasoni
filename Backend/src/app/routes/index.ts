@@ -10,6 +10,7 @@ import { StatsRoutes } from "../module/stats/stats.route";
 import { SitemapRoutes } from "../module/sitemap/sitempa.route";
 import { PaymentRoutes } from "../module/payment/payment.route";
 import { AuthorRoutes } from "../module/author/author.route";
+import { AIRoutes } from "../module/ai/ai.route";
 
 export const router = Router();
 
@@ -53,6 +54,10 @@ const moduleRoutes = [
   {
     path: "/payment",
     route: PaymentRoutes,
+  },
+  {
+    path: "/ai",
+    route: AIRoutes,
   },
   {
     path: "/sitemap.xml",
