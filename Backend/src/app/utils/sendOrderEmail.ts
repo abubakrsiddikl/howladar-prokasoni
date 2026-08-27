@@ -9,7 +9,7 @@ import { sendEmail } from "./sendEmail";
 
 interface OrderEmailPayload {
   order: IOrder;
-  user: any;
+  user?: any;
   shippingInfo: {
     address: string;
     phone: string;
@@ -38,16 +38,17 @@ export const sendOrderEmails = async ({
     subject: "New Order Created",
     templateName: "adminOrderEmail",
     templateData: {
-      orderId: order.orderId,
-      customerName: user.name,
-      total: order.totalAmount,
-      phone: shippingInfo.phone || user.phone,
-      paymentMethod: order.paymentMethod,
-      paymentStatus: order.paymentStatus,
-      shippingAddress: shippingInfo.address,
-      city: shippingInfo.city,
-      district: shippingInfo.district,
-      division: shippingInfo.division,
+      orderId: order?.orderId,
+      orderType: order?.orderType,
+      customerName: user?.name,
+      total: order?.totalAmount,
+      phone: shippingInfo.phone || user?.phone,
+      paymentMethod: order?.paymentMethod,
+      paymentStatus: order?.paymentStatus,
+      shippingAddress: shippingInfo?.address,
+      city: shippingInfo?.city,
+      district: shippingInfo?.district,
+      division: shippingInfo?.division,
     },
     attachments: [
       {
@@ -59,28 +60,30 @@ export const sendOrderEmails = async ({
   });
 
   // 3. Send customer email
-  await sendEmail({
-    to: user.email,
-    subject: "Order Confirmation",
-    templateName: "customerOrderEmail",
-    templateData: {
-      orderId: order.orderId,
-      customerName: user.name,
-      total: order.totalAmount,
-      phone: shippingInfo.phone || user.phone,
-      paymentMethod: order.paymentMethod,
-      paymentStatus: order.paymentStatus,
-      shippingAddress: shippingInfo.address,
-      city: shippingInfo.city,
-      district: shippingInfo.district,
-      division: shippingInfo.division,
-    },
-    attachments: [
-      {
-        filename: `Invoice_${order.orderId}.pdf`,
-        content: pdfBuffer,
-        contentType: "application/pdf",
+  if (user && user.email) {
+    await sendEmail({
+      to: user.email,
+      subject: "Order Confirmation",
+      templateName: "customerOrderEmail",
+      templateData: {
+        orderId: order.orderId,
+        customerName: user.name,
+        total: order.totalAmount,
+        phone: shippingInfo.phone || user.phone,
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
+        shippingAddress: shippingInfo.address,
+        city: shippingInfo.city,
+        district: shippingInfo.district,
+        division: shippingInfo.division,
       },
-    ],
-  });
+      attachments: [
+        {
+          filename: `Invoice_${order.orderId}.pdf`,
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    });
+  }
 };

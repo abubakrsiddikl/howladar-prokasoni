@@ -11,6 +11,7 @@ import { SitemapRoutes } from "../module/sitemap/sitempa.route";
 import { PaymentRoutes } from "../module/payment/payment.route";
 import { AuthorRoutes } from "../module/author/author.route";
 import { AIRoutes } from "../module/ai/ai.route";
+import { CampaignRoutes } from "../module/campaign/campaign.route";
 
 export const router = Router();
 
@@ -58,6 +59,10 @@ const moduleRoutes = [
   {
     path: "/ai",
     route: AIRoutes,
+  },
+  {
+    path: "/campaign",
+    route: CampaignRoutes,
   },
   {
     path: "/sitemap.xml",

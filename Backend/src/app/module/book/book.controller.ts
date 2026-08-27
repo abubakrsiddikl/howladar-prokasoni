@@ -56,7 +56,7 @@ const getHomeBooks = catchAsync(async (req: Request, res: Response) => {
 });
 // get single book with slug
 const getSingleBook = catchAsync(async (req: Request, res: Response) => {
-  const slug = req.params.slug;
+  const slug = req.params.slug as string;
   const book = await BookServices.getSingleBook(slug);
   sendResponse(res, {
     success: true,
@@ -68,7 +68,7 @@ const getSingleBook = catchAsync(async (req: Request, res: Response) => {
 
 // get book by genre
 const getBookByGenre = catchAsync(async (req: Request, res: Response) => {
-  const genre = req.params.genre;
+  const genre = req.params.genre as string;
   const book = await BookServices.getBookByGenre(genre);
   sendResponse(res, {
     success: true,
@@ -82,7 +82,7 @@ const getBookByGenre = catchAsync(async (req: Request, res: Response) => {
 
 // update a book
 const updateBook = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params.id as string;
 
   let coverImagePath: string | undefined;
 
@@ -106,7 +106,7 @@ const updateBook = catchAsync(async (req: Request, res: Response) => {
 
 // delete a book
 const deleteBook = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params.id as string;
   await BookServices.deleteBook(id);
   sendResponse(res, {
     success: true,

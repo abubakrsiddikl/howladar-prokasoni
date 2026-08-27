@@ -7,13 +7,25 @@ import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHelper/AppError";
 
-const createOrder = catchAsync(async (req: Request, res: Response) => {
+const createRegularOrder = catchAsync(async (req: Request, res: Response) => {
   const decodedToken = req.user;
 
-  const order = await OrderService.createOrder(
+  const order = await OrderService.createRegularOrder(
     req.body,
-    decodedToken as JwtPayload
+    decodedToken as JwtPayload,
   );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Order created successfully",
+    data: order,
+  });
+});
+
+// create campaign order
+const createCampaignOrder = catchAsync(async (req: Request, res: Response) => {
+  const order = await OrderService.createCampaignOrder(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -36,7 +48,7 @@ const getMyOrders = catchAsync(async (req: Request, res: Response) => {
 });
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const orders = await OrderService.getAllOrders(
-    req.query as Record<string, string>
+    req.query as Record<string, string>,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -53,7 +65,7 @@ const getTraceOrder = catchAsync(async (req: Request, res: Response) => {
   if (!orderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
   }
-  const order = await OrderService.getTraceOrder(orderId);
+  const order = await OrderService.getTraceOrder(orderId as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -68,7 +80,7 @@ const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
   }
 
-  const order = await OrderService.getSingleOrder(orderId);
+  const order = await OrderService.getSingleOrder(orderId as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -83,8 +95,8 @@ const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
   }
   const updatedOrder = await OrderService.updateOrderStatus(
-    orderId,
-    req.body.status
+    orderId as string,
+    req.body.status,
   );
 
   sendResponse(res, {
@@ -102,8 +114,8 @@ const updatePaymentStatus = catchAsync(async (req: Request, res: Response) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Order ID is required");
   }
   const updatedOrder = await OrderService.updatePaymentStatus(
-    orderId,
-    req.body.paymentStatus
+    orderId as string,
+    req.body.paymentStatus,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -114,7 +126,8 @@ const updatePaymentStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const OrderController = {
-  createOrder,
+  createRegularOrder,
+  createCampaignOrder,
   getMyOrders,
   getTraceOrder,
   getAllOrders,

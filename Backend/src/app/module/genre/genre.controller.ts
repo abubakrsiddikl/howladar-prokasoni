@@ -49,7 +49,7 @@ const getSortedGenresByBookCount = catchAsync(
 // Get Single Genre by Slug
 const getGenreBySlug = catchAsync(async (req: Request, res: Response) => {
   const { slug } = req.params;
-  const result = await GenreService.getGenreBySlug(slug);
+  const result = await GenreService.getGenreBySlug(slug as string);
 
   sendResponse(res, {
     success: true,
@@ -62,7 +62,7 @@ const getGenreBySlug = catchAsync(async (req: Request, res: Response) => {
 // Update Genre
 const updateGenre = catchAsync(async (req: Request, res: Response) => {
   const { slug } = req.params;
-  const result = await GenreService.updateGenre(slug, req.body);
+  const result = await GenreService.updateGenre(slug as string, req.body);
 
   sendResponse(res, {
     success: true,
@@ -75,7 +75,7 @@ const updateGenre = catchAsync(async (req: Request, res: Response) => {
 // Delete Genre
 const deleteGenre = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await GenreService.deleteGenre(id);
+  const result = await GenreService.deleteGenre(id as string);
 
   sendResponse(res, {
     success: true,

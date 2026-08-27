@@ -6,20 +6,22 @@ import { generateOrderInvoicePDF } from "./invoice";
 
 export const saveInvoiceURLToDB = async (
   orderId: string,
-  session?: ClientSession
+  session?: ClientSession,
 ) => {
+  // find order by __id
   const order = await Order.findById(orderId)
     .populate("items.book")
+    .populate("campaignId")
     .session(session as ClientSession);
-
+  // console.log(order, " save db invoice order");
   // generate pdf buffer
   const pdfBuffer = await generateOrderInvoicePDF(order as IOrder);
   // generate invoice pdf url
   const invoiceURL = await uploadBufferToCloudinary(pdfBuffer, "invoice");
-  
+
   await Order.updateOne(
     { _id: orderId },
-    { invoiceURL: invoiceURL?.secure_url }
+    { invoiceURL: invoiceURL?.secure_url },
   ).session(session as ClientSession);
   return console.log("✅ Invoice URL save done to db ");
 };

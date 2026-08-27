@@ -1,14 +1,22 @@
 import { z } from "zod";
-import { PaymentMethod, PaymentStatus, OrderStatus } from "./order.interface";
+import {
+  PaymentMethod,
+  PaymentStatus,
+  OrderStatus,
+  OrderType,
+} from "./order.interface";
 
 export const orderItemSchema = z.object({
-  book: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid book ObjectId"),
-  quantity: z.number().int().min(1, "Quantity must be at least 1"),
+  book: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid book ObjectId")
+    .optional(),
+  quantity: z.number().int().min(1, "Quantity must be at least 1").optional(),
 });
 
 export const shippingInfoSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
+  email: z.string().optional(),
   address: z.string().min(1, "Address is required"),
   phone: z.string().min(5, "Phone number is too short"),
   division: z.string().min(1, "Division is required"),
@@ -17,9 +25,11 @@ export const shippingInfoSchema = z.object({
 });
 
 export const createOrderSchema = z.object({
-  items: z.array(orderItemSchema).min(1, "At least one item is required"),
+  items: z.array(orderItemSchema).min(1, "At least one item is required").optional(),
   shippingInfo: shippingInfoSchema,
   paymentMethod: z.nativeEnum(PaymentMethod).default(PaymentMethod.COD),
+  orderType: z.nativeEnum(OrderType).default(OrderType.REGULAR),
+  campaignId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid campaign ObjectId").optional(),
   paymentStatus: z.nativeEnum(PaymentStatus).default(PaymentStatus.PENDING),
 });
 

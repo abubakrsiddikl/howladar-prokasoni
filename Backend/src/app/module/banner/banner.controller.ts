@@ -43,7 +43,7 @@ const getActiveBanners = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleBanner = catchAsync(async (req: Request, res: Response) => {
-  const banner = await BannerServices.getBannerById(req.params.id);
+  const banner = await BannerServices.getBannerById(req.params.id as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -53,7 +53,7 @@ const getSingleBanner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateBanner = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params.id as string;
   const payload: IBanner = {
     ...req.body,
     image: req.file?.path,
@@ -68,7 +68,7 @@ const updateBanner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteBanner = catchAsync(async (req: Request, res: Response) => {
-  await BannerServices.deleteBanner(req.params.id);
+  await BannerServices.deleteBanner(req.params.id as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

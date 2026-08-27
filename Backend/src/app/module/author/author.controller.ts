@@ -42,7 +42,7 @@ const getAllAuthors = catchAsync(async (req: Request, res: Response) => {
 // Controller to get a single author
 const getSingleAuthor = catchAsync(async (req: Request, res: Response) => {
   const { slug } = req.params;
-  const author = await AuthorServices.getSingleAuthor(slug);
+  const author = await AuthorServices.getSingleAuthor(slug as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -66,7 +66,7 @@ const updateAuthor = catchAsync(async (req: Request, res: Response) => {
     profileImage: profileImagePath,
   };
 
-  const updatedAuthor = await AuthorServices.updateAuthor(id, payload);
+  const updatedAuthor = await AuthorServices.updateAuthor(id as string, payload);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -78,7 +78,7 @@ const updateAuthor = catchAsync(async (req: Request, res: Response) => {
 // Controller to delete an author (soft delete)
 const deleteAuthor = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  await AuthorServices.deleteAuthor(id);
+  await AuthorServices.deleteAuthor(id as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

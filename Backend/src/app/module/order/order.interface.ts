@@ -23,6 +23,11 @@ export enum OrderStatus {
   Failed = "Failed",
 }
 
+export enum OrderType{
+  REGULAR = "REGULAR",
+  CAMPAIGN = "CAMPAIGN",
+}
+
 export interface IOrderStatusLog {
   status: OrderStatus;
   location?: string;
@@ -48,6 +53,7 @@ export interface IShippingInfo {
 
 export interface IOrder {
   user: Types.ObjectId;
+  campaignId?: Types.ObjectId;
   items: IOrderItem[];
   shippingInfo: IShippingInfo;
   paymentMethod: PaymentMethod;
@@ -58,6 +64,7 @@ export interface IOrder {
   currentStatus: string;
   orderId: string;
   totalDiscountedPrice: number;
+  orderType: OrderType;
   paymentGateway?: any;
   transactionId?: string;
   invoiceURL?: string;

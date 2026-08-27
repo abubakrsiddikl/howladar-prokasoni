@@ -16,7 +16,14 @@ router.post(
   "/create",
   validateRequest(createOrderSchema),
   checkAuth(Role.CUSTOMER),
-  OrderController.createOrder
+  OrderController.createRegularOrder,
+);
+
+// Create Campaign Order
+router.post(
+  "/create/campaign",
+  // checkAuth(Role.CUSTOMER),
+  OrderController.createCampaignOrder,
 );
 
 // Get my order
@@ -26,14 +33,14 @@ router.get("/my-order", checkAuth(Role.CUSTOMER), OrderController.getMyOrders);
 router.get(
   "/all-order",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
-  OrderController.getAllOrders
+  OrderController.getAllOrders,
 );
 
 // Get single order (admin, store manager, or the customer who ordered it)
 router.get(
   "/:orderId",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER, Role.CUSTOMER),
-  OrderController.getSingleOrder
+  OrderController.getSingleOrder,
 );
 
 // trace order publicly
@@ -44,14 +51,14 @@ router.patch(
   "/:id/status",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   validateRequest(updateOrderStatusZodSchema),
-  OrderController.updateOrderStatus
+  OrderController.updateOrderStatus,
 );
 // update payment status (admin & store manager)
 router.patch(
   "/:orderId/payment-status",
   checkAuth(Role.ADMIN, Role.STORE_MANAGER),
   validateRequest(updatePaymentStatusZodSchema),
-  OrderController.updatePaymentStatus
+  OrderController.updatePaymentStatus,
 );
 
 export const OrderRoutes = router;

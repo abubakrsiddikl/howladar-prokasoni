@@ -40,7 +40,7 @@ const removeFromCart = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req.user as JwtPayload).userId;
-    const cartItemId = req.params.id;
+    const cartItemId = req.params.id as string;
 
     await CartServices.removeFromCart(userId, cartItemId);
 
@@ -56,7 +56,7 @@ const updateCartQuantity = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req.user as JwtPayload).userId;
-    const cartItemId = req.params.id;
+    const cartItemId = req.params.id as string;
     const { quantity } = req.body;
     const updatedCartItem = await CartServices.updateCartQuantity(
       userId,

@@ -30,7 +30,7 @@ const updateUser = catchAsync(
     };
     const verifiedToken = req.user;
     const user = await UserServices.updateUser(
-      userId,
+      userId as string,
       payload,
       verifiedToken as JwtPayload
     );
@@ -46,7 +46,7 @@ const updateUser = catchAsync(
 // promete user to admin
 const promoteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
+    const userId = req.params.id as string;
 
     const user = await UserServices.promoteUser(userId, req.body.role);
     sendResponse(res, {

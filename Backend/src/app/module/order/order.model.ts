@@ -5,6 +5,7 @@ import {
   PaymentStatus,
   OrderStatus,
   IOrderStatusLog,
+  OrderType,
 } from "./order.interface";
 
 const orderStatusLogSchema = new Schema<IOrderStatusLog>(
@@ -31,7 +32,7 @@ const orderStatusLogSchema = new Schema<IOrderStatusLog>(
       default: Date.now,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // order item schema
@@ -40,27 +41,27 @@ const orderItemSchema = new Schema(
     book: { type: Schema.Types.ObjectId, ref: "Book", required: true },
     quantity: { type: Number, required: true, min: 1 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // shipping schema
 const shippingInfoSchema = new Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String, required: false },
     address: { type: String, required: true },
     phone: { type: String, required: true },
     division: { type: String, required: true },
     district: { type: String, required: true },
     city: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const orderSchema = new Schema<IOrder>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User" },
-    items: { type: [orderItemSchema], required: true },
+    items: { type: [orderItemSchema], required: false, default: [] },
     shippingInfo: { type: shippingInfoSchema, required: true },
     paymentMethod: {
       type: String,
@@ -73,6 +74,12 @@ const orderSchema = new Schema<IOrder>(
       enum: Object.values(PaymentStatus),
       default: PaymentStatus.PENDING,
     },
+    // add campaignId ref if needed
+    campaignId: {
+      type: Schema.Types.ObjectId,
+      ref: "Campaign",
+      required: false,
+    },
     totalAmount: { type: Number, required: true, min: 0 },
     deliveryCharge: { type: Number, required: false },
     orderStatusLog: [orderStatusLogSchema],
@@ -81,6 +88,12 @@ const orderSchema = new Schema<IOrder>(
     totalDiscountedPrice: { type: Number, required: true, default: 0 },
     paymentGateway: {
       type: Schema.Types.Mixed,
+    },
+    orderType: {
+      type: String,
+      enum: Object.values(OrderType),
+      required: true,
+      default: OrderType.REGULAR,
     },
     transactionId: {
       type: String,
@@ -95,7 +108,7 @@ const orderSchema = new Schema<IOrder>(
       sparse: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Order = model<IOrder>("Order", orderSchema);
