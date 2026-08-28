@@ -23,6 +23,8 @@ import { sendOrderEmails } from "../../utils/sendOrderEmail";
 import { generateSecureTransactionId } from "../../utils/generateTransactionId";
 import { saveInvoiceURLToDB } from "../../utils/invoiceUrlSaveToDB";
 import { Campaign } from "../campaign/campaign.model";
+import { sendEmail } from "../../utils/sendEmail";
+import { generateOrderInvoicePDF } from "../../utils/invoice";
 
 // const createRegularOrder = async (
 //   payload: IOrder,
@@ -546,13 +548,48 @@ const createCampaignOrder = async (payload: IOrder) => {
     if (!populatedOrder) {
       throw new AppError(httpStatus.NOT_FOUND, "Order could not be populated");
     }
-
+    // console.log("saveinvoice db before")
     await saveInvoiceURLToDB(order._id.toString(), session);
 
-    await sendOrderEmails({
-      order: populatedOrder as IOrder,
-      shippingInfo: order.shippingInfo,
+    // console.log("before send email");
+    // await sendOrderEmails({
+    //   order: populatedOrder as IOrder,
+    //   shippingInfo: order.shippingInfo,
+    // });
+    // 2. Send admin email
+    // 1. Admin + Manager emails
+    const adminsAndStoreManagers = await User.find({
+      role: { $in: [Role.ADMIN, Role.STORE_MANAGER] },
     });
+    const emails = adminsAndStoreManagers.map((admin) => admin.email);
+    const pdfBuffer = await generateOrderInvoicePDF(populatedOrder as IOrder);
+    console.log("send email before")
+    await sendEmail({
+      to: emails.join(", "),
+      subject: "New Order Created",
+      templateName: "adminOrderEmail",
+      templateData: {
+        orderId: order?.orderId,
+        orderType: order?.orderType,
+        customerName: order?.shippingInfo.name,
+        total: order?.totalAmount,
+        phone: order?.shippingInfo.phone,
+        paymentMethod: order?.paymentMethod,
+        paymentStatus: order?.paymentStatus,
+        shippingAddress: order.shippingInfo?.address,
+        city: order.shippingInfo?.city,
+        district: order.shippingInfo?.district,
+        division: order.shippingInfo?.division,
+      },
+      attachments: [
+        {
+          filename: `Invoice_${order.orderId}.pdf`,
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    });
+    console.log("after send email");
 
     await session.commitTransaction();
 

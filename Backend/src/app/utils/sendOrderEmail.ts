@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { IOrder } from "../module/order/order.interface";
-import { Role } from "../module/user/user.interface";
+import { IUser, Role } from "../module/user/user.interface";
 import { User } from "../module/user/user.model";
 import { generateOrderInvoicePDF } from "./invoice";
 
@@ -9,7 +9,7 @@ import { sendEmail } from "./sendEmail";
 
 interface OrderEmailPayload {
   order: IOrder;
-  user?: any;
+  user?: Partial<IUser>;
   shippingInfo: {
     address: string;
     phone: string;
@@ -28,6 +28,7 @@ export const sendOrderEmails = async ({
   const adminsAndStoreManagers = await User.find({
     role: { $in: [Role.ADMIN, Role.STORE_MANAGER] },
   });
+  // console.log("order from sendOrderEmail",order)
 
   const emails = adminsAndStoreManagers.map((admin) => admin.email);
   const pdfBuffer = await generateOrderInvoicePDF(order);
@@ -58,6 +59,7 @@ export const sendOrderEmails = async ({
       },
     ],
   });
+  // console.log("after send email admin")
 
   // 3. Send customer email
   if (user && user.email) {
@@ -86,4 +88,6 @@ export const sendOrderEmails = async ({
       ],
     });
   }
+  console.log("after send email customer")
+  
 };

@@ -13,9 +13,11 @@ export const saveInvoiceURLToDB = async (
     .populate("items.book")
     .populate("campaignId")
     .session(session as ClientSession);
+    // console.log("saveinv order fist",order)
   // console.log(order, " save db invoice order");
+  
   // generate pdf buffer
-  const pdfBuffer = await generateOrderInvoicePDF(order as IOrder);
+  const pdfBuffer = await generateOrderInvoicePDF(order as unknown as IOrder);
   // generate invoice pdf url
   const invoiceURL = await uploadBufferToCloudinary(pdfBuffer, "invoice");
 
@@ -23,5 +25,4 @@ export const saveInvoiceURLToDB = async (
     { _id: orderId },
     { invoiceURL: invoiceURL?.secure_url },
   ).session(session as ClientSession);
-  return console.log("✅ Invoice URL save done to db ");
 };

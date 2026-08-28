@@ -204,14 +204,370 @@
 // };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import PDFDocument from "pdfkit";
+// import PDFDocument from "pdfkit";
+// import { IOrder, OrderType } from "../module/order/order.interface";
+// import { IBook } from "../module/book/book.interface";
+// import { ICampaign } from "../module/campaign/campaign.interface";
+
+// export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const doc = new PDFDocument({
+//         size: "A4",
+//         margin: 40,
+//       });
+
+//       const buffers: Uint8Array[] = [];
+
+//       const banglaFont = require.resolve(
+//         "@fontsource/noto-sans-bengali/files/noto-sans-bengali-bengali-400-normal.woff",
+//       );
+
+//       doc.on("data", (d) => buffers.push(d));
+//       doc.on("end", () => resolve(Buffer.concat(buffers)));
+//       doc.on("error", reject);
+
+//       const isCampaign = order.orderType === OrderType.CAMPAIGN;
+
+//       /* ================= HEADER ================= */
+
+//       doc
+//         .font(banglaFont)
+//         .fontSize(22)
+//         .fillColor("#1A365D")
+//         .text("হাওলাদার প্রকাশনী", 40, 40);
+
+//       doc
+//         .font("Helvetica")
+//         .fontSize(9)
+//         .fillColor("#4A5568")
+//         .text("Buy, Exchange, Sell Books Online", 40, 70)
+//         .text("Email: howladarprokasoni@gmail.com", 40, 85)
+//         .text("Phone: +880193658263", 40, 100)
+//         .text("Banglabazar, Dhaka - 1100", 40, 115);
+
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(20)
+//         .fillColor("#000")
+//         .text("INVOICE", 350, 60, {
+//           align: "right",
+//         });
+
+//       doc
+//         .font("Helvetica")
+//         .fontSize(10)
+//         .fillColor("#FF7A00")
+//         .text(`Invoice No: #${order.orderId}`, 350, 90, {
+//           align: "right",
+//         });
+
+//       doc
+//         .moveTo(40, 140)
+//         .lineTo(555, 140)
+//         .strokeColor("#E2E8F0")
+//         .stroke();
+
+//       /* ================= ORDER + DELIVERY INFO ================= */
+
+//       const infoTop = 155;
+
+//       // Order Info
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(10)
+//         .fillColor("#2D3748")
+//         .text("Order Info:", 40, infoTop);
+
+//       doc
+//         .font("Helvetica")
+//         .fontSize(9)
+//         .text(
+//           `Placed At: ${new Date(
+//             order.createdAt || Date.now(),
+//           ).toLocaleDateString()}`,
+//           40,
+//           infoTop + 18,
+//         )
+//         .text(`Payment Method: ${order.paymentMethod}`, 40, infoTop + 33)
+//         .text(`Payment Status: ${order.paymentStatus}`, 40, infoTop + 48)
+//         .text(
+//           `Order Type: ${isCampaign ? "Campaign / Combo" : "Regular Order"}`,
+//           40,
+//           infoTop + 63,
+//         );
+
+//       // Delivery Info
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(10)
+//         .text("Delivery Info:", 300, infoTop);
+
+//       doc.fontSize(9);
+
+//       doc.font("Helvetica").text("Name:", 300, infoTop + 18);
+//       doc
+//         .font(banglaFont)
+//         .text(order.shippingInfo.name, 350, infoTop + 18, {
+//           width: 190,
+//         });
+
+//       doc.font("Helvetica").text("Phone:", 300, infoTop + 33);
+//       doc
+//         .font("Helvetica")
+//         .text(order.shippingInfo.phone, 350, infoTop + 33);
+
+//       doc.font("Helvetica").text("Email:", 300, infoTop + 48);
+//       doc
+//         .font("Helvetica")
+//         .text(order.shippingInfo.email || "N/A", 350, infoTop + 48);
+
+//       doc.font("Helvetica").text("Address:", 300, infoTop + 63);
+//       doc
+//         .font(banglaFont)
+//         .text(order.shippingInfo.address, 350, infoTop + 63, {
+//           width: 190,
+//         });
+
+//       /* =====================================================
+//          CAMPAIGN INVOICE
+//       ===================================================== */
+
+//       if (isCampaign) {
+//         const campaign = order.campaignId as unknown as ICampaign;
+//         // console.log(campaign,"pdf")
+//         const campaignTop = 245;
+
+//         // Section Header
+//         doc
+//           .rect(40, campaignTop, 515, 30)
+//           .fill("#F1F5F9");
+
+//         doc
+//           .font("Helvetica-Bold")
+//           .fontSize(10)
+//           .fillColor("#000")
+//           .text("Campaign / Combo Offer", 50, campaignTop + 10);
+
+//         let y = campaignTop + 50;
+
+//         // Campaign title
+//         doc
+//           .font("Helvetica-Bold")
+//           .fontSize(12)
+//           .fillColor("#2D3748")
+//           .text("Offer:", 45, y);
+
+//         doc
+//           .font(banglaFont)
+//           .fontSize(11)
+//           .text(campaign?.title || "Campaign Offer", 110, y, {
+//             width: 400,
+//           });
+
+//         y += 30;
+
+//         // Description
+//         doc
+//           .font("Helvetica-Bold")
+//           .fontSize(9)
+//           .text("Details:", 45, y);
+
+//         doc
+//           .font(banglaFont)
+//           .fontSize(9)
+//           .text(campaign?.description || "Combo offer", 110, y, {
+//             width: 400,
+//             features: [],
+//           });
+
+//         y += 55;
+
+//         // Campaign Price
+//         doc
+//           .font("Helvetica")
+//           .fontSize(10)
+//           .text("Campaign Price", 350, y)
+//           .text(`${campaign?.campaignPrice ?? 0} Tk.`, 450, y, {
+//             width: 70,
+//             align: "right",
+//           });
+
+//         y += 20;
+
+//         // Delivery
+//         doc
+//           .font("Helvetica")
+//           .fontSize(10)
+//           .text("Shipping Cost", 350, y)
+//           .text(`${order.deliveryCharge ?? 0} Tk.`, 450, y, {
+//             width: 70,
+//             align: "right",
+//           });
+
+//         y += 30;
+
+//         // Grand Total
+//         doc
+//           .moveTo(340, y)
+//           .lineTo(555, y)
+//           .strokeColor("#E2E8F0")
+//           .stroke();
+
+//         y += 15;
+
+//         doc
+//           .font("Helvetica-Bold")
+//           .fontSize(11)
+//           .text("Grand Total", 350, y)
+//           .text(`${order.totalAmount} Tk.`, 450, y, {
+//             width: 70,
+//             align: "right",
+//           });
+//       }
+
+//       /* =====================================================
+//          REGULAR ORDER INVOICE
+//       ===================================================== */
+
+//       if (!isCampaign) {
+//         const tableTop = 245;
+
+//         doc
+//           .rect(40, tableTop, 515, 25)
+//           .fill("#F1F5F9");
+
+//         doc
+//           .font("Helvetica-Bold")
+//           .fontSize(9)
+//           .fillColor("#000")
+//           .text("Description", 45, tableTop + 8)
+//           .text("Condition", 230, tableTop + 8)
+//           .text("Unit Cost", 320, tableTop + 8, {
+//             width: 60,
+//             align: "right",
+//           })
+//           .text("Qty", 390, tableTop + 8, {
+//             width: 40,
+//             align: "center",
+//           })
+//           .text("Amount", 450, tableTop + 8, {
+//             width: 70,
+//             align: "right",
+//           });
+
+//         let y = tableTop + 30;
+
+//         order.items?.forEach((item: any) => {
+//           const book = item.book as IBook;
+
+//           if (!book) return;
+
+//           doc
+//             .font(banglaFont)
+//             .fontSize(9)
+//             .fillColor("#2D3748")
+//             .text(book.title, 45, y, {
+//               width: 170,
+//             });
+
+//           doc
+//             .font("Helvetica")
+//             .text("New Book", 230, y)
+//             .text(`${book.price} Tk.`, 320, y, {
+//               width: 60,
+//               align: "right",
+//             })
+//             .text(`${item.quantity}`, 390, y, {
+//               width: 40,
+//               align: "center",
+//             })
+//             .text(`${book.price * item.quantity} Tk.`, 450, y, {
+//               width: 70,
+//               align: "right",
+//             });
+
+//           y += 22;
+//         });
+
+//         /* ================= REGULAR TOTAL ================= */
+
+//         y += 20;
+
+//         const row = (
+//           label: string,
+//           value: number,
+//           offset: number,
+//         ) => {
+//           doc
+//             .font("Helvetica")
+//             .fontSize(9)
+//             .text(label, 350, y + offset)
+//             .text(`${value} Tk.`, 450, y + offset, {
+//               width: 70,
+//               align: "right",
+//             });
+//         };
+
+//         row(
+//           "Sub Total",
+//           order.totalAmount - (order.deliveryCharge || 0),
+//           0,
+//         );
+
+//         row("Shipping cost", order.deliveryCharge || 0, 15);
+
+//         row(
+//           "Discount",
+//           order.totalDiscountedPrice || 0,
+//           30,
+//         );
+
+//         doc
+//           .font("Helvetica-Bold")
+//           .fontSize(10)
+//           .text("Grand Total", 350, y + 50)
+//           .text(`${order.totalAmount} Tk.`, 450, y + 50, {
+//             width: 70,
+//             align: "right",
+//           });
+//       }
+
+//       /* ================= FOOTER ================= */
+
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(14)
+//         .fillColor("#1A365D")
+//         .text("Thanks For Shopping With Us!!", 40, 720, {
+//           align: "center",
+//           width: 515,
+//         });
+
+//       doc
+//         .font("Helvetica")
+//         .fontSize(9)
+//         .fillColor("#718096")
+//         .text("https://howladarporkasoni.com.bd", 40, 745, {
+//           align: "center",
+//           width: 515,
+//         });
+
+//       doc.end();
+//     } catch (error) {
+//       reject(error);
+//     }
+//   });
+// };
+
+
 import path from "path";
+import PDFDocument from "pdfkit";
 import { IOrder, OrderType } from "../module/order/order.interface";
 import { IBook } from "../module/book/book.interface";
 import { ICampaign } from "../module/campaign/campaign.interface";
 
 export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
-  
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
@@ -221,13 +577,11 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
 
       const buffers: Uint8Array[] = [];
 
-      const banglaFont = path.join(
-        process.cwd(),
-        "src",
-        "app",
-        "utils",
-        "SolaimanLipi.ttf",
-      );
+      // ✅ ১. .ttf ফন্ট পাথ নিশ্চিত করুন (WOFF এর বদলে TTF ব্যবহার বাধ্যতামূলক)
+      // আপনার প্রজেক্টে রাখা TTF ফন্টের পাথ দিন
+      const banglaFont = path.join(process.cwd(), "src/assets/fonts/NotoSansBengali-Regular.ttf"); 
+      // অথবা node_modules থেকে TTF পাথ:
+      // const banglaFont = require.resolve("@fontsource/noto-sans-bengali/files/noto-sans-bengali-bengali-400-normal.ttf");
 
       doc.on("data", (d) => buffers.push(d));
       doc.on("end", () => resolve(Buffer.concat(buffers)));
@@ -239,7 +593,7 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
 
       doc
         .font(banglaFont)
-        .fontSize(22)
+        .fontSize(20)
         .fillColor("#1A365D")
         .text("হাওলাদার প্রকাশনী", 40, 40);
 
@@ -247,36 +601,32 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
         .font("Helvetica")
         .fontSize(9)
         .fillColor("#4A5568")
-        .text("Buy, Exchange, Sell Books Online", 40, 70)
-        .text("Email: howladarprokasoni@gmail.com", 40, 85)
-        .text("Phone: +880193658263", 40, 100)
-        .text("Banglabazar, Dhaka - 1100", 40, 115);
+        .text("Buy, Exchange, Sell Books Online", 40, 68)
+        .text("Email: howladarprokasoni@gmail.com", 40, 82)
+        .text("Phone: +880193658263", 40, 96)
+        .text("Banglabazar, Dhaka - 1100", 40, 110);
 
       doc
         .font("Helvetica-Bold")
         .fontSize(20)
         .fillColor("#000")
-        .text("INVOICE", 350, 60, {
-          align: "right",
-        });
+        .text("INVOICE", 350, 50, { align: "right" });
 
       doc
         .font("Helvetica")
         .fontSize(10)
         .fillColor("#FF7A00")
-        .text(`Invoice No: #${order.orderId}`, 350, 90, {
-          align: "right",
-        });
+        .text(`Invoice No: #${order.orderId}`, 350, 75, { align: "right" });
 
       doc
-        .moveTo(40, 140)
-        .lineTo(555, 140)
+        .moveTo(40, 135)
+        .lineTo(555, 135)
         .strokeColor("#E2E8F0")
         .stroke();
 
       /* ================= ORDER + DELIVERY INFO ================= */
 
-      const infoTop = 155;
+      const infoTop = 150;
 
       // Order Info
       doc
@@ -288,20 +638,10 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
       doc
         .font("Helvetica")
         .fontSize(9)
-        .text(
-          `Placed At: ${new Date(
-            order.createdAt || Date.now(),
-          ).toLocaleDateString()}`,
-          40,
-          infoTop + 18,
-        )
+        .text(`Placed At: ${new Date(order.createdAt || Date.now()).toLocaleDateString()}`, 40, infoTop + 18)
         .text(`Payment Method: ${order.paymentMethod}`, 40, infoTop + 33)
         .text(`Payment Status: ${order.paymentStatus}`, 40, infoTop + 48)
-        .text(
-          `Order Type: ${isCampaign ? "Campaign / Combo" : "Regular Order"}`,
-          40,
-          infoTop + 63,
-        );
+        .text(`Order Type: ${isCampaign ? "Campaign / Combo" : "Regular Order"}`, 40, infoTop + 63);
 
       // Delivery Info
       doc
@@ -312,28 +652,18 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
       doc.fontSize(9);
 
       doc.font("Helvetica").text("Name:", 300, infoTop + 18);
-      doc
-        .font(banglaFont)
-        .text(order.shippingInfo.name, 350, infoTop + 18, {
-          width: 190,
-        });
+      // ✅ Bangla Font Embedded for Name
+      doc.font(banglaFont).text(order.shippingInfo?.name || "N/A", 350, infoTop + 18, { width: 190 });
 
       doc.font("Helvetica").text("Phone:", 300, infoTop + 33);
-      doc
-        .font("Helvetica")
-        .text(order.shippingInfo.phone, 350, infoTop + 33);
+      doc.font("Helvetica").text(order.shippingInfo?.phone || "N/A", 350, infoTop + 33);
 
       doc.font("Helvetica").text("Email:", 300, infoTop + 48);
-      doc
-        .font("Helvetica")
-        .text(order.shippingInfo.email || "N/A", 350, infoTop + 48);
+      doc.font("Helvetica").text(order.shippingInfo?.email || "N/A", 350, infoTop + 48);
 
       doc.font("Helvetica").text("Address:", 300, infoTop + 63);
-      doc
-        .font(banglaFont)
-        .text(order.shippingInfo.address, 350, infoTop + 63, {
-          width: 190,
-        });
+      // ✅ Bangla Font Embedded for Address
+      doc.font(banglaFont).text(order.shippingInfo?.address || "N/A", 350, infoTop + 63, { width: 190 });
 
       /* =====================================================
          CAMPAIGN INVOICE
@@ -341,13 +671,9 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
 
       if (isCampaign) {
         const campaign = order.campaignId as unknown as ICampaign;
-        // console.log(campaign,"pdf")
         const campaignTop = 245;
 
-        // Section Header
-        doc
-          .rect(40, campaignTop, 515, 30)
-          .fill("#F1F5F9");
+        doc.rect(40, campaignTop, 515, 30).fill("#F1F5F9");
 
         doc
           .font("Helvetica-Bold")
@@ -355,80 +681,37 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
           .fillColor("#000")
           .text("Campaign / Combo Offer", 50, campaignTop + 10);
 
-        let y = campaignTop + 50;
+        let y = campaignTop + 45;
 
-        // Campaign title
-        doc
-          .font("Helvetica-Bold")
-          .fontSize(12)
-          .fillColor("#2D3748")
-          .text("Offer:", 45, y);
+        // Campaign Title
+        doc.font("Helvetica-Bold").fontSize(10).fillColor("#2D3748").text("Offer:", 45, y);
+        doc.font(banglaFont).fontSize(10).text(campaign?.title || "N/A", 110, y, { width: 400 });
 
-        doc
-          .font(banglaFont)
-          .fontSize(11)
-          .text(campaign?.title || "Campaign Offer", 110, y, {
-            width: 400,
-          });
-
-        y += 30;
+        y += 25;
 
         // Description
-        doc
-          .font("Helvetica-Bold")
-          .fontSize(9)
-          .text("Details:", 45, y);
+        doc.font("Helvetica-Bold").fontSize(9).text("Details:", 45, y);
+        doc.font(banglaFont).fontSize(9).text(campaign?.description || "Combo offer", 110, y, { width: 400 });
 
-        doc
-          .font(banglaFont)
-          .fontSize(9)
-          .text(campaign?.description || "Combo offer", 110, y, {
-            width: 400,
-          });
+        y += 50;
 
-        y += 55;
-
-        // Campaign Price
-        doc
-          .font("Helvetica")
-          .fontSize(10)
-          .text("Campaign Price", 350, y)
-          .text(`${campaign?.campaignPrice ?? 0} Tk.`, 450, y, {
-            width: 70,
-            align: "right",
-          });
+        // Pricing
+        doc.font("Helvetica").fontSize(10).text("Campaign Price", 350, y);
+        doc.font("Helvetica").text(`${campaign?.campaignPrice ?? 0} Tk.`, 450, y, { width: 70, align: "right" });
 
         y += 20;
 
-        // Delivery
-        doc
-          .font("Helvetica")
-          .fontSize(10)
-          .text("Shipping Cost", 350, y)
-          .text(`${order.deliveryCharge ?? 0} Tk.`, 450, y, {
-            width: 70,
-            align: "right",
-          });
+        doc.font("Helvetica").fontSize(10).text("Shipping Cost", 350, y);
+        doc.font("Helvetica").text(`${order.deliveryCharge ?? 0} Tk.`, 450, y, { width: 70, align: "right" });
 
-        y += 30;
+        y += 25;
 
-        // Grand Total
-        doc
-          .moveTo(340, y)
-          .lineTo(555, y)
-          .strokeColor("#E2E8F0")
-          .stroke();
+        doc.moveTo(340, y).lineTo(555, y).strokeColor("#E2E8F0").stroke();
 
-        y += 15;
+        y += 10;
 
-        doc
-          .font("Helvetica-Bold")
-          .fontSize(11)
-          .text("Grand Total", 350, y)
-          .text(`${order.totalAmount} Tk.`, 450, y, {
-            width: 70,
-            align: "right",
-          });
+        doc.font("Helvetica-Bold").fontSize(11).text("Grand Total", 350, y);
+        doc.font("Helvetica-Bold").text(`${order.totalAmount} Tk.`, 450, y, { width: 70, align: "right" });
       }
 
       /* =====================================================
@@ -438,9 +721,7 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
       if (!isCampaign) {
         const tableTop = 245;
 
-        doc
-          .rect(40, tableTop, 515, 25)
-          .fill("#F1F5F9");
+        doc.rect(40, tableTop, 515, 25).fill("#F1F5F9");
 
         doc
           .font("Helvetica-Bold")
@@ -448,115 +729,63 @@ export const generateOrderInvoicePDF = (order: IOrder): Promise<Buffer> => {
           .fillColor("#000")
           .text("Description", 45, tableTop + 8)
           .text("Condition", 230, tableTop + 8)
-          .text("Unit Cost", 320, tableTop + 8, {
-            width: 60,
-            align: "right",
-          })
-          .text("Qty", 390, tableTop + 8, {
-            width: 40,
-            align: "center",
-          })
-          .text("Amount", 450, tableTop + 8, {
-            width: 70,
-            align: "right",
-          });
+          .text("Unit Cost", 320, tableTop + 8, { width: 60, align: "right" })
+          .text("Qty", 390, tableTop + 8, { width: 40, align: "center" })
+          .text("Amount", 450, tableTop + 8, { width: 70, align: "right" });
 
         let y = tableTop + 30;
 
         order.items?.forEach((item: any) => {
           const book = item.book as IBook;
-
           if (!book) return;
 
-          doc
-            .font(banglaFont)
-            .fontSize(9)
-            .fillColor("#2D3748")
-            .text(book.title, 45, y, {
-              width: 170,
-            });
+          // ✅ Book Title in Bangla Font
+          doc.font(banglaFont).fontSize(9).fillColor("#2D3748").text(book.title, 45, y, { width: 170 });
 
           doc
             .font("Helvetica")
             .text("New Book", 230, y)
-            .text(`${book.price} Tk.`, 320, y, {
-              width: 60,
-              align: "right",
-            })
-            .text(`${item.quantity}`, 390, y, {
-              width: 40,
-              align: "center",
-            })
-            .text(`${book.price * item.quantity} Tk.`, 450, y, {
-              width: 70,
-              align: "right",
-            });
+            .text(`${book.price} Tk.`, 320, y, { width: 60, align: "right" })
+            .text(`${item.quantity}`, 390, y, { width: 40, align: "center" })
+            .text(`${book.price * item.quantity} Tk.`, 450, y, { width: 70, align: "right" });
 
           y += 22;
         });
 
-        /* ================= REGULAR TOTAL ================= */
-
         y += 20;
 
-        const row = (
-          label: string,
-          value: number,
-          offset: number,
-        ) => {
+        const row = (label: string, value: number, offset: number) => {
           doc
             .font("Helvetica")
             .fontSize(9)
             .text(label, 350, y + offset)
-            .text(`${value} Tk.`, 450, y + offset, {
-              width: 70,
-              align: "right",
-            });
+            .text(`${value} Tk.`, 450, y + offset, { width: 70, align: "right" });
         };
 
-        row(
-          "Sub Total",
-          order.totalAmount - (order.deliveryCharge || 0),
-          0,
-        );
-
+        row("Sub Total", order.totalAmount - (order.deliveryCharge || 0), 0);
         row("Shipping cost", order.deliveryCharge || 0, 15);
-
-        row(
-          "Discount",
-          order.totalDiscountedPrice || 0,
-          30,
-        );
+        row("Discount", order.totalDiscountedPrice || 0, 30);
 
         doc
           .font("Helvetica-Bold")
           .fontSize(10)
           .text("Grand Total", 350, y + 50)
-          .text(`${order.totalAmount} Tk.`, 450, y + 50, {
-            width: 70,
-            align: "right",
-          });
+          .text(`${order.totalAmount} Tk.`, 450, y + 50, { width: 70, align: "right" });
       }
 
       /* ================= FOOTER ================= */
 
       doc
-        .font("Helvetica-Bold")
-        .fontSize(14)
+        .font(banglaFont)
+        .fontSize(12)
         .fillColor("#1A365D")
-        .text("Thanks For Shopping With Us!!", 40, 720, {
-          align: "center",
-          width: 515,
-        });
+        .text("আমাদের সাথে কেনাকাটা করার জন্য ধন্যবাদ!", 40, 720, { align: "center", width: 515 });
 
       doc
         .font("Helvetica")
         .fontSize(9)
         .fillColor("#718096")
-        .text("https://howladarporkasoni.com.bd", 40, 745, {
-          align: "center",
-          width: 515,
-        });
+        .text("https://howladarporkasoni.com.bd", 40, 740, { align: "center", width: 515 });
 
       doc.end();
     } catch (error) {
