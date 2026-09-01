@@ -15,6 +15,8 @@ export const createCampaignZodSchema = z.object({
 
   campaignPrice: z.number().nonnegative("Campaign price cannot be negative"),
 
+  isDeliveryFree: z.boolean().default(true),
+
   // deliveryCharge: z
   //   .number()
   //   .nonnegative("Delivery charge cannot be negative")
@@ -28,4 +30,3 @@ export const updateCampaignValidationSchema = createCampaignZodSchema.partial();
 export const updateCampaignStatusValidationSchema = z.object({
   isActive: z.boolean(),
 });
-

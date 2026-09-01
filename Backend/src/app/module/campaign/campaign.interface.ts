@@ -9,7 +9,8 @@ export interface ICampaign {
   description: string;
 
   campaignPrice: number;
-  deliveryCharge: number;
+  // deliveryCharge: number;
+  isDeliveryFree: boolean;
 
   isActive: boolean;
 

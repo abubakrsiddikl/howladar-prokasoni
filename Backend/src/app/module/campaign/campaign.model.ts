@@ -8,6 +8,7 @@ const campaignSchema = new Schema<ICampaign>(
     bannerImage: { type: String, required: true },
     description: { type: String, required: true, trim: true }, //book details
     campaignPrice: { type: Number, required: true }, 
+    isDeliveryFree: { type: Boolean, default: false },
     // deliveryCharge: { type: Number, default: 60 },
     isActive: { type: Boolean, default: true },
   },

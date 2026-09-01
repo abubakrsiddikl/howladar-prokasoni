@@ -487,7 +487,14 @@ const createCampaignOrder = async (payload: IOrder) => {
       );
     }
 
-    const deliveryCharge = payload.shippingInfo.district === "ঢাকা" ? 60 : 120;
+    let deliveryCharge = 0;
+
+    if (campaign.isDeliveryFree) {
+      deliveryCharge = 0;
+    } else {
+      deliveryCharge = payload.shippingInfo.district === "ঢাকা" ? 60 : 120;
+    }
+    // const deliveryCharge = payload.shippingInfo.district === "ঢাকা" ? 60 : 120;
 
     const totalAmount = campaign.campaignPrice + deliveryCharge;
 
@@ -563,7 +570,7 @@ const createCampaignOrder = async (payload: IOrder) => {
     });
     const emails = adminsAndStoreManagers.map((admin) => admin.email);
     const pdfBuffer = await generateOrderInvoicePDF(populatedOrder as IOrder);
-    console.log("send email before")
+    console.log("send email before");
     await sendEmail({
       to: emails.join(", "),
       subject: "New Order Created",
