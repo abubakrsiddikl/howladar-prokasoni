@@ -15,7 +15,7 @@ const getCustomerDashboardStats = catchAsync(
       message: "Order statistics retrieved successfully",
       data: stats,
     });
-  }
+  },
 );
 const getStats = catchAsync(async (_req: Request, res: Response) => {
   const stats = await StatsServices.getStats();
@@ -35,11 +35,23 @@ const getMonthlySalesStatsController = catchAsync(
       message: "Monthly sales stats retrieved successfully",
       data: stats,
     });
-  }
+  },
 );
+
+const getDailySalesStats = catchAsync(async (req: Request, res: Response) => {
+  const days = Number(req.query.days) || 14;
+  const result = await StatsServices.getDailySalesStats(days);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Daily sales stats retrieved successfully",
+    data: result,
+  });
+});
 
 export const StatsControllers = {
   getCustomerDashboardStats,
   getStats,
   getMonthlySalesStatsController,
+  getDailySalesStats,
 };

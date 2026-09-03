@@ -182,8 +182,61 @@ const getMonthlySalesStats = async () => {
   }));
 };
 
+// Daily sales trend (orders count + revenue) for the last N days
+const getDailySalesStats = async (days = 14) => {
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - (days - 1));
+  startDate.setHours(0, 0, 0, 0);
+
+  const stats = await Order.aggregate([
+    {
+      $match: { createdAt: { $gte: startDate } },
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+          day: { $dayOfMonth: "$createdAt" },
+        },
+        totalOrders: { $sum: 1 },
+        totalRevenue: {
+          $sum: {
+            $cond: [{ $eq: ["$paymentStatus", "PAID"] }, "$totalAmount", 0],
+          },
+        },
+      },
+    },
+    {
+      $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+    },
+  ]);
+
+  // Fill in missing days with zero values so the chart has no gaps
+  const result: { date: string; totalOrders: number; totalRevenue: number }[] = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    const found = stats.find(
+      (s) =>
+        s._id.year === d.getFullYear() &&
+        s._id.month === d.getMonth() + 1 &&
+        s._id.day === d.getDate()
+    );
+    result.push({
+      date: `${d.getDate()}/${d.getMonth() + 1}`,
+      totalOrders: found ? found.totalOrders : 0,
+      totalRevenue: found ? found.totalRevenue : 0,
+    });
+  }
+
+  return result;
+};
+
 export const StatsServices = {
   getCustomerDashboardStats,
   getStats,
   getMonthlySalesStats,
+  getDailySalesStats,
 };
+
