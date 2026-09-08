@@ -6,6 +6,7 @@ import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import AppError from "../../errorHelper/AppError";
 import { JwtPayload } from "jsonwebtoken";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const createUser = async (payload: Partial<IUser>) => {
   const { phone, email, password, ...rest } = payload;
@@ -18,7 +19,7 @@ const createUser = async (payload: Partial<IUser>) => {
 
   const hashedPassword = await bcryptjs.hash(
     password as string,
-    Number(envVars.BCRYPT_SALT_ROUND)
+    Number(envVars.BCRYPT_SALT_ROUND),
   );
 
   const authProvider: IAuthProvider = {
@@ -40,7 +41,7 @@ const createUser = async (payload: Partial<IUser>) => {
 const updateUser = async (
   userId: string,
   payload: Partial<IUser>,
-  decodedToken: JwtPayload
+  decodedToken: JwtPayload,
 ) => {
   const isUserExist = await User.findById(userId);
   if (
@@ -78,7 +79,7 @@ const promoteUser = async (userId: string, newRole: Role) => {
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { role: newRole },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   ).select("-password");
   return updatedUser;
 };
@@ -89,9 +90,24 @@ const getMe = async (userId: string) => {
   };
 };
 
+const getAllUser = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(User.find(), query);
+
+  await queryBuilder.filter();
+  queryBuilder.search(["email", "phone", "name"]).sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build().select("-password"),
+    queryBuilder.getMeta(),
+  ]);
+
+  return { data, meta };
+};
+
 export const UserServices = {
   createUser,
   updateUser,
   promoteUser,
   getMe,
+  getAllUser
 };

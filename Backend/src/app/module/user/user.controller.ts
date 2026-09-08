@@ -17,7 +17,7 @@ const createUser = catchAsync(
       message: "User Created Successfully",
       data: user,
     });
-  }
+  },
 );
 
 const updateUser = catchAsync(
@@ -32,7 +32,7 @@ const updateUser = catchAsync(
     const user = await UserServices.updateUser(
       userId as string,
       payload,
-      verifiedToken as JwtPayload
+      verifiedToken as JwtPayload,
     );
     sendResponse(res, {
       success: true,
@@ -40,10 +40,10 @@ const updateUser = catchAsync(
       message: "User Updated Successfully",
       data: user,
     });
-  }
+  },
 );
 
-// promete user to admin
+// promote user to admin
 const promoteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id as string;
@@ -55,7 +55,7 @@ const promoteUser = catchAsync(
       message: "User Promoted Successfully",
       data: user,
     });
-  }
+  },
 );
 const getMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -68,7 +68,22 @@ const getMe = catchAsync(
       message: "Your profile Retrieved Successfully",
       data: result.data,
     });
-  }
+  },
+);
+
+const getAllUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query as Record<string, string>;
+    const result = await UserServices.getAllUser(query);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Users Retrieved Successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  },
 );
 
 // function => try-catch catch => req-res function
@@ -78,6 +93,7 @@ export const UserControllers = {
   updateUser,
   getMe,
   promoteUser,
+  getAllUser,
 };
 
 // route matching -> controller -> service -> model -> DB
