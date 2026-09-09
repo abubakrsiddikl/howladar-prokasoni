@@ -12,25 +12,31 @@ import prerender from "prerender-node";
 import "./app/config/passport";
 
 const app = express();
+
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: envVars.FRONTEND_URL,
     credentials: true,
-  })
+  }),
 );
 app.use(
   expressSession({
     secret: envVars.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-  })
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  }),
 );
 app.use(prerender.set("prerenderToken", envVars.PRERENDER_IO_TOKEN));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
 app.use(express.json());
-app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", router);
 
