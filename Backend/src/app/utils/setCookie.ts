@@ -13,6 +13,7 @@ export const setAuthCookie = (res: Response, tokenInfo: AuthTokens) => {
       secure: envVars.NODE_ENV === "production",
       sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
+      domain: ".howladarporkasoni.com.bd",
     });
   }
 };
