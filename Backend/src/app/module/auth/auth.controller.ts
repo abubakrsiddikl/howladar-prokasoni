@@ -99,8 +99,9 @@ const googleCallbackController = catchAsync(
       redirectTo = redirectTo.slice(1);
     }
 
+    console.log("start google callback login")
     const user = req.user as IUser;
-
+    console.log("this is goole user",user)
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
     }

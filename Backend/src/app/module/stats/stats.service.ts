@@ -142,13 +142,17 @@ const getStats = async () => {
 
 // Monthly sales & revenue stats
 const getMonthlySalesStats = async () => {
+  const TIMEZONE = "+06:00";
   const stats = await Order.aggregate([
     {
       $match: { paymentStatus: "PAID" }, // শুধু Paid order
     },
     {
       $group: {
-        _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+        _id: {
+          year: { $year: { date: "$createdAt", timezone: TIMEZONE } },
+          month: { $month: { date: "$createdAt", timezone: TIMEZONE } },
+        },
         totalOrders: { $sum: 1 },
         totalRevenue: { $sum: "$totalAmount" },
       },
@@ -183,10 +187,13 @@ const getMonthlySalesStats = async () => {
 };
 
 // Daily sales trend (orders count + revenue) for the last N days
+
 const getDailySalesStats = async (days = 14) => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - (days - 1));
   startDate.setHours(0, 0, 0, 0);
+
+  const TIMEZONE = "+06:00";
 
   const stats = await Order.aggregate([
     {
@@ -195,9 +202,9 @@ const getDailySalesStats = async (days = 14) => {
     {
       $group: {
         _id: {
-          year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" },
-          day: { $dayOfMonth: "$createdAt" },
+          year: { $year: { date: "$createdAt", timezone: TIMEZONE } },
+          month: { $month: { date: "$createdAt", timezone: TIMEZONE } },
+          day: { $dayOfMonth: { date: "$createdAt", timezone: TIMEZONE } },
         },
         totalOrders: { $sum: 1 },
         totalRevenue: {
@@ -212,8 +219,9 @@ const getDailySalesStats = async (days = 14) => {
     },
   ]);
 
-  // Fill in missing days with zero values so the chart has no gaps
-  const result: { date: string; totalOrders: number; totalRevenue: number }[] = [];
+  // Missing days fill-in logic (একই থাকবে)
+  const result: { date: string; totalOrders: number; totalRevenue: number }[] =
+    [];
   for (let i = 0; i < days; i++) {
     const d = new Date(startDate);
     d.setDate(startDate.getDate() + i);
@@ -221,7 +229,7 @@ const getDailySalesStats = async (days = 14) => {
       (s) =>
         s._id.year === d.getFullYear() &&
         s._id.month === d.getMonth() + 1 &&
-        s._id.day === d.getDate()
+        s._id.day === d.getDate(),
     );
     result.push({
       date: `${d.getDate()}/${d.getMonth() + 1}`,
@@ -239,4 +247,3 @@ export const StatsServices = {
   getMonthlySalesStats,
   getDailySalesStats,
 };
-

@@ -8,11 +8,13 @@ export const createUserToken = (user: Partial<IUser>) => {
     email: user.email,
     role: user.role,
   };
+  console.log("creteToken user",user)
   const accessToken = generateToken(
     jwtPayLoad,
     envVars.JWT_ACCESS_SECRET,
     envVars.JWT_ACCESS_EXPIRES
   );
+  console.log("creteToken accessToken",accessToken)
   return {
     accessToken,
   };
