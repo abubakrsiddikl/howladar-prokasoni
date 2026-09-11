@@ -6,7 +6,7 @@ export interface AuthTokens {
   refreshToken?: string;
 }
 export const setAuthCookie = (res: Response, tokenInfo: AuthTokens) => {
-  console.log("accesstoken setAuthcookie", tokenInfo.accessToken)
+  // console.log("accesstoken setAuthcookie", tokenInfo.accessToken)
   if (tokenInfo.accessToken) {
     res.cookie("accessToken", tokenInfo.accessToken, {
       httpOnly: true,

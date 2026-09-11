@@ -42,11 +42,14 @@ const credentialsLogin = catchAsync(
 
 //  logout
 const logout = catchAsync(async (req: Request, res: Response) => {
+  // console.log("called handle logout")
+  // console.log(req.cookies,"cooke")
   res.clearCookie("accessToken", {
     httpOnly: true,
     secure: envVars.NODE_ENV === "production",
     sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
     path: "/",
+    domain: ".howladarporkasoni.com.bd",
   });
   sendResponse(res, {
     success: true,
@@ -99,9 +102,9 @@ const googleCallbackController = catchAsync(
       redirectTo = redirectTo.slice(1);
     }
 
-    console.log("start google callback login")
+    // console.log("start google callback login")
     const user = req.user as IUser;
-    console.log("this is goole user",user)
+    // console.log("this is goole user",user)
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
     }
