@@ -6,6 +6,7 @@ import {
   OrderStatus,
   IOrderStatusLog,
   OrderType,
+  OrderSource,
 } from "./order.interface";
 
 const orderStatusLogSchema = new Schema<IOrderStatusLog>(
@@ -94,6 +95,16 @@ const orderSchema = new Schema<IOrder>(
       enum: Object.values(OrderType),
       required: true,
       default: OrderType.REGULAR,
+    },
+    orderSource: {
+      type: String,
+      enum: Object.values(OrderSource),
+      default: OrderSource.WEBSITE,
+    },
+    description: {
+      type: String,
+      required: false,
+      default: "N/A",
     },
     transactionId: {
       type: String,

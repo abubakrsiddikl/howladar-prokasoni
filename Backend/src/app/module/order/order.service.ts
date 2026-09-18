@@ -3,6 +3,7 @@ import { Order } from "./order.model";
 import {
   IOrder,
   IOrderStatusLog,
+  OrderSource,
   OrderStatus,
   OrderType,
   PaymentMethod,
@@ -612,6 +613,76 @@ const createCampaignOrder = async (payload: IOrder) => {
   }
 };
 
+// Create an order on behalf of a customer by ADMIN or STORE_MANAGER.
+// Create custom order by ADMIN or STORE_MANAGER
+const createCustomOrder = async (
+  payload: Partial<IOrder>,
+  decodedToken: JwtPayload,
+) => {
+  // 1. Role Authorization Check
+  if (![Role.ADMIN, Role.STORE_MANAGER].includes(decodedToken.role as Role)) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Only admin or store manager can create custom orders!",
+    );
+  }
+
+  const session = await Book.startSession();
+
+  try {
+    session.startTransaction();
+
+    // 2. Prepare simple initial status log
+    const initialOrderStatusLog: IOrderStatusLog = {
+      status: OrderStatus.Processing,
+      location: "N/A",
+      note: " কাস্টম অর্ডার তৈরি করা হয়েছে।",
+      updatedBy: decodedToken.userId,
+      timestamp: new Date(),
+    };
+
+    // 3. Prepare payload for custom admin order
+    const orderData = {
+      user: undefined, // Messenger/Custom order specific database user is not required
+      orderType: payload.orderType || OrderType.REGULAR,
+      orderSource: payload.orderSource || OrderSource.MESSENGER,
+      shippingInfo: payload.shippingInfo,
+      paymentMethod: payload.paymentMethod || PaymentMethod.COD,
+      paymentStatus: payload.paymentStatus || PaymentStatus.PENDING,
+      totalAmount: payload.totalAmount || 0,
+      deliveryCharge: payload.deliveryCharge || 0,
+      totalDiscountedPrice: 0,
+      items: payload.items || [], // Can send empty array if no specific book mapping needed
+      description: payload.description,
+      orderStatusLog: [initialOrderStatusLog],
+      currentStatus: OrderStatus.Processing,
+      orderId: await generateOrderId(),
+    };
+
+    // 4. Save Order in DB
+    const [order] = await Order.create([orderData], { session });
+
+    // 5. Invoice URL Save
+    await saveInvoiceURLToDB(order._id.toString(), session);
+
+    // PDF generation (if needed)
+    await generateOrderInvoicePDF(order as IOrder);
+
+    await session.commitTransaction();
+    return order;
+  } catch (error: any) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "Failed to create custom order",
+    );
+  } finally {
+    await session.endSession();
+  }
+};
+
 // get order by customer id
 const getMyOrders = async (decodedToken: JwtPayload) => {
   const orders = await Order.find({ user: decodedToken?.userId })
@@ -760,6 +831,7 @@ const deleteOrder = async (id: string) => {
 export const OrderService = {
   createRegularOrder,
   createCampaignOrder,
+  createCustomOrder,
   getMyOrders,
   getTraceOrder,
   getAllOrders,

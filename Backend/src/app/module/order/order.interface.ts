@@ -23,9 +23,16 @@ export enum OrderStatus {
   Failed = "Failed",
 }
 
-export enum OrderType{
+export enum OrderType {
   REGULAR = "REGULAR",
   CAMPAIGN = "CAMPAIGN",
+}
+
+export enum OrderSource {
+  MESSENGER = "MESSENGER",
+  WHATSAPP = "WHATSAPP",
+  WEBSITE = "WEBSITE",
+  OTHER = "OTHER",
 }
 
 export interface IOrderStatusLog {
@@ -65,6 +72,8 @@ export interface IOrder {
   orderId: string;
   totalDiscountedPrice: number;
   orderType: OrderType;
+  orderSource?: OrderSource;
+  description?: string;
   paymentGateway?: any;
   transactionId?: string;
   invoiceURL?: string;

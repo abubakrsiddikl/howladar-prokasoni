@@ -4,6 +4,7 @@ import {
   PaymentStatus,
   OrderStatus,
   OrderType,
+  OrderSource,
 } from "./order.interface";
 
 export const orderItemSchema = z.object({
@@ -25,11 +26,18 @@ export const shippingInfoSchema = z.object({
 });
 
 export const createOrderSchema = z.object({
-  items: z.array(orderItemSchema).min(1, "At least one item is required").optional(),
+  items: z
+    .array(orderItemSchema)
+    .min(1, "At least one item is required")
+    .optional(),
   shippingInfo: shippingInfoSchema,
   paymentMethod: z.nativeEnum(PaymentMethod).default(PaymentMethod.COD),
   orderType: z.nativeEnum(OrderType).default(OrderType.REGULAR),
-  campaignId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid campaign ObjectId").optional(),
+  orderSource: z.nativeEnum(OrderSource).default(OrderSource.WEBSITE),
+  campaignId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid campaign ObjectId")
+    .optional(),
   paymentStatus: z.nativeEnum(PaymentStatus).default(PaymentStatus.PENDING),
 });
 

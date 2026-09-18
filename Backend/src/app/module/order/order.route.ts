@@ -26,6 +26,13 @@ router.post(
   OrderController.createCampaignOrder,
 );
 
+// create custom order by admin or store_manager
+router.post(
+  "/create/custom",
+  checkAuth(Role.ADMIN, Role.STORE_MANAGER),
+  OrderController.createCustomOrder,
+);
+
 // Get my order
 router.get("/my-order", checkAuth(Role.CUSTOMER), OrderController.getMyOrders);
 

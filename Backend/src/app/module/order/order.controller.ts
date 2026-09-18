@@ -35,6 +35,22 @@ const createCampaignOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// create custom order by admin or store_manager
+const createCustomOrder = catchAsync(async (req: Request, res: Response) => {
+  const decodedToken = req?.user;
+  const order = await OrderService.createCustomOrder(
+    req.body,
+    decodedToken as JwtPayload,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Custom Order created successfully",
+    data: order,
+  });
+});
+
 // get customer order her create
 const getMyOrders = catchAsync(async (req: Request, res: Response) => {
   const decodedToken = req.user as JwtPayload;
@@ -128,6 +144,7 @@ const updatePaymentStatus = catchAsync(async (req: Request, res: Response) => {
 export const OrderController = {
   createRegularOrder,
   createCampaignOrder,
+  createCustomOrder,
   getMyOrders,
   getTraceOrder,
   getAllOrders,
