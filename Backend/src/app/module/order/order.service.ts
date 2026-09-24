@@ -641,6 +641,9 @@ const createCustomOrder = async (
       timestamp: new Date(),
     };
 
+    const totalAmount =
+      (payload.totalAmount || 0) + (payload.deliveryCharge || 0);
+
     // 3. Prepare payload for custom admin order
     const orderData = {
       user: undefined, // Messenger/Custom order specific database user is not required
@@ -649,7 +652,7 @@ const createCustomOrder = async (
       shippingInfo: payload.shippingInfo,
       paymentMethod: payload.paymentMethod || PaymentMethod.COD,
       paymentStatus: payload.paymentStatus || PaymentStatus.PENDING,
-      totalAmount: payload.totalAmount || 0,
+      totalAmount,
       deliveryCharge: payload.deliveryCharge || 0,
       totalDiscountedPrice: 0,
       items: payload.items || [], // Can send empty array if no specific book mapping needed
