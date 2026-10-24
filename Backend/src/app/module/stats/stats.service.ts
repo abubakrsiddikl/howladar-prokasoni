@@ -131,12 +131,57 @@ const getStats = async () => {
   // Total orders
   const totalOrders = await Order.countDocuments();
 
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const nowInBangladesh = new Date(Date.now() + 6 * 60 * 60 * 1000);
+  const todayStart = new Date(
+    Date.UTC(
+      nowInBangladesh.getUTCFullYear(),
+      nowInBangladesh.getUTCMonth(),
+      nowInBangladesh.getUTCDate(),
+    ) -
+      6 * 60 * 60 * 1000,
+  );
+
+  const recentSales = await Order.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: sevenDaysAgo },
+        currentStatus: { $nin: ["Cancelled", "Returned"] },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$totalAmount" },
+      },
+    },
+  ]);
+
+  const todaySales = await Order.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: todayStart },
+        currentStatus: { $nin: ["Cancelled", "Returned"] },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$totalAmount" },
+      },
+    },
+  ]);
+
   return {
     totalOrders,
     totalUsers,
     totalBook,
     statusStats: currentStatusByCount,
     revenue: paymentStatsWithAll,
+    last7DaysSales: recentSales[0]?.totalAmount ?? 0,
+    todaySales: todaySales[0]?.totalAmount ?? 0,
   };
 };
 
